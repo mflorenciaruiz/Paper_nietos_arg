@@ -16,6 +16,8 @@
 
 # Data cruda
 Data Raw/
+Data Int/
+Data Out/
 
 # LaTeX auxiliary files
 *.aux
