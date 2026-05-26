@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# R / RStudio
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Stata
+*.smcl
+*.log
+*.tmp
+*.gph
+*.ster
+
+# Data cruda
+Data Raw/
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
