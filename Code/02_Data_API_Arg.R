@@ -13,8 +13,12 @@ library(writexl)
 
 options(scipen = 999)
 
+# Definir el path a la carpeta del proyecto: ARGENTINA
+path_flor <- "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
+setwd(path_flor)
+
 # ---------------------- #
-#   Padrón electoral
+# 1. Padrón electoral
 # ---------------------- #
 {
 padron <- readxl::read_excel("Data raw/Elecciones Argentina/Padron_2017.xlsx")
@@ -37,7 +41,7 @@ keys <- padron %>%
   )
 }
 # ---------------------- #
-#        API
+# 2. API
 # ---------------------- #
 {
 ### Prueba
@@ -185,7 +189,7 @@ psych::describe(main_panel)
 skimr::skim(main_panel)
 }
 # ---------------------- #
-#         Data CP
+# 3. Data CP
 # ---------------------- #
 {
 mapa <- st_read("Argentina/Data Raw/Elecciones/CP/geo_x_seccion_arg.geojson")
@@ -475,7 +479,7 @@ describe(dip_nac_wide_small$votos_no_clasif) # todos son clasificados
 
 }
 # ------------------------ #
-# Merge con data del censo
+# 4. Merge con data del censo
 # ------------------------ #
 {
 # spanish_cohorts_arg <- readRDS("Data Out/Argentina/spanish_cohorts_arg.rds") # Activar si no tengo la data en la memoria
@@ -959,3 +963,68 @@ write_csv(dip_nac_sec_paso, "Data Out/dip_nac_sec_paso.csv")
 write_csv(dip_nac_sec_gen, "Data Out/dip_nac_sec_gen.csv")
 
 }
+# ------------------------ #
+# 5. Censo 2001 y 2010
+# ------------------------ #
+
+## 5.1 Censo 2001
+censo_2001 <- read_dta("Data Raw/Censo/Censo 2001/censo_2001_arg.dta")
+table(censo_2001$urban, useNA = "ifany")
+attr(censo_2001$urban, "labels")
+any(is.na(censo_2001$urban))
+any(is.na(censo_2001$hhwt))
+
+# creo el el código de municipio (6 últimos dígitos de geo2_ar)
+censo_2001 <- censo_2001 %>% 
+  mutate(mun_code = str_sub(geo2_ar, -6, -1)) %>% 
+  dplyr::select(mun_code, urban, hhwt)
+
+# Urban está a nivel hogar, creo el % de hogares rurales y urbanos por municipio usando los pesos de hogar (hhwt) 
+# y defino el municipio como mayormente rural o urbano según cuál sea el porcentaje más alto
+censo_2001 <- censo_2001 %>%
+  group_by(mun_code) %>%
+  summarise(
+    pct_rural = 100 * sum(hhwt * (urban == 1), na.rm = TRUE) / sum(hhwt, na.rm = TRUE),
+    pct_urban = 100 * sum(hhwt * (urban == 2), na.rm = TRUE) / sum(hhwt, na.rm = TRUE),
+    
+    mayormente = case_when(
+      pct_rural > pct_urban ~ "rural",
+      pct_urban > pct_rural ~ "urbano",
+      pct_rural == pct_urban ~ "empate",
+      TRUE ~ NA_character_
+    ),
+    
+    mayormente_urb = case_when(
+      pct_urban > pct_rural ~ 1,
+      pct_rural > pct_urban ~ 0,
+      pct_rural == pct_urban ~ NA_real_
+    ),
+    
+    .groups = "drop"
+  )
+
+table(censo_2001$mayormente)
+censo_2001 <- censo_2001 %>% 
+  rename(
+    pct_urb_2001 = pct_urban,
+    pct_rur_2001 = pct_rural,
+    mayormente_urb_2001 = mayormente_urb
+  ) %>% 
+  dplyr::select(-mayormente)
+
+# Me quedo con una observación por municipio
+censo_2001 <- censo_2001 %>% 
+  group_by(mun_code) %>% 
+  summarise(
+    pct_urb_2001 = dplyr::first(pct_urb_2001),
+    pct_rur_2001 = dplyr::first(pct_rur_2001),
+    mayormente_urb_2001 = dplyr::first(mayormente_urb_2001),
+    .groups = "drop"
+  )
+
+table(censo_2001$mayormente_urb_2001, useNA = "ifany")
+summary(censo_2001$pct_urb_2001)
+summary(censo_2001$pct_rur_2001)
+
+# Guardo la data de urbanización para usarla despues
+write_csv(censo_2001, "Data Out/rural_urb_censo01.csv")

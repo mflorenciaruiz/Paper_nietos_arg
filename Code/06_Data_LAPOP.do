@@ -6,7 +6,7 @@ Objetivo: Limpiar la data de LAPOP de las rondas 2012-2023 y unir las rondas
 
 *******************************************************************************/
 
-global main "/Users/florenciaruiz/Library/CloudStorage/OneDrive-Personal/BID/Papers Valerie/Ley de nietos/Argentina"
+global main "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
 global data_raw_lapop "$main/Data Raw/LAPOP"
 global data_int "$main/Data Int"
 global data_out "$main/Data Out"
@@ -147,6 +147,10 @@ label list q14f_es
 gen migracion_probable = .
 	replace migracion_probable = 1 if q14f == 1 | q14f == 2 // muy probable o algo probable
 	replace migracion_probable = 0 if q14f == 3 | q14f == 4 // poco probable o nada probable
+
+gen pro_de_migracion = q14f
+	replace pro_de_migracion = . if q14f == .a | q14f == .b | q14f == .c
+tab pro_de_migracion, m	
 drop q14f
 
 * Guardo la data
@@ -717,5 +721,44 @@ drop prov_cod municipio_cod
 save "$data_int/lapop_append.dta", replace
 }
 
-*svyset upm
-*[pw=weight1500], strata(strata)
+* -------------------- *
+* 8. Análisis de las chances de ir a España
+* -------------------- *
+
+use "$data_int/lapop_2023_clean.dta", clear
+
+svyset upm [pw=wt], strata(strata)
+
+* Intencion de migrara en general
+svy: tab intencion_migrar, percent // --> 24.95%
+svy: tab intencion_migrar, count
+
+tab intencion_migrar, m
+
+* Intención de migrar a España
+svy: tab intencion_migrar_esp, percent
+
+tab intencion_migrar_esp, m
+tab intencion_migrar_esp intencion_migrar, m
+
+* Creo la variable sin missing en los que no tienen intencion de migrar
+gen migrar_esp_nm = .
+	replace migrar_esp_nm = 1 if intencion_migrar_esp ==1
+	replace migrar_esp_nm = 0 if intencion_migrar == 0 | intencion_migrar_esp ==0
+tab  migrar_esp_nm
+svy: tab migrar_esp_nm, percent // intencion de migrar a españa como % del total de la muestra mayor a 16 --> 9.82%
+
+* Probabilidad de migrara a España. Creo la variable sin missing en los que no tienen intencion de migrar
+tab pro_de_migracion, m 
+tab pro_de_migracion intencion_migrar, m 
+tab pro_de_migracion intencion_migrar_esp, m 
+
+gen prob_mig_esp_nm = pro_de_migracion if intencion_migrar_esp == 1
+	replace prob_mig_esp_nm = 5 if intencion_migrar == 0 | intencion_migrar_esp == 0 
+tab prob_mig_esp_nm, m
+
+svy: tab prob_mig_esp_nm, percent //   muy probable = 3.297 %, algo probable = 3.903%, poco probable = 2.221%, nada probable = 0.4038%
+
+
+
+

@@ -19,7 +19,7 @@ library(openxlsx)
 # ------------------------------------------ #
 
 # Definir el path a la carpeta del proyecto: ARGENTINA
-path_flor <- "/Users/florenciaruiz/Library/CloudStorage/OneDrive-Personal/BID/Papers Valerie/Ley de nietos/Argentina"
+path_flor <- "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
 setwd(path_flor)
 
 dip_nac_mun <- read_csv("Data Out/dip_nac_mun.csv")
