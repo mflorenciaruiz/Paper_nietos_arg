@@ -6,15 +6,15 @@ Objetivo: Probar métodos de procesamiento previo de la data para balancear grup
 
 *******************************************************************************/
 
-cd "/Users/florenciaruiz/Library/CloudStorage/OneDrive-Personal/BID/Papers Valerie/Ley de nietos/Argentina"
-global main "/Users/florenciaruiz/Library/CloudStorage/OneDrive-Personal/BID/Papers Valerie/Ley de nietos/Argentina"
+cd "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
+global main "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
 global data_int "$main/Data Int"
 global data_out "$main/Data Out"
 global data_raw "$main/Data Raw"
 global output "$main/Output"
 
 * ------------------------------------------------ *
-* 1. Censo 2011
+* 1. Censo 2010
 * ------------------------------------------------ *
 {
 * Importo la data del censo 
@@ -64,6 +64,19 @@ foreach e of local edu_levels {
     gen edu_`e' = edattain == `e' if edattain < .
 }
 
+	* Años de educación promedio
+tab	yrschool, m
+label list yrschool_lbl 
+replace yrschool =. if yrschool ==90 // Not specified
+replace yrschool =. if yrschool ==91 // Some primary
+replace yrschool =. if yrschool ==92 // Some technical after primary
+replace yrschool =. if yrschool ==93 // Some secondary
+replace yrschool =. if yrschool ==94 // Some tertiary
+replace yrschool =. if yrschool ==95 // Adult literacy
+replace yrschool =. if yrschool ==96 // Special education
+replace yrschool =. if yrschool ==98 // Unknown/missing
+replace yrschool =. if yrschool ==99 //NIU (not in universe)
+
 	* Alfabetismo
 tab lit
 label list lit_lbl
@@ -110,6 +123,7 @@ collapse ///
            empstat_* ///
 		   popdensgeo2 ///
 	(p50) median_age = age ///
+	       median_yrschool = yrschool ///
     [pw = perwt], by(mun_code)
 
 foreach var of varlis share_* edu_* empstat_* {
