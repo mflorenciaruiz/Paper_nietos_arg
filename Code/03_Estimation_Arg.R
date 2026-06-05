@@ -43,6 +43,9 @@ pesos_cbgps <- read_dta("Data Int/pesos_cbgps.dta")
 dip_nac_mun_pesos <- dip_nac_mun_eb %>% 
   left_join(pesos_cbgps, by = "mun_code")
 
+# Censo de 2010
+censo_2010 <- read_dta("Data Int/censo_2010_arg_mun.dta")
+
 # Settings para exportar
 options("modelsummary_format_numeric_latex" = "plain") # Números sin formato en tablas de modelsummary.
 
@@ -858,6 +861,14 @@ writeLines(lines, "Output/att_blankvotes_turnout.tex")
   att_of1 <- feols(share_oficialismo ~ share_1936_1955:post  + share_1956_1978:post | 
                      mun_code + anio + tipo_eleccion, data = dip_nac_mun)
   summary(att_of1)
+  
+  event_of1_36 <- feols(share_oficialismo ~ i(anio, share_1936_1955, ref = 2021) |
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+  iplot(event_of1_36)
+  
+  event_of1_56 <- feols(share_oficialismo ~ i(anio, share_1956_1978, ref = 2021) | 
+                          mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+  iplot(event_of1_56)
   
   # Controlando también por el lag del outcome
   att_of1_l <- feols(share_oficialismo ~ share_1936_1955:post  + share_1956_1978:post + share_oficialismo_l | 
@@ -3266,3 +3277,132 @@ final <- c(
 )
 writeLines(final, "Output/turnout_subsamples.tex")
 }
+
+# ------------------------------------------ #
+# 8. Correlaciones: shares de españoles y características municipales 
+# ------------------------------------------ #
+{
+# Uno la data del censo con los shares de españoles
+censo_2010 <- censo_2010 %>%
+  left_join(spanish_cohorts_arg %>% 
+              dplyr::select(mun_code, share_1936_1955, share_1956_1978), by = "mun_code")
+
+# Carcaterísticas municipales a analizar
+chars <- c(
+  "mean_yrschool"     = "Mean years of education",
+  "median_age"        = "Median age",
+  "mean_age"          = "Mean age",
+  "share_age_65plus"  = "Share aged 65+",
+  "share_age_25_44"   = "Share aged 25–44",
+  "popdensgeo2"       = "Pop. density",
+  "share_female"      = "Share female",
+  "share_unemployed"  = "Share unemployed",
+  "share_laborforce"  = "Share in labor force"
+)
+
+# Regresiones sin estandarizar el outcome
+results_raw <- lapply(names(chars), function(v) {
+  m <- feols(as.formula(paste0(v, " ~ share_1936_1955 + share_1956_1978")),
+             data = censo_2010 %>% distinct(mun_code, .keep_all = TRUE))
+  tidy(m, conf.int = TRUE) %>% mutate(outcome = v)
+}) %>% bind_rows()
+
+# Función: 
+test_char_std <- function(data, char_var) {
+  # Estandarizar el outcome
+  data <- data %>%
+    mutate(y_std = (!!sym(char_var) - mean(!!sym(char_var), na.rm = TRUE)) /
+             sd(!!sym(char_var), na.rm = TRUE))
+  
+  # Correr la regresión
+  m <- feols(y_std ~ share_1936_1955 + share_1956_1978, data = data, vcov = "hetero")
+  
+  # Wald test: H0: beta_36 = beta_56
+  betas <- coef(m)
+  V     <- vcov(m)
+  diff  <- betas["share_1936_1955"] - betas["share_1956_1978"]
+  se_diff <- sqrt(
+    V["share_1936_1955", "share_1936_1955"] +
+      V["share_1956_1978", "share_1956_1978"] -
+      2 * V["share_1936_1955", "share_1956_1978"]
+  )
+  t_stat <- diff / se_diff
+  p_val  <- 2 * pnorm(-abs(t_stat))
+  
+  broom::tidy(m, conf.int = TRUE) %>%
+    filter(term %in% c("share_1936_1955", "share_1956_1978")) %>%
+    mutate(p_equal = p_val,
+           sig_equal = case_when(
+             p_val < 0.01 ~ "***",
+             p_val < 0.05 ~ "**",
+             p_val < 0.10 ~ "*",
+             TRUE         ~ ""
+           ))
+}
+
+# Correr todas las regresiones y juntar resultados
+results <- bind_rows(lapply(names(chars), function(v) {
+  test_char_std(censo_2010, v) %>%
+    mutate(characteristic = chars[v])
+}))
+
+# Limpiar para el plot
+results <- results %>%
+  mutate(
+    window = case_when(
+      term == "share_1936_1955" ~ "1936–1955",
+      term == "share_1956_1978" ~ "1956–1978"
+    ),
+    characteristic = factor(characteristic, levels = rev(unname(chars)))
+  )
+
+# Registro de los p-valores para mostrar en el plot
+sig_labels <- results %>%
+  distinct(characteristic, p_equal, sig_equal) %>%
+  mutate(label = sprintf("p = %.3f%s", p_equal, sig_equal))
+
+# Coefplot
+(p <- ggplot(results, aes(x = estimate, y = characteristic,
+                         color = window, shape = window)) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high),
+                 height = 0, linewidth = 0.5,
+                 position = position_dodge(width = 0.6)) +
+  geom_point(size = 2.5, position = position_dodge(width = 0.6)) +
+  scale_shape_manual(values = c("1936–1955" = 16, "1956–1978" = 17),
+                     name = "Spanish share window") +
+  scale_color_manual(values = c("1936–1955" = "black", "1956–1978" = "#555555"),
+                     name = "Spanish share window") +
+  labs(
+    x = "Standardized coefficient (SD of characteristic per unit of share)",
+    y = NULL,
+    title = "Municipal characteristics and Spanish-immigration shares"
+  ) +
+  theme_minimal(base_family = "Times New Roman") +
+  theme(
+    legend.position  = "bottom",
+    plot.title       = element_text(hjust = 0.5, size = 12),
+    axis.title.x     = element_text(size = 11),
+    axis.text        = element_text(size = 11),
+    legend.text      = element_text(size = 11),
+    legend.title     = element_text(size = 11), 
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    axis.line        = element_line(color = "black", linewidth = 0.4)
+  ))
+
+# Agregar al plot los resultados del test de igualdad de coeficientes
+(p <- p +
+  geom_text(data = sig_labels,
+            aes(x = Inf, y = characteristic, label = label),
+            inherit.aes = FALSE,
+            hjust = 1.1, vjust = 0.5,
+            size = 3,
+            color = "grey30"))
+
+ggsave("Output/coef_plot_chars.pdf", p, width = 9, height = 6)
+ggsave("Output/coef_plot_chars.png", p, width = 9, height = 6, dpi = 300)
+
+}
+
+
