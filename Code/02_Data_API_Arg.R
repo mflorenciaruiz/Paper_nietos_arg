@@ -13,8 +13,12 @@ library(writexl)
 
 options(scipen = 999)
 
+# Definir el path a la carpeta del proyecto: ARGENTINA
+path_flor <- "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
+setwd(path_flor)
+
 # ---------------------- #
-#   Padrón electoral
+# 1. Padrón electoral
 # ---------------------- #
 {
 padron <- readxl::read_excel("Data raw/Elecciones Argentina/Padron_2017.xlsx")
@@ -37,7 +41,7 @@ keys <- padron %>%
   )
 }
 # ---------------------- #
-#        API
+# 2. API
 # ---------------------- #
 {
 ### Prueba
@@ -185,19 +189,19 @@ psych::describe(main_panel)
 skimr::skim(main_panel)
 }
 # ---------------------- #
-#         Data CP
+# 3. Data CP
 # ---------------------- #
 {
-mapa <- st_read("Argentina/Data Raw/Elecciones/CP/geo_x_seccion_arg.geojson")
+mapa <- st_read("Data Raw/Elecciones/CP/geo_x_seccion_arg.geojson")
 
-dip_nac <- read_xlsx("Argentina/Data Raw/Elecciones/CP/datos_electorales_diputados_nacionales_1772828173306.xlsx")
+dip_nac <- read_xlsx("Data Raw/Elecciones/CP/datos_electorales_diputados_nacionales_1772828173306.xlsx")
 
 dip_nac <- dip_nac %>%
   separate(Elecciones, into = c("tipo_eleccion", "anio"), sep = " ") %>% 
   mutate(anio = as.numeric(anio)) %>%
   janitor::clean_names() %>% 
   arrange(anio, provincia, seccion, tipo_eleccion) %>% 
-  select(anio, provincia, seccion, tipo_eleccion, everything())
+  dplyr::select(anio, provincia, seccion, tipo_eleccion, everything())
 
 # graficar mapa
 ggplot()+
@@ -246,7 +250,7 @@ votos_especiales <- dip_nac %>%
       partido == "IMPUGNADO" ~ "impugnado"
     )
   ) %>%
-  select(anio, tipo_eleccion, provincia, seccion, id,
+  dplyr::select(anio, tipo_eleccion, provincia, seccion, id,
          tipo, votos, porcentaje) %>% 
   group_by(anio, tipo_eleccion, provincia, seccion, id) %>%
   mutate(
@@ -254,7 +258,7 @@ votos_especiales <- dip_nac %>%
   )
 table(votos_especiales$chequeo) # no hay secciones con más de tres filas, bien
 votos_especiales <- votos_especiales %>% 
-  select(-chequeo)
+  dplyr::select(-chequeo)
 
 # Paso a wide
 votos_especiales <- votos_especiales %>%
@@ -303,7 +307,7 @@ votos_partidos <- votos_partidos %>%
     names_glue = "{.value}_{party_num}",
     values_fill = list(votos = 0, porcentaje = 0)
   )
-rowSums(select(votos_partidos, starts_with("porcentaje_")), na.rm = TRUE) # chequeo que todos sumen aprox 100
+rowSums(dplyr::select(votos_partidos, starts_with("porcentaje_")), na.rm = TRUE) # chequeo que todos sumen aprox 100
 
 # Unir todo
 dip_nac_wide <- votos_partidos %>%
@@ -311,19 +315,19 @@ dip_nac_wide <- votos_partidos %>%
     votos_especiales,
     by = c("anio", "tipo_eleccion", "provincia", "seccion", "id")
   ) %>% 
-  select(anio, tipo_eleccion, provincia, seccion, id,
+  dplyr::select(anio, tipo_eleccion, provincia, seccion, id,
          participacion, electores, votantes, ganador, 
          votos_blanco, porcentaje_blanco, votos_impugnado, porcentaje_impugnado, votos_nulo, porcentaje_nulo,
          everything())
 
 # Data más chica sin partidos
 dip_nac_wide_small <- dip_nac_wide %>%
-  select(-matches("_(\\d+)$")) %>% 
+  dplyr::select(-matches("_(\\d+)$")) %>% 
   arrange(tipo_eleccion, provincia, seccion, id, anio)
 
 # Guardo los nombres de los partidos para clasificarlos según ideología
 nombres_partidos <- dip_nac %>% 
-  select(partido, provincia, anio) %>% 
+  dplyr::select(partido, provincia, anio) %>% 
   distinct() %>% 
   filter(partido != "BLANCO", partido != "NULO", partido != "IMPUGNADO")
 
@@ -332,15 +336,15 @@ nombres_partidos %>%
   count(partido, anio) %>% 
   filter(n > 1)
 
-write_xlsx(nombres_partidos, "Argentina/Data Out/nombres_partidos.xlsx")
+write_xlsx(nombres_partidos, "Data Out/nombres_partidos.xlsx")
 
 # Importo los partidos ya clasificados
-nombres_partidos <- read_xlsx("Argentina/Data Out/nombres_partidos_clasificado.xlsx")
+nombres_partidos <- read_xlsx("Data Out/nombres_partidos_clasificado.xlsx")
 
 # Uno la clasificación de partidos a la data de diputados long
 dip_nac_partidos <- dip_nac %>% 
   left_join(nombres_partidos, by = c("partido", "provincia", "anio")) %>% 
-  select(anio, tipo_eleccion, provincia, seccion, id, partido, clasificacion_binaria,	
+  dplyr::select(anio, tipo_eleccion, provincia, seccion, id, partido, clasificacion_binaria,	
          clasificacion_desagregada, familia_politica, everything()) %>% 
   arrange(anio, tipo_eleccion, provincia, seccion, id)
 
@@ -441,18 +445,18 @@ top_partidos_sec <- dip_nac_clasif %>%
 nep_sec <- dip_nac_clasif %>% 
   filter(!partido %in% c("BLANCO", "NULO", "IMPUGNADO")) %>% 
   group_by(anio, tipo_eleccion, provincia, seccion, id) %>% 
+  mutate(porcentaje = as.numeric(porcentaje)) %>% 
   summarise(
     nep = 1 / sum(porcentaje^2, na.rm = TRUE),
     .groups = "drop"
   )
-
 
 # Unir todo en una sola data
 
 # 1. Uno los data sets de indicadores políticos (incumbencia e indicadores ideológicos)
 ind_pol <- oficialismo_sec %>%
   left_join(shares_sec, by = c("anio", "tipo_eleccion", "provincia", "seccion", "id")) %>% 
-  select(anio, tipo_eleccion, provincia, seccion, id, everything())
+  dplyr::select(anio, tipo_eleccion, provincia, seccion, id, everything())
 
 # 2. Uno la data de indicadores políticos con la data de elecciones sin partidos (que tiene los votos en blanco, nulos, impugnados)
 dip_nac_wide_small <- dip_nac_wide_small %>% 
@@ -475,10 +479,10 @@ describe(dip_nac_wide_small$votos_no_clasif) # todos son clasificados
 
 }
 # ------------------------ #
-# Merge con data del censo
+# 4. Merge con data del censo
 # ------------------------ #
 {
-# spanish_cohorts_arg <- readRDS("Data Out/Argentina/spanish_cohorts_arg.rds") # Activar si no tengo la data en la memoria
+# spanish_cohorts_arg <- readRDS("Data Out/spanish_cohorts_arg.rds") # Activar si no tengo la data en la memoria
 
 ### Chequeo antes de hacer el merge ###
 
@@ -489,8 +493,8 @@ spanish_cohorts_arg <- st_make_valid(spanish_cohorts_arg)
 mapa <- st_make_valid(mapa)
 
   # 2. Quedarse solo con las variables identificadoras
-mun_sf_small <- spanish_cohorts_arg %>% select(mun_code)
-sec_sf_small <- mapa %>% select(id)
+mun_sf_small <- spanish_cohorts_arg %>% dplyr::select(mun_code)
+sec_sf_small <- mapa %>% dplyr::select(id)
 
   # 3. Intersección espacial
 intersections <- st_intersection(mun_sf_small, sec_sf_small)
@@ -555,7 +559,7 @@ crosswalk_sec_mun <- intersections %>%
   group_by(id) %>%
   slice_max(area_intersection, n = 1, with_ties = FALSE) %>%
   ungroup() %>%
-  select(id, mun_code, share_sec, share_mun)
+  dplyr::select(id, mun_code, share_sec, share_mun)
 
   # Verificar que cada id quedo una sola vez 
 any(duplicated(crosswalk_sec_mun$id))
@@ -599,13 +603,13 @@ dip_nac_wide_small <- dip_nac_wide_small %>%
   filter(!id == "TIERRA DEL FUEGO_ANTARTIDA ARGENTINA")
   
 crosswalk_sec_mun <- crosswalk_sec_mun %>% 
-  select(-share_mun, -share_sec) %>%
+  dplyr::select(-share_mun, -share_sec) %>%
   filter(!id == "BUENOS AIRES_JOSE C PAZ") # esta sección está con y sin ".", saco la que no tiene punto así coincida con la data de elecciones
 
   # Uno las dos datas
 dip_nac_wide_small <- dip_nac_wide_small %>%
   left_join(crosswalk_sec_mun, by = c("id")) %>% 
-  select(tipo_eleccion, provincia, mun_code, id, seccion, anio, 
+  dplyr::select(tipo_eleccion, provincia, mun_code, id, seccion, anio, 
          participacion, electores, votantes, ganador, 
          votos_blanco, porcentaje_blanco, votos_impugnado, porcentaje_impugnado, votos_nulo, porcentaje_nulo,
          everything()) %>% 
@@ -672,7 +676,7 @@ dip_nac_mun <- dip_nac_wide_small %>%
                                     ),
     share_oficialismo = 100 * votos_oficialismo / votos_validos
   ) %>% 
-  select(mun_code, anio, tipo_eleccion, everything(), -votos_clasif) %>% 
+  dplyr::select(mun_code, anio, tipo_eleccion, everything(), -votos_clasif) %>% 
   arrange(tipo_eleccion, mun_code, anio)
 
   # Chequeo
@@ -686,7 +690,7 @@ skimr::skim(dip_nac_mun$participacion)
 
   # Extraigo el código de municipio para cada id de elección
 sec_to_mun <- dip_nac_wide_small %>% 
-  select(id, mun_code) %>% 
+  dplyr::select(id, mun_code) %>% 
   distinct() %>% 
   filter(!is.na(mun_code))
 
@@ -720,7 +724,7 @@ top_partidos_mun <- dip_nac_long_mun %>%
 
   # 3.2. Alternancia: cambia el bloque ideológico del ganador respecto  la elección anterior del mismo tipo (PASO con PASO, GEN con GEN)
 alternancia_mun <- top_partidos_mun %>% 
-  select(mun_code, tipo_eleccion, anio, ganador_clasif) %>% 
+  dplyr::select(mun_code, tipo_eleccion, anio, ganador_clasif) %>% 
   arrange(mun_code, tipo_eleccion, anio) %>% 
   group_by(mun_code, tipo_eleccion) %>% 
   mutate(
@@ -732,13 +736,13 @@ alternancia_mun <- top_partidos_mun %>%
     )
   ) %>% 
   ungroup() %>% 
-  select(-ganador_clasif_lag, -ganador_clasif)
+  dplyr::select(-ganador_clasif_lag, -ganador_clasif)
 
   table(alternancia_mun$alternancia, useNA = "ifany")
   
   # 3.3 Alternancia PASO vs GENERALES a nivel municipio
 alt_paso_gen_mun <- top_partidos_mun %>% 
-    select(anio, tipo_eleccion, mun_code, 
+  dplyr::select(anio, tipo_eleccion, mun_code, 
            ganador_partido, ganador_clasif) %>% 
     pivot_wider(
       names_from  = tipo_eleccion,
@@ -757,7 +761,7 @@ alt_paso_gen_mun <- top_partidos_mun %>%
         TRUE                                                           ~ 0L
       )
     ) %>% 
-    select(anio, mun_code, alt_paso_gen_partido, alt_paso_gen_clasif)
+  dplyr::select(anio, mun_code, alt_paso_gen_partido, alt_paso_gen_clasif)
   
 table(alt_paso_gen_mun$alt_paso_gen_partido, useNA = "ifany")
 table(alt_paso_gen_mun$alt_paso_gen_clasif, useNA = "ifany")
@@ -777,14 +781,14 @@ extras_mun <- top_partidos_mun %>%
   left_join(alt_paso_gen_mun, by = c("anio", "mun_code")) %>%
   left_join(nep_mun, by = c("anio", "tipo_eleccion", "mun_code")) %>% 
   left_join(
-    dip_nac_mun %>% select(anio, tipo_eleccion, mun_code, votos_validos),
+    dip_nac_mun %>%  dplyr::select(anio, tipo_eleccion, mun_code, votos_validos),
     by = c("anio", "tipo_eleccion", "mun_code")
   ) %>% 
   mutate(
     margen = 100 * (votos_1ro - votos_2do) / votos_validos,
     voto_incumbente =  if_else(es_oficialismo(ganador_partido, anio), 1L, 0L)
   ) %>% 
-  select(-votos_validos)
+  dplyr::select(-votos_validos)
 
   # Uno con la data de elecciones municipales completa
 dip_nac_mun <- dip_nac_mun %>% 
@@ -800,12 +804,12 @@ dip_nac_mun <- dip_nac_mun %>%
   left_join(spanish_cohorts_arg, 
             by = c("mun_code")) %>% 
   rename(mun_name = admin_name) %>%
-  select(mun_code, mun_name, anio, tipo_eleccion, everything()) %>% 
+  dplyr::select(mun_code, mun_name, anio, tipo_eleccion, everything()) %>% 
   arrange(tipo_eleccion, mun_code, mun_name, anio)
 
   # Agrego los nombres de las provincias
 provincias <- mapa %>% 
-  select(id, provincia) %>%
+  dplyr::select(id, provincia) %>%
   st_drop_geometry()
 
 length(unique(provincias$id)) # 529 secciones
@@ -824,7 +828,7 @@ provincias <- distinct(provincias) # Elimino las dos secciones duplicadas que ve
 
 provincias <- provincias %>% 
   left_join(crosswalk_sec_mun, by = "id") %>% 
-  select(provincia, mun_code) %>% 
+  dplyr::select(provincia, mun_code) %>% 
   arrange(provincia, mun_code) %>% 
   distinct() # me quedo solo con el mapeo de provincias a municipios
 
@@ -844,7 +848,7 @@ setdiff(unique(provincias$mun_code), unique(dip_nac_mun$mun_code)) # todos coinc
 dip_nac_mun <- dip_nac_mun %>%
   left_join(provincias, by = "mun_code") %>% 
   rename(prov_name = provincia, prov_code = province_code) %>%
-  select(mun_code, mun_name,  prov_name, prov_code, anio, tipo_eleccion, everything()) %>% 
+  dplyr::select(mun_code, mun_name,  prov_name, prov_code, anio, tipo_eleccion, everything()) %>% 
   arrange(tipo_eleccion, mun_code, anio)
 
   # Chequeo (tiene que dar 799)
@@ -854,7 +858,7 @@ dip_nac %>%
   summarise(total_votos = sum(votos, na.rm = TRUE))
 
 dip_nac_mun <- dip_nac_mun %>% 
-  select(mun_code, mun_name, prov_name, prov_code, anio, tipo_eleccion,
+  dplyr::select(mun_code, mun_name, prov_name, prov_code, anio, tipo_eleccion,
          electores, votantes, participacion, 
          votos_blanco, votos_nulo, votos_impugnado, votos_validos,
          porcentaje_blanco, porcentaje_nulo, porcentaje_impugnado,
@@ -868,6 +872,23 @@ dip_nac_mun <- dip_nac_mun %>%
          alternancia, alt_paso_gen_partido, alt_paso_gen_clasif, nep, everything())
 
 names(dip_nac_mun)
+
+# Creo los lags
+dip_nac_mun <- dip_nac_mun %>%
+  arrange(mun_code, tipo_eleccion, anio) %>%
+  group_by(mun_code, tipo_eleccion) %>%
+  mutate(
+    porcentaje_blanco_l  = lag(porcentaje_blanco, 1),
+    participacion_l      = lag(participacion, 1),
+    share_izq_l          = lag(share_izq, 1),
+    share_der_l          = lag(share_der, 1),
+    share_izq_amplia_l   = lag(share_izq_amplia, 1),
+    share_der_amplia_l   = lag(share_der_amplia, 1),
+    share_peronistas_l   = lag(share_peronistas, 1),
+    share_oficialismo_l  = lag(share_oficialismo, 1),
+    alternancia_l        = lag(alternancia, 1)
+  ) %>%
+  ungroup()
 
 # 5. Data sin agregar en municipios (a nivel de sección)
 
@@ -885,7 +906,7 @@ dip_nac_sec <- dip_nac_wide_small %>%
          prov_code = province_code,
          seccion_code = id,
          seccion_name = seccion) %>%
-  select(prov_name, prov_code, mun_code, mun_name, seccion_code, seccion_name,
+  dplyr::select(prov_name, prov_code, mun_code, mun_name, seccion_code, seccion_name,
          anio, tipo_eleccion, everything()) %>% 
   arrange(tipo_eleccion, prov_name, prov_code, mun_code, mun_name, anio, seccion_code, seccion_name)
 
@@ -902,11 +923,11 @@ table(dip_nac_sec$anio, dip_nac_sec$tipo_eleccion) # No hay paso en 2025
   # Las secciones difieren entre PASO y GENERALES
 paso <- dip_nac_sec %>%
   filter(tipo_eleccion == "PASO") %>%
-  select(anio, seccion_code) %>%
+  dplyr::select(anio, seccion_code) %>%
   distinct()
 generales <- dip_nac_sec %>%
   filter(tipo_eleccion == "GENERALES") %>%
-  select(anio, seccion_code) %>%
+  dplyr::select(anio, seccion_code) %>%
   distinct()
   # Secciones que están en PASO pero no en GENERALES
 anti_join(paso, generales, by = c("anio", "seccion_code")) # 2021 CHACO_TAPENAGA y 2011 JUJUY_VALLE GRANDE (se constata con la data de la pagina oficial)
@@ -939,7 +960,7 @@ dip_nac_sec <- dip_nac_sec %>%
   mutate(post = if_else(anio > 2021, 1, 0))
 
   # Guardo la data
-write_csv(dip_nac_mun, "Data Out/dip_nac_mun.csv")
+# write_csv(dip_nac_mun, "Data Out/dip_nac_mun.csv") # ahora la guardo más abajo despues de agregar la data de los censos 2011 y 2001
 write_csv(dip_nac_sec, "Data Out/dip_nac_sec.csv")
 
 dip_nac_mun_paso <- dip_nac_mun %>% 
@@ -958,4 +979,162 @@ dip_nac_sec_gen <- dip_nac_sec %>%
 write_csv(dip_nac_sec_paso, "Data Out/dip_nac_sec_paso.csv")
 write_csv(dip_nac_sec_gen, "Data Out/dip_nac_sec_gen.csv")
 
+}
+# ------------------------ #
+# 5. Censo 2001 y 2010
+# ------------------------ #
+{
+## 5.1 Censo 2001 ##
+
+censo_2001 <- read_dta("Data Raw/Censo/Censo 2001/censo_2001_arg.dta")
+table(censo_2001$urban, useNA = "ifany")
+attr(censo_2001$urban, "labels")
+any(is.na(censo_2001$urban))
+any(is.na(censo_2001$hhwt))
+
+# creo el el código de municipio (6 últimos dígitos de geo2_ar)
+censo_2001 <- censo_2001 %>% 
+  mutate(mun_code = str_sub(geo2_ar, -6, -1)) %>% 
+  dplyr::select(mun_code, urban, hhwt)
+
+# Urban está a nivel hogar, creo el % de hogares rurales y urbanos por municipio usando los pesos de hogar (hhwt) 
+# y defino el municipio como mayormente rural o urbano según cuál sea el porcentaje más alto
+censo_2001 <- censo_2001 %>%
+  group_by(mun_code) %>%
+  summarise(
+    pct_rural = 100 * sum(hhwt * (urban == 1), na.rm = TRUE) / sum(hhwt, na.rm = TRUE),
+    pct_urban = 100 * sum(hhwt * (urban == 2), na.rm = TRUE) / sum(hhwt, na.rm = TRUE),
+    
+    mayormente = case_when(
+      pct_rural > pct_urban ~ "rural",
+      pct_urban > pct_rural ~ "urbano",
+      pct_rural == pct_urban ~ "empate",
+      TRUE ~ NA_character_
+    ),
+    
+    mayormente_urb = case_when(
+      pct_urban > pct_rural ~ 1,
+      pct_rural > pct_urban ~ 0,
+      pct_rural == pct_urban ~ NA_real_
+    ),
+    
+    .groups = "drop"
+  )
+
+table(censo_2001$mayormente)
+censo_2001 <- censo_2001 %>% 
+  rename(
+    pct_urb_2001 = pct_urban,
+    pct_rur_2001 = pct_rural,
+    mayormente_urb_2001 = mayormente_urb
+  ) %>% 
+  dplyr::select(-mayormente)
+
+# Me quedo con una observación por municipio
+censo_2001 <- censo_2001 %>% 
+  group_by(mun_code) %>% 
+  summarise(
+    pct_urb_2001 = dplyr::first(pct_urb_2001),
+    pct_rur_2001 = dplyr::first(pct_rur_2001),
+    mayormente_urb_2001 = dplyr::first(mayormente_urb_2001),
+    .groups = "drop"
+  )
+
+table(censo_2001$mayormente_urb_2001, useNA = "ifany")
+summary(censo_2001$pct_urb_2001)
+summary(censo_2001$pct_rur_2001)
+
+# Guardo la data de urbanización para usarla después
+write_csv(censo_2001, "Data Int/rural_urb_censo01.csv")
+
+## 5.2 Censo 2010 ##
+
+censo_2010 <- read_dta("Data Int/censo_2010_arg_mun.dta")
+
+# Renombro todas las variables para que tengan 2010 en el nombre
+censo_2010 <- censo_2010 %>% 
+  rename_with(~ paste0(., "_2010"), -mun_code)
+
+## 5.3 Uno con la data de estimación ##
+censos_0110 <- censo_2001 %>% 
+  full_join(censo_2010, by = "mun_code")
+
+# Chequeos
+censos_0110 %>% 
+  skimr::skim(mean_yrschool_2010, median_yrschool_2010, share_less_primary_2010,
+              share_primary_2010, share_secondary_2010, share_university_2010)
+
+cor(censos_0110 %>% dplyr::select(mean_yrschool_2010, share_less_primary_2010,
+                                  share_primary_2010, share_secondary_2010,
+                                  share_university_2010), use = "complete.obs")
+
+cor(censos_0110 %>% dplyr::select(popdensgeo2_2010, pct_urb_2001,
+                                  pct_rur_2001), use = "complete.obs")
+
+skimr::skim(censos_0110$pct_urb_2001)
+skimr::skim(censos_0110$pct_rur_2001)
+
+# Calculo los terciles
+censos_0110 <- censos_0110 %>% 
+  mutate(
+    t_urb_2001        = ntile(pct_urb_2001, 3),
+    t_density_2010    = ntile(popdensgeo2_2010, 3),
+    t_rur_2001        = ntile(pct_rur_2001, 3),
+    t_fem_2010        = ntile(share_female_2010, 3),
+    t_male_2010       = ntile(share_male_2010, 3),
+    t_uni_2010        = ntile(share_university_2010, 3),
+    t_sec_2010        = ntile(share_secondary_2010, 3),
+    t_prim_2010       = ntile(share_primary_2010, 3),
+    t_lessp_2010      = ntile(share_less_primary_2010, 3),
+    t_mean_schyr_2010 = ntile(mean_yrschool_2010, 3),
+    t_med_schyr_2010  = ntile(median_yrschool_2010, 3),
+    t_med_dage_2010   = ntile(median_age_2010, 3),
+    t_age2544_2010    = ntile(share_age_25_44_2010, 3),
+    t_unemp_2010      = ntile(share_unemployed_2010, 3)
+  )
+
+dip_nac_mun_2 <- dip_nac_mun %>% 
+  left_join(censos_0110, by = "mun_code")
+}
+# ------------------------ #
+# 6. Características políticas promedio
+# ------------------------ #
+{
+dip_nac_mun_pre_avg <- read_dta("Data Int/dip_nac_mun_pre_avg.dta") 
+names(dip_nac_mun_pre_avg)
+
+dip_nac_mun_pre_avg <- dip_nac_mun_pre_avg %>% 
+  dplyr::select(mun_code, 
+                share_izq_pre_avg, share_izq_amplia_pre_avg, share_der_amplia_pre_avg, share_der_pre_avg,
+                share_peronistas_pre_avg, share_oficialismo_pre_avg, alternancia_pre_avg, 
+                share_1936_1955, share_1956_1978) %>% 
+  mutate(share_alt_pre_avg = 100*alternancia_pre_avg) %>% 
+  dplyr::select(-alternancia_pre_avg)
+
+skimr::skim(dip_nac_mun_pre_avg)
+
+cor(dip_nac_mun_pre_avg %>% dplyr::select(share_izq_amplia_pre_avg, share_der_amplia_pre_avg,
+                                  share_peronistas_pre_avg, share_oficialismo_pre_avg, 
+                                  share_alt_pre_avg, share_1936_1955,
+                                  share_1956_1978), use = "complete.obs")
+
+dip_nac_mun_pre_avg <- dip_nac_mun_pre_avg %>% 
+  dplyr::select(-share_1936_1955, -share_1956_1978)
+
+# Calculo los terciles
+dip_nac_mun_pre_avg <- dip_nac_mun_pre_avg %>% 
+  mutate(
+    t_izam_pre_avg = ntile(share_izq_amplia_pre_avg, 3),
+    t_deam_pre_avg = ntile(share_der_amplia_pre_avg, 3),
+    t_per_pre_avg  = ntile(share_peronistas_pre_avg, 3),
+    t_ofi_pre_avg  = ntile(share_oficialismo_pre_avg, 3),
+    t_alt_pre_avg  = ntile(share_alt_pre_avg, 3)
+  )
+
+dip_nac_mun_2 <- dip_nac_mun_2 %>% 
+  left_join(dip_nac_mun_pre_avg, by = "mun_code")
+
+# Sobreescribo la data
+write_csv(dip_nac_mun_2, "Data Out/dip_nac_mun.csv") 
+# Creo dip_nac_mun_2 para no tener que volver a correr todo si hay un problema, pero sobre escribo la data como dip_nac_mun y en el código 3 la importo como dip_nac_mun
 }

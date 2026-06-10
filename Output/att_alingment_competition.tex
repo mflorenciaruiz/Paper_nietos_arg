@@ -1,0 +1,35 @@
+\begin{table}
+\caption{Effects on Party Alignment and Electoral Competition}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\centering
+\begin{tabular}[t]{lcccccc}
+\hline
+ & \multicolumn{2}{c}{Peronist vote share} & \multicolumn{2}{c}{Incumbent vote share} & \multicolumn{2}{c}{Ideological alternation} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+  & (1) & (2) & (3) & (4) & (5) & (6)\\
+\hline
+Spanish share 1936-1955$\times$Post & -1.281 & -1.302 & 2.065** & 2.806*** & -0.104** & -0.079*\\
+ & (1.460) & (1.431) & (1.035) & (1.002) & (0.044) & (0.044)\\
+Spanish share 1956-1978$\times$Post & 8.511 & 8.474 & 7.549* & 8.578** & 0.223 & 0.127\\
+ & (6.750) & (6.422) & (4.276) & (3.835) & (0.201) & (0.201)\\
+Lagged Peronist vote share &  & -0.119*** &  &  &  & \\
+ &  & (0.030) &  &  &  & \\
+Lagged incumbent vote share &  &  &  & 0.059*** &  & \\
+ &  &  &  & (0.020) &  & \\
+Lagged ideological alternation &  &  &  &  &  & 0.019\\
+ &  &  &  &  &  & (0.024)\\
+
+ & & & & & & \\
+Observations & 4680 & 4056 & 4680 & 4056 & 4056 & 3432\\
+R$^2$ & 0.590 & 0.580 & 0.446 & 0.378 & 0.288 & 0.288\\
+Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes\\
+Time FE & Yes & Yes & Yes & Yes & Yes & Yes\\
+Election type FE & Yes & Yes & Yes & Yes & Yes & Yes\\
+\hline
+\end{tabular}
+\vspace{0.4em}
+\begin{center}
+\footnotesize Notes: Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.
+\end{center}
+\end{table}
