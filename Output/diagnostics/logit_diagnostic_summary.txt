@@ -1,0 +1,92 @@
+Diagnóstico de coeficientes Logit grandes
+========================================
+
+1. Coeficientes problemáticos
+-----------------------------
+# A tibble: 40 × 9
+   model_family controls model                term  coef_logit odds_ratio abs_coef big_coef big_or
+   <chr>        <chr>    <chr>                <chr>      <dbl>      <dbl>    <dbl> <lgl>    <lgl> 
+ 1 triple       No       mun_pre_all_share_h… post…     -52.5    1.60e-23    52.5  TRUE     TRUE  
+ 2 triple       No       mun_pre_all_mean_ed… post…      36.5    7.11e+15    36.5  TRUE     TRUE  
+ 3 triple       No       mun_pre_all_share_h… post…      26.3    2.54e+11    26.3  TRUE     TRUE  
+ 4 triple       No       mun_pre_all_share_e… post…      16.8    1.95e+ 7    16.8  TRUE     TRUE  
+ 5 triple       No       mun_pre_all_share_v… post…      15.6    5.75e+ 6    15.6  TRUE     TRUE  
+ 6 triple       No       mun_pre_all_share_h… post…      14.9    2.94e+ 6    14.9  TRUE     TRUE  
+ 7 triple       No       mun_pre_all_share_i… post…     -13.2    1.79e- 6    13.2  TRUE     TRUE  
+ 8 triple       No       mun_pre_all_share_d… post…       9.42   1.23e+ 4     9.42 TRUE     TRUE  
+ 9 triple       No       mun_pre_all_share_e… post…      -8.68   1.71e- 4     8.68 TRUE     TRUE  
+10 triple       No       mun_pre_all_share_h… post…      -7.34   6.52e- 4     7.34 TRUE     TRUE  
+# ℹ 30 more rows
+# ℹ Use `print(n = ...)` to see more rows
+
+
+2. Resumen de separación por municipio-año
+------------------------------------------
+# A tibble: 1 × 5
+  n_cells cells_no_variation_y share_cells_no_variation_y cells_all_zero cells_all_one
+    <int>                <int>                      <dbl>          <int>         <int>
+1     270                   21                     0.0778             21             0
+
+
+3. Diagnóstico por año
+----------------------
+# A tibble: 5 × 5
+  year      n mean_y share_y_1 share_y_0
+  <fct> <int>  <dbl>     <dbl>     <dbl>
+1 2012   1512 0.0946    0.0946     0.905
+2 2014   1512 0.0983    0.0983     0.902
+3 2017   1528 0.184     0.184      0.816
+4 2019   1528 0.186     0.186      0.814
+5 2023   1540 0.250     0.250      0.750
+
+
+4. Variables eliminadas por colinealidad
+----------------------------------------
+# A tibble: 18 × 4
+   model_family controls model                               collinear_var                      
+   <chr>        <chr>    <chr>                               <chr>                              
+ 1 post_x       No       mun_pre_all_mean_edad               mun_pre_all_mean_edad              
+ 2 post_x       No       mun_pre_all_share_hombre            mun_pre_all_share_hombre           
+ 3 post_x       No       mun_pre_all_share_rural             mun_pre_all_share_rural            
+ 4 post_x       No       mun_pre_all_share_desempleado       mun_pre_all_share_desempleado      
+ 5 post_x       No       mun_pre_all_share_en_pareja         mun_pre_all_share_en_pareja        
+ 6 post_x       No       mun_pre_all_mean_educ               mun_pre_all_mean_educ              
+ 7 post_x       No       mun_pre_all_mean_izq_der            mun_pre_all_mean_izq_der           
+ 8 post_x       No       mun_pre_all_share_interes_pol_mucho mun_pre_all_share_interes_pol_mucho
+ 9 post_x       No       mun_pre_all_share_voto_blanco_nulo  mun_pre_all_share_voto_blanco_nulo 
+10 post_x       Yes      mun_pre_all_mean_edad               mun_pre_all_mean_edad              
+11 post_x       Yes      mun_pre_all_share_hombre            mun_pre_all_share_hombre           
+12 post_x       Yes      mun_pre_all_share_rural             mun_pre_all_share_rural            
+13 post_x       Yes      mun_pre_all_share_desempleado       mun_pre_all_share_desempleado      
+14 post_x       Yes      mun_pre_all_share_en_pareja         mun_pre_all_share_en_pareja        
+15 post_x       Yes      mun_pre_all_mean_educ               mun_pre_all_mean_educ              
+16 post_x       Yes      mun_pre_all_mean_izq_der            mun_pre_all_mean_izq_der           
+17 post_x       Yes      mun_pre_all_share_interes_pol_mucho mun_pre_all_share_interes_pol_mucho
+18 post_x       Yes      mun_pre_all_share_voto_blanco_nulo  mun_pre_all_share_voto_blanco_nulo 
+
+
+5. Variables X problemáticas detectadas
+---------------------------------------
+[1] "mun_pre_all_share_hombre"            "mun_pre_all_share_en_pareja"        
+[3] "mun_pre_all_share_voto_blanco_nulo"  "mun_pre_all_share_interes_pol_mucho"
+[5] "mun_pre_all_share_desempleado"       "mun_pre_all_share_rural"            
+
+
+6. Diagnóstico de escala de X problemáticas
+------------------------------------------
+# A tibble: 6 × 37
+  variable   x_n x_mean   x_sd  x_min   x_p1   x_p5  x_p50 x_p95 x_p99 x_max share1_mean share1_sd
+  <chr>    <int>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl> <dbl> <dbl> <dbl>       <dbl>     <dbl>
+1 mun_pre…  7584 0.493  0.0119 0.452  0.452  0.472  0.493  0.514 0.521 0.521       0.721     0.653
+2 mun_pre…  7584 0.515  0.0610 0.347  0.347  0.4    0.510  0.625 0.685 0.685       0.721     0.653
+3 mun_pre…  7584 0.154  0.0586 0.0364 0.0364 0.0923 0.15   0.241 0.467 0.467       0.721     0.653
+4 mun_pre…  7584 0.142  0.0568 0.0278 0.0278 0.0605 0.139  0.239 0.278 0.278       0.721     0.653
+5 mun_pre…  7584 0.0618 0.0297 0      0      0.0139 0.0575 0.125 0.130 0.16        0.721     0.653
+6 mun_pre…  7584 0.118  0.266  0      0      0      0      1     1     1           0.721     0.653
+# ℹ 24 more variables: share1_min <dbl>, share1_p99 <dbl>, share1_max <dbl>, share2_mean <dbl>,
+#   share2_sd <dbl>, share2_min <dbl>, share2_p99 <dbl>, share2_max <dbl>, interaction1_sd <dbl>,
+#   interaction1_min <dbl>, interaction1_p99 <dbl>, interaction1_max <dbl>,
+#   interaction2_sd <dbl>, interaction2_min <dbl>, interaction2_p99 <dbl>,
+#   interaction2_max <dbl>, post_interaction1_sd <dbl>, post_interaction1_min <dbl>,
+#   post_interaction1_p99 <dbl>, post_interaction1_max <dbl>, post_interaction2_sd <dbl>,
+#   post_interaction2_min <dbl>, post_interaction2_p99 <dbl>, post_interaction2_max <dbl>

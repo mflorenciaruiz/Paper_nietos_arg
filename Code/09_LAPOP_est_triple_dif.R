@@ -296,6 +296,22 @@ models_triple_with_controls <- map(
 names(models_triple_with_controls) <- triple_vars
 
 # ---------------------------------------------------------------------------- #
+# 6.1 Guardar modelos LPM triple
+# ---------------------------------------------------------------------------- #
+
+dir.create("Output/models", showWarnings = FALSE, recursive = TRUE)
+
+saveRDS(
+  models_triple_no_controls,
+  "Output/models/models_triple_no_controls.rds"
+)
+
+saveRDS(
+  models_triple_with_controls,
+  "Output/models/models_triple_with_controls.rds"
+)
+
+# ---------------------------------------------------------------------------- #
 # 7. Extraer solo coeficientes de triple interacción
 # ---------------------------------------------------------------------------- #
 

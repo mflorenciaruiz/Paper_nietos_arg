@@ -278,9 +278,9 @@ latex_lines_post_x <- c(
   "\\multicolumn{5}{l}{\\footnotesize Each row reports a separate specification interacting $Post$ with one pre-2023 municipal characteristic $X$.} \\\\",
   "\\multicolumn{5}{l}{\\footnotesize LPM columns report coefficients with clustered standard errors in parentheses.} \\\\",
   "\\multicolumn{5}{l}{\\footnotesize Logit columns report the sign and statistical significance of the corresponding Logit coefficient.} \\\\",
-  "\\multicolumn{5}{l}{\\footnotesize All models include year fixed effects. Municipality fixed effects are not included because controls enter in levels.} \\\\",
-  "\\multicolumn{5}{l}{\\footnotesize In rows with Controls = Yes, controls include age, male, and the remaining pre-2023 municipal characteristics in levels.} \\\\",
-  "\\multicolumn{5}{l}{\\footnotesize Survey weights are used. Standard errors are clustered at the municipality level.} \\\\",
+  "\\multicolumn{5}{l}{\\footnotesize All models include year and municipality fixed effects.} \\\\",
+  "\\multicolumn{5}{l}{\\footnotesize In rows with Controls = Yes, controls include age and male.} \\\\",
+  "\\multicolumn{5}{l}{\\footnotesize Standard errors are clustered at the municipality level.} \\\\",
   "\\multicolumn{5}{l}{\\footnotesize * p$<$0.10, ** p$<$0.05, *** p$<$0.01.} \\\\",
   "\\end{tabular}",
   "\\end{table}"
@@ -349,7 +349,7 @@ latex_lines_share <- c(
   "\\multicolumn{7}{l}{\\footnotesize Logit columns report the sign and statistical significance of the corresponding Logit coefficient.} \\\\",
   "\\multicolumn{7}{l}{\\footnotesize All models include year fixed effects. Municipality fixed effects are not included because $X$ and Spanish exposure are time-invariant.} \\\\",
   "\\multicolumn{7}{l}{\\footnotesize In rows with Controls = Yes, controls include age, male, and the remaining pre-2023 municipal characteristics in levels.} \\\\",
-  "\\multicolumn{7}{l}{\\footnotesize Survey weights are used. Standard errors are clustered at the municipality level.} \\\\",
+  "\\multicolumn{7}{l}{\\footnotesize Standard errors are clustered at the municipality level.} \\\\",
   "\\multicolumn{7}{l}{\\footnotesize * p$<$0.10, ** p$<$0.05, *** p$<$0.01.} \\\\",
   "\\end{tabular}",
   "\\end{table}"
@@ -418,7 +418,7 @@ latex_lines_triple <- c(
   "\\multicolumn{7}{l}{\\footnotesize Logit columns report the sign and statistical significance of the corresponding Logit coefficient.} \\\\",
   "\\multicolumn{7}{l}{\\footnotesize All models include year and municipality fixed effects.} \\\\",
   "\\multicolumn{7}{l}{\\footnotesize In rows with Controls = Yes, controls include age, male, and $Post$ interacted with the remaining pre-2023 municipal characteristics.} \\\\",
-  "\\multicolumn{7}{l}{\\footnotesize Survey weights are used. Standard errors are clustered at the municipality level.} \\\\",
+  "\\multicolumn{7}{l}{\\footnotesize Standard errors are clustered at the municipality level.} \\\\",
   "\\multicolumn{7}{l}{\\footnotesize * p$<$0.10, ** p$<$0.05, *** p$<$0.01.} \\\\",
   "\\end{tabular}",
   "\\end{table}"

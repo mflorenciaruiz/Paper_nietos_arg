@@ -269,6 +269,20 @@ models_logit_triple_with_controls <- map(
 names(models_logit_triple_with_controls) <- triple_vars
 
 # ---------------------------------------------------------------------------- #
+dir.create("Output/models", showWarnings = FALSE, recursive = TRUE)
+
+saveRDS(
+  models_logit_triple_no_controls,
+  "Output/models/models_logit_triple_no_controls.rds"
+)
+
+saveRDS(
+  models_logit_triple_with_controls,
+  "Output/models/models_logit_triple_with_controls.rds"
+)
+# ---------------------------------------------------------------------------- #
+
+# ---------------------------------------------------------------------------- #
 # 7. Extraer solo coeficientes de triple interacción
 # ---------------------------------------------------------------------------- #
 
@@ -419,7 +433,7 @@ latex_lines <- c(
   "\\multicolumn{5}{l}{\\footnotesize All models include year and municipality fixed effects.} \\\\",
   "\\multicolumn{5}{l}{\\footnotesize In rows with Controls = Yes, controls include age, male, and $Post$ interacted with the remaining pre-2023 municipal characteristics.} \\\\",
   "\\multicolumn{5}{l}{\\footnotesize The remaining pre-2023 municipal characteristics exclude the heterogeneity variable $X$ used in that row.} \\\\",
-  "\\multicolumn{5}{l}{\\footnotesize Survey weights are used. Standard errors are clustered at the municipality level. Delta-method standard errors for odds ratios are in parentheses.} \\\\",
+  "\\multicolumn{5}{l}{\\footnotesize Standard errors are clustered at the municipality level. Delta-method standard errors for odds ratios are in parentheses.} \\\\",
   "\\multicolumn{5}{l}{\\footnotesize * p$<$0.10, ** p$<$0.05, *** p$<$0.01.} \\\\",
   "\\end{tabular}",
   "\\end{table}"

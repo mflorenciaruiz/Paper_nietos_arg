@@ -235,8 +235,7 @@ print(post_x_vars)
 run_post_x_logit <- function(x,
                              with_controls = FALSE,
                              data = lapop,
-                             controls_individual = c("edad", "hombre"),
-                             mun_pre_controls = post_x_vars) {
+                             controls_individual = c("edad", "hombre")) {
   
   rhs_main <- paste0(
     x,
@@ -244,13 +243,6 @@ run_post_x_logit <- function(x,
   )
   
   if (with_controls) {
-    
-    other_mun_pre_vars <- setdiff(mun_pre_controls, x)
-    
-    rhs_other_mun_pre <- paste(
-      other_mun_pre_vars,
-      collapse = " + "
-    )
     
     controls_individual <- controls_individual[
       controls_individual %in% names(data)
@@ -263,7 +255,6 @@ run_post_x_logit <- function(x,
     
     rhs <- rhs_join(
       rhs_main,
-      rhs_other_mun_pre,
       rhs_individual
     )
     
@@ -275,11 +266,11 @@ run_post_x_logit <- function(x,
   fml <- as.formula(paste0(
     "intencion_migrar ~ ",
     rhs,
-    " | year"
+    " | year + mun_code"
   ))
   
   cat("\nEstimando Logit post x X para:", x, "\n")
-  cat("Controles adicionales:", ifelse(with_controls, "Sí", "No"), "\n")
+  cat("Controles individuales:", ifelse(with_controls, "Sí", "No"), "\n")
   cat(deparse(fml), "\n\n")
   
   feglm(
@@ -314,6 +305,22 @@ models_logit_post_x_with_controls <- map(
 )
 
 names(models_logit_post_x_with_controls) <- post_x_vars
+
+# ---------------------------------------------------------------------------- #
+
+dir.create("Output/models", showWarnings = FALSE, recursive = TRUE)
+
+saveRDS(
+  models_logit_post_x_no_controls,
+  "Output/models/models_logit_post_x_no_controls.rds"
+)
+
+saveRDS(
+  models_logit_post_x_with_controls,
+  "Output/models/models_logit_post_x_with_controls.rds"
+)
+
+# ---------------------------------------------------------------------------- #
 
 # ---------------------------------------------------------------------------- #
 # 7. Extraer solo coeficientes post:X
@@ -447,9 +454,8 @@ latex_lines <- c(
   "\\multicolumn{4}{l}{\\footnotesize Notes: The dependent variable is migration intention.} \\\\",
   "\\multicolumn{4}{l}{\\footnotesize Each row reports a separate Logit specification interacting $Post$ with one pre-2023 municipal characteristic $X$.} \\\\",
   "\\multicolumn{4}{l}{\\footnotesize Reported coefficients are odds ratios.} \\\\",
-  "\\multicolumn{4}{l}{\\footnotesize All models include year fixed effects. Municipality fixed effects are not included because controls enter in levels.} \\\\",
-  "\\multicolumn{4}{l}{\\footnotesize In rows with Controls = Yes, controls include age, male, and the remaining pre-2023 municipal characteristics in levels.} \\\\",
-  "\\multicolumn{4}{l}{\\footnotesize The remaining pre-2023 municipal characteristics exclude the heterogeneity variable $X$ used in that row.} \\\\",
+  "\\multicolumn{4}{l}{\\footnotesize All models include year and municipality fixed effects.} \\\\",
+  "\\multicolumn{4}{l}{\\footnotesize In rows with Controls = Yes, controls include age and male.} \\\\",
   "\\multicolumn{4}{l}{\\footnotesize Survey weights are used. Standard errors are clustered at the municipality level. Delta-method standard errors for odds ratios are in parentheses.} \\\\",
   "\\multicolumn{4}{l}{\\footnotesize * p$<$0.10, ** p$<$0.05, *** p$<$0.01.} \\\\",
   "\\end{tabular}",
