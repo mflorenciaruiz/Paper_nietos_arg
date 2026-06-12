@@ -1,0 +1,54 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+entry=none,label=none,
+note{}={* p \num{< 0.1}, ** p \num{< 0.05}, *** p \num{< 0.01}},
+note{ }={Outcome is migration intention. Survey weights used. Standard errors clustered at the municipality level. Each column estimates post interacted with one municipality-level pre-2023 characteristic. Other municipality-level pre-2023 characteristics enter as level controls, not interacted with post. These models include year fixed effects but not municipality fixed effects. Individual contemporaneous controls potentially affected by the post-2023 context are not included.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+hline{2}={1-9}{solid, black, 0.05em},
+hline{1}={1-9}{solid, black, 0.08em},
+hline{38}={1-9}{solid, black, 0.08em},
+column{2-9}={}{halign=c},
+column{1}={}{halign=l},
+}                     %% tabularray inner close
+& mun\_pre\_all\_mean\_edad & mun\_pre\_all\_share\_hombre & mun\_pre\_all\_share\_rural & mun\_pre\_all\_share\_desempleado & mun\_pre\_all\_share\_ocupado & mun\_pre\_all\_share\_estudiante & mun\_pre\_all\_share\_en\_pareja & mun\_pre\_all\_mean\_educ \\
+mun\_pre\_all\_mean\_edad & \num{-0.012}** & \num{-0.010}* & \num{-0.010}* & \num{-0.011}* & \num{-0.011}* & \num{-0.010}* & \num{-0.010}* & \num{-0.010}* \\
+& (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) \\
+edad & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** \\
+& (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) \\
+hombre & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** \\
+& (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) \\
+mun\_pre\_all\_share\_hombre & \num{-0.707} & \num{-0.756} & \num{-0.708} & \num{-0.710} & \num{-0.706} & \num{-0.705} & \num{-0.706} & \num{-0.706} \\
+& (\num{0.612}) & (\num{0.672}) & (\num{0.611}) & (\num{0.614}) & (\num{0.614}) & (\num{0.612}) & (\num{0.612}) & (\num{0.612}) \\
+mun\_pre\_all\_share\_rural & \num{-0.008} & \num{-0.008} & \num{-0.000} & \num{-0.006} & \num{-0.006} & \num{-0.008} & \num{-0.008} & \num{-0.008} \\
+& (\num{0.016}) & (\num{0.016}) & (\num{0.013}) & (\num{0.016}) & (\num{0.016}) & (\num{0.016}) & (\num{0.016}) & (\num{0.016}) \\
+mun\_pre\_all\_share\_desempleado & \num{0.109} & \num{0.110} & \num{0.103} & \num{0.016} & \num{0.118} & \num{0.110} & \num{0.109} & \num{0.109} \\
+& (\num{0.196}) & (\num{0.196}) & (\num{0.198}) & (\num{0.202}) & (\num{0.196}) & (\num{0.195}) & (\num{0.195}) & (\num{0.197}) \\
+mun\_pre\_all\_share\_ocupado & \num{0.223} & \num{0.222} & \num{0.225} & \num{0.216} & \num{0.263}* & \num{0.222} & \num{0.222} & \num{0.222} \\
+& (\num{0.144}) & (\num{0.144}) & (\num{0.144}) & (\num{0.143}) & (\num{0.145}) & (\num{0.144}) & (\num{0.144}) & (\num{0.144}) \\
+mun\_pre\_all\_share\_estudiante & \num{0.179} & \num{0.179} & \num{0.180} & \num{0.175} & \num{0.176} & \num{0.133} & \num{0.179} & \num{0.179} \\
+& (\num{0.152}) & (\num{0.152}) & (\num{0.153}) & (\num{0.151}) & (\num{0.151}) & (\num{0.162}) & (\num{0.152}) & (\num{0.152}) \\
+mun\_pre\_all\_share\_en\_pareja & \num{-0.045} & \num{-0.045} & \num{-0.045} & \num{-0.043} & \num{-0.044} & \num{-0.045} & \num{-0.037} & \num{-0.045} \\
+& (\num{0.112}) & (\num{0.112}) & (\num{0.112}) & (\num{0.112}) & (\num{0.112}) & (\num{0.112}) & (\num{0.103}) & (\num{0.112}) \\
+mun\_pre\_all\_mean\_educ & \num{0.009} & \num{0.009} & \num{0.009} & \num{0.009} & \num{0.009} & \num{0.009} & \num{0.009} & \num{0.009} \\
+& (\num{0.009}) & (\num{0.009}) & (\num{0.009}) & (\num{0.009}) & (\num{0.009}) & (\num{0.009}) & (\num{0.009}) & (\num{0.009}) \\
+mun\_pre\_all\_mean\_edad × post & \num{0.005} &  &  &  &  &  &  &  \\
+& (\num{0.012}) &  &  &  &  &  &  &  \\
+mun\_pre\_all\_share\_hombre × post &  & \num{0.254} &  &  &  &  &  &  \\
+&  & (\num{1.088}) &  &  &  &  &  &  \\
+mun\_pre\_all\_share\_rural × post &  &  & \num{-0.040} &  &  &  &  &  \\
+&  &  & (\num{0.047}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_desempleado × post &  &  &  & \num{0.511} &  &  &  &  \\
+&  &  &  & (\num{0.406}) &  &  &  &  \\
+mun\_pre\_all\_share\_ocupado × post &  &  &  &  & \num{-0.227} &  &  &  \\
+&  &  &  &  & (\num{0.161}) &  &  &  \\
+mun\_pre\_all\_share\_estudiante × post &  &  &  &  &  & \num{0.227} &  &  \\
+&  &  &  &  &  & (\num{0.274}) &  &  \\
+mun\_pre\_all\_share\_en\_pareja × post &  &  &  &  &  &  & \num{-0.035} &  \\
+&  &  &  &  &  &  & (\num{0.178}) &  \\
+mun\_pre\_all\_mean\_educ × post &  &  &  &  &  &  &  & \num{0.002} \\
+&  &  &  &  &  &  &  & (\num{0.013}) \\
+\end{talltblr}
+\end{table}

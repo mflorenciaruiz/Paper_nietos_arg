@@ -1,0 +1,42 @@
+\begin{table}[!htbp]
+\centering
+\caption{Interactions between Spanish exposure and pre-2023 municipal characteristics}
+\label{tab:share_interactions_key}
+\small
+\begin{tabular}{llccr}
+\hline
+Variable & Controls & $X \times Share_{1936-1955}$ & $X \times Share_{1956-1978}$ & N \\
+\hline
+mun\_pre\_all\_mean\_edad & No & 0.004 (0.014) & -0.006 (0.055) & 7467 \\
+mun\_pre\_all\_mean\_edad & Yes & -0.016 (0.015) & 0.050 (0.058) & 7412 \\
+mun\_pre\_all\_mean\_educ & No & -0.029** (0.011) & 0.029 (0.052) & 7467 \\
+mun\_pre\_all\_mean\_educ & Yes & -0.037*** (0.012) & 0.063 (0.049) & 7412 \\
+mun\_pre\_all\_mean\_izq\_der & No & -0.001 (0.063) & -0.021 (0.254) & 7467 \\
+mun\_pre\_all\_mean\_izq\_der & Yes & -0.004 (0.059) & -0.071 (0.243) & 7412 \\
+mun\_pre\_all\_share\_desempleado & No & -0.025 (0.868) & 0.947 (3.733) & 7467 \\
+mun\_pre\_all\_share\_desempleado & Yes & -0.030 (0.869) & 1.671 (3.842) & 7412 \\
+mun\_pre\_all\_share\_en\_pareja & No & -0.331* (0.167) & -0.002 (0.596) & 7467 \\
+mun\_pre\_all\_share\_en\_pareja & Yes & -0.232 (0.167) & -0.972 (0.852) & 7412 \\
+mun\_pre\_all\_share\_estudiante & No & -0.095 (0.505) & -1.182 (1.655) & 7467 \\
+mun\_pre\_all\_share\_estudiante & Yes & -0.046 (0.601) & -1.124 (2.505) & 7412 \\
+mun\_pre\_all\_share\_hombre & No & 1.493 (1.253) & 1.575 (5.043) & 7467 \\
+mun\_pre\_all\_share\_hombre & Yes & 1.082 (1.821) & 3.920 (7.159) & 7412 \\
+mun\_pre\_all\_share\_interes\_pol\_mucho & No & -0.130 (0.232) & 0.540 (0.934) & 7467 \\
+mun\_pre\_all\_share\_interes\_pol\_mucho & Yes & -0.239 (0.249) & 0.398 (0.952) & 7412 \\
+mun\_pre\_all\_share\_ocupado & No & -0.267 (0.227) & 0.620 (0.756) & 7467 \\
+mun\_pre\_all\_share\_ocupado & Yes & -0.287 (0.222) & 0.453 (0.736) & 7412 \\
+mun\_pre\_all\_share\_rural & No & 0.054 (0.038) & 0.048 (0.164) & 7467 \\
+mun\_pre\_all\_share\_rural & Yes & 0.045 (0.041) & 0.241 (0.150) & 7412 \\
+mun\_pre\_all\_share\_voto\_blanco\_nulo & No & 0.334 (0.486) & -0.132 (2.268) & 7467 \\
+mun\_pre\_all\_share\_voto\_blanco\_nulo & Yes & 0.663 (0.502) & -1.254 (1.999) & 7412 \\
+\hline
+\multicolumn{5}{l}{\footnotesize Notes: The dependent variable is migration intention.} \\
+\multicolumn{5}{l}{\footnotesize Each row reports a separate interaction specification.} \\
+\multicolumn{5}{l}{\footnotesize The reported coefficients correspond to $X \times Share_{1936-1955}$ and $X \times Share_{1956-1978}$.} \\
+\multicolumn{5}{l}{\footnotesize All models include year fixed effects. Municipality fixed effects are not included because $X$ and Spanish exposure are time-invariant at the municipality level.} \\
+\multicolumn{5}{l}{\footnotesize In rows with Controls = Yes, controls include age, male, and the remaining pre-2023 municipal characteristics.} \\
+\multicolumn{5}{l}{\footnotesize The remaining pre-2023 municipal characteristics exclude the heterogeneity variable $X$ used in that row.} \\
+\multicolumn{5}{l}{\footnotesize Survey weights are used. Standard errors are clustered at the municipality level. Standard errors are in parentheses.} \\
+\multicolumn{5}{l}{\footnotesize * p$<$0.10, ** p$<$0.05, *** p$<$0.01.} \\
+\end{tabular}
+\end{table}

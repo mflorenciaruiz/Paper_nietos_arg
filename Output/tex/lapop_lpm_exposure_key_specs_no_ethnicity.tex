@@ -1,0 +1,74 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+entry=none,label=none,
+note{}={* p \num{< 0.1}, ** p \num{< 0.05}, *** p \num{< 0.01}},
+note{ }={Outcome is migration intention. Linear probability models. Survey weights used. Standard errors clustered at the municipality level. The post indicator is absorbed by year fixed effects. Models with municipality fixed effects identify within-municipality changes over time. The coefficients of interest are post x share\_1936\_1955 and post x share\_1956\_1978. Municipality-level controls are measured in the pre-2023 period and interacted with post. Municipality-level pre-period controls use all years before 2023. Whiteness and ethnicity variables are excluded to preserve sample size. Specifications with political variables are interpreted descriptively because these variables may be endogenous to the post-2023 context.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+hline{2}={1-13}{solid, black, 0.05em},
+hline{1}={1-13}{solid, black, 0.08em},
+hline{58}={1-13}{solid, black, 0.08em},
+column{2-13}={}{halign=c},
+column{1}={}{halign=l},
+}                     %% tabularray inner close
+& Exposure, year FE & Exposure + predetermined, year FE & Exposure + nonpolitical controls, year FE & Exposure + all controls, year FE & Post x exposure & Post x exposure + predetermined & Post x exposure + municipal pre controls & Post x exposure + predetermined + municipal pre controls & Post x exposure + nonpolitical controls & Post x exposure + nonpolitical controls + municipal pre controls & Post x exposure + all controls & Post x exposure + all controls + municipal pre controls \\
+share\_1936\_1955 & \num{-0.016} & \num{-0.017} & \num{-0.012} & \num{-0.020} &  &  &  &  &  &  &  &  \\
+& (\num{0.015}) & (\num{0.014}) & (\num{0.016}) & (\num{0.018}) &  &  &  &  &  &  &  &  \\
+share\_1956\_1978 & \num{0.154}*** & \num{0.165}*** & \num{0.099}* & \num{0.133}** &  &  &  &  &  &  &  &  \\
+& (\num{0.052}) & (\num{0.051}) & (\num{0.059}) & (\num{0.058}) &  &  &  &  &  &  &  &  \\
+edad &  & \num{-0.005}*** & \num{-0.004}*** & \num{-0.004}*** &  & \num{-0.005}*** &  & \num{-0.005}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** \\
+&  & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) &  & (\num{0.000}) &  & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) \\
+hombre &  & \num{0.046}*** & \num{0.053}*** & \num{0.052}*** &  & \num{0.046}*** &  & \num{0.046}*** & \num{0.054}*** & \num{0.054}*** & \num{0.052}*** & \num{0.052}*** \\
+&  & (\num{0.010}) & (\num{0.012}) & (\num{0.015}) &  & (\num{0.009}) &  & (\num{0.010}) & (\num{0.012}) & (\num{0.012}) & (\num{0.014}) & (\num{0.014}) \\
+anios\_educ &  &  & \num{0.003}** & \num{0.003} &  &  &  &  & \num{0.003}* & \num{0.003}* & \num{0.002} & \num{0.002} \\
+&  &  & (\num{0.001}) & (\num{0.002}) &  &  &  &  & (\num{0.001}) & (\num{0.001}) & (\num{0.002}) & (\num{0.002}) \\
+rural &  &  & \num{-0.035}*** & \num{-0.037}*** &  &  &  &  & \num{-0.057}** & \num{-0.057}** & \num{-0.067} & \num{-0.067} \\
+&  &  & (\num{0.011}) & (\num{0.013}) &  &  &  &  & (\num{0.023}) & (\num{0.023}) & (\num{0.040}) & (\num{0.040}) \\
+desempleado &  &  & \num{0.058}** & \num{0.040} &  &  &  &  & \num{0.060}** & \num{0.060}** & \num{0.042} & \num{0.042} \\
+&  &  & (\num{0.022}) & (\num{0.027}) &  &  &  &  & (\num{0.022}) & (\num{0.022}) & (\num{0.027}) & (\num{0.027}) \\
+ocupado &  &  & \num{-0.001} & \num{-0.001} &  &  &  &  & \num{-0.004} & \num{-0.004} & \num{-0.005} & \num{-0.005} \\
+&  &  & (\num{0.011}) & (\num{0.015}) &  &  &  &  & (\num{0.011}) & (\num{0.011}) & (\num{0.015}) & (\num{0.015}) \\
+estudiante &  &  & \num{0.081}*** & \num{0.059}* &  &  &  &  & \num{0.080}*** & \num{0.080}*** & \num{0.057}* & \num{0.057}* \\
+&  &  & (\num{0.025}) & (\num{0.032}) &  &  &  &  & (\num{0.025}) & (\num{0.025}) & (\num{0.032}) & (\num{0.032}) \\
+en\_pareja &  &  & \num{-0.038}*** & \num{-0.035}*** &  &  &  &  & \num{-0.037}*** & \num{-0.037}*** & \num{-0.033}** & \num{-0.033}** \\
+&  &  & (\num{0.008}) & (\num{0.013}) &  &  &  &  & (\num{0.009}) & (\num{0.009}) & (\num{0.013}) & (\num{0.013}) \\
+izq\_der &  &  &  & \num{0.003} &  &  &  &  &  &  & \num{0.002} & \num{0.002} \\
+&  &  &  & (\num{0.002}) &  &  &  &  &  &  & (\num{0.002}) & (\num{0.002}) \\
+interes\_pol\_mucho &  &  &  & \num{0.023} &  &  &  &  &  &  & \num{0.028}* & \num{0.028}* \\
+&  &  &  & (\num{0.015}) &  &  &  &  &  &  & (\num{0.016}) & (\num{0.016}) \\
+voto\_blanco\_nulo &  &  &  & \num{0.039}** &  &  &  &  &  &  & \num{0.037}** & \num{0.037}** \\
+&  &  &  & (\num{0.018}) &  &  &  &  &  &  & (\num{0.018}) & (\num{0.018}) \\
+identifica\_partido1 &  &  &  & \num{-0.003} &  &  &  &  &  &  & \num{-0.000} & \num{-0.000} \\
+&  &  &  & (\num{0.012}) &  &  &  &  &  &  & (\num{0.012}) & (\num{0.012}) \\
+voto\_anterior1 &  &  &  & \num{-0.080}*** &  &  &  &  &  &  & \num{-0.081}*** & \num{-0.081}*** \\
+&  &  &  & (\num{0.024}) &  &  &  &  &  &  & (\num{0.023}) & (\num{0.023}) \\
+post × share\_1936\_1955 &  &  &  &  & \num{0.008} & \num{0.013} & \num{-0.005} & \num{0.001} &  &  &  &  \\
+&  &  &  &  & (\num{0.036}) & (\num{0.037}) & (\num{0.038}) & (\num{0.036}) &  &  &  &  \\
+post × share\_1956\_1978 &  &  &  &  & \num{0.112} & \num{0.094} & \num{0.170} & \num{0.157} &  &  &  &  \\
+&  &  &  &  & (\num{0.115}) & (\num{0.118}) & (\num{0.117}) & (\num{0.109}) &  &  &  &  \\
+post × mun\_pre\_all\_mean\_edad &  &  &  &  &  &  & \num{0.010} & \num{0.004} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.011}) & (\num{0.011}) &  &  &  &  \\
+post × mun\_pre\_all\_share\_hombre &  &  &  &  &  &  & \num{1.037} & \num{0.990} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.727}) & (\num{0.738}) &  &  &  &  \\
+post × mun\_pre\_all\_share\_rural &  &  &  &  &  &  & \num{-0.060} & \num{-0.058} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.040}) & (\num{0.043}) &  &  &  &  \\
+post × mun\_pre\_all\_share\_desempleado &  &  &  &  &  &  & \num{0.184} & \num{0.136} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.423}) & (\num{0.432}) &  &  &  &  \\
+post × mun\_pre\_all\_share\_ocupado &  &  &  &  &  &  & \num{-0.374} & \num{-0.450} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.285}) & (\num{0.280}) &  &  &  &  \\
+post × mun\_pre\_all\_share\_estudiante &  &  &  &  &  &  & \num{0.012} & \num{-0.024} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.367}) & (\num{0.347}) &  &  &  &  \\
+post × mun\_pre\_all\_share\_en\_pareja &  &  &  &  &  &  & \num{0.056} & \num{0.052} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.188}) & (\num{0.184}) &  &  &  &  \\
+post × mun\_pre\_all\_mean\_educ &  &  &  &  &  &  & \num{0.004} & \num{0.009} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.018}) & (\num{0.018}) &  &  &  &  \\
+Predetermined controls & No & Yes & Yes & Yes & No & Yes & No & Yes & Yes & Yes & Yes & Yes \\
+Nonpolitical individual controls & No & No & Yes & Yes & No & No & No & No & Yes & Yes & Yes & Yes \\
+Political controls & No & No & No & Yes & No & No & No & No & No & No & Yes & Yes \\
+Municipality pre-2023 controls \$\textbackslash{}times\$ post & No & No & No & No & No & No & Yes & Yes & No & Yes & No & Yes \\
+Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Municipality FE & No & No & No & No & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+\end{talltblr}
+\end{table}

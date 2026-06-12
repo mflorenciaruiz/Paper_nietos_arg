@@ -1,0 +1,124 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+entry=none,label=none,
+note{}={* p \num{< 0.1}, ** p \num{< 0.05}, *** p \num{< 0.01}},
+note{ }={Outcome is migration intention. Linear probability models. Survey weights used. Standard errors clustered at the municipality level. Each column estimates heterogeneity in the association between Spanish exposure and migration intention by the variable named in the column. The coefficients of interest are variable x share\_1936\_1955 and variable x share\_1956\_1978. Whiteness and ethnicity variables are excluded to preserve sample size. Specifications with political variables are interpreted descriptively because these variables may be endogenous to the post-2023 context. These models include year fixed effects but not municipality fixed effects, so the levels of Spanish exposure are estimated.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+hline{2}={1-15}{solid, black, 0.05em},
+hline{1}={1-15}{solid, black, 0.08em},
+hline{108}={1-15}{solid, black, 0.08em},
+column{2-15}={}{halign=c},
+column{1}={}{halign=l},
+}                     %% tabularray inner close
+& edad & hombre & rural & anios\_educ & desempleado & ocupado & estudiante & en\_pareja & izq\_der & interes\_pol\_mucho & voto\_blanco\_nulo & sit\_lab\_mig & identifica\_partido & voto\_anterior \\
+share\_1936\_1955 & \num{0.074} & \num{-0.016} & \num{-0.018} & \num{-0.011} & \num{-0.018} & \num{-0.004} & \num{-0.026}* & \num{0.002} & \num{-0.039} & \num{-0.020} & \num{-0.022} & \num{-0.031} & \num{-0.026} & \num{-0.015} \\
+& (\num{0.054}) & (\num{0.022}) & (\num{0.022}) & (\num{0.028}) & (\num{0.018}) & (\num{0.033}) & (\num{0.014}) & (\num{0.020}) & (\num{0.031}) & (\num{0.017}) & (\num{0.019}) & (\num{0.021}) & (\num{0.019}) & (\num{0.049}) \\
+share\_1956\_1978 & \num{0.159} & \num{0.015} & \num{0.139}** & \num{-0.077} & \num{0.124}** & \num{0.087} & \num{0.149}*** & \num{0.114} & \num{0.222} & \num{0.123}* & \num{0.119}** & \num{0.167}** & \num{0.164}** & \num{0.334} \\
+& (\num{0.186}) & (\num{0.075}) & (\num{0.069}) & (\num{0.148}) & (\num{0.054}) & (\num{0.121}) & (\num{0.054}) & (\num{0.086}) & (\num{0.142}) & (\num{0.063}) & (\num{0.057}) & (\num{0.063}) & (\num{0.068}) & (\num{0.225}) \\
+hombre & \num{0.048}*** &  & \num{0.052}*** & \num{0.052}*** & \num{0.052}*** & \num{0.053}*** & \num{0.052}*** & \num{0.052}*** & \num{0.052}*** & \num{0.053}*** & \num{0.051}*** & \num{0.053}*** & \num{0.052}*** & \num{0.054}*** \\
+& (\num{0.015}) &  & (\num{0.015}) & (\num{0.015}) & (\num{0.015}) & (\num{0.014}) & (\num{0.015}) & (\num{0.015}) & (\num{0.014}) & (\num{0.014}) & (\num{0.014}) & (\num{0.014}) & (\num{0.014}) & (\num{0.015}) \\
+anios\_educ & \num{0.005}** & \num{0.003} & \num{0.003} &  & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} \\
+& (\num{0.002}) & (\num{0.002}) & (\num{0.002}) &  & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) \\
+rural & \num{-0.033}*** & \num{-0.036}*** &  & \num{-0.039}*** & \num{-0.037}*** & \num{-0.037}*** & \num{-0.036}*** & \num{-0.037}*** & \num{-0.037}*** & \num{-0.037}*** & \num{-0.036}*** & \num{-0.036}*** & \num{-0.038}*** & \num{-0.039}*** \\
+& (\num{0.012}) & (\num{0.013}) &  & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) \\
+desempleado & \num{0.080}*** & \num{0.052}* & \num{0.041} & \num{0.040} &  & \num{0.032} & \num{0.040} & \num{0.042} & \num{0.039} & \num{0.040} & \num{0.040} & \num{0.034} & \num{0.040} & \num{0.039} \\
+& (\num{0.026}) & (\num{0.028}) & (\num{0.027}) & (\num{0.027}) &  & (\num{0.027}) & (\num{0.027}) & (\num{0.027}) & (\num{0.027}) & (\num{0.027}) & (\num{0.027}) & (\num{0.036}) & (\num{0.027}) & (\num{0.027}) \\
+ocupado & \num{0.028}* & \num{0.011} & \num{-0.000} & \num{0.001} & \num{-0.000} &  & \num{-0.001} & \num{0.001} & \num{-0.001} & \num{-0.000} & \num{0.000} & \num{0.002} & \num{-0.000} & \num{-0.004} \\
+& (\num{0.016}) & (\num{0.015}) & (\num{0.015}) & (\num{0.014}) & (\num{0.015}) &  & (\num{0.015}) & (\num{0.015}) & (\num{0.015}) & (\num{0.015}) & (\num{0.015}) & (\num{0.020}) & (\num{0.015}) & (\num{0.015}) \\
+estudiante & \num{0.124}*** & \num{0.069}** & \num{0.059}* & \num{0.061}* & \num{0.059}* & \num{0.052} &  & \num{0.065}** & \num{0.059}* & \num{0.060}* & \num{0.059}* & \num{0.041} & \num{0.059}* & \num{0.070}** \\
+& (\num{0.034}) & (\num{0.032}) & (\num{0.032}) & (\num{0.032}) & (\num{0.032}) & (\num{0.031}) &  & (\num{0.032}) & (\num{0.033}) & (\num{0.032}) & (\num{0.032}) & (\num{0.045}) & (\num{0.032}) & (\num{0.033}) \\
+en\_pareja & \num{-0.039}*** & \num{-0.034}*** & \num{-0.035}*** & \num{-0.034}*** & \num{-0.035}*** & \num{-0.034}*** & \num{-0.035}*** &  & \num{-0.034}*** & \num{-0.035}*** & \num{-0.034}*** & \num{-0.035}*** & \num{-0.034}*** & \num{-0.036}*** \\
+& (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) &  & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) \\
+izq\_der & \num{0.002} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} &  & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} & \num{0.003} \\
+& (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) &  & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) & (\num{0.002}) \\
+interes\_pol\_mucho & \num{0.013} & \num{0.025}* & \num{0.023} & \num{0.024} & \num{0.023} & \num{0.023} & \num{0.023} & \num{0.023} & \num{0.022} &  & \num{0.023} & \num{0.023} & \num{0.023} & \num{0.022} \\
+& (\num{0.014}) & (\num{0.015}) & (\num{0.015}) & (\num{0.014}) & (\num{0.015}) & (\num{0.015}) & (\num{0.014}) & (\num{0.015}) & (\num{0.015}) &  & (\num{0.014}) & (\num{0.015}) & (\num{0.014}) & (\num{0.015}) \\
+voto\_blanco\_nulo & \num{0.042}** & \num{0.037}** & \num{0.038}** & \num{0.037}** & \num{0.039}** & \num{0.039}** & \num{0.039}** & \num{0.039}** & \num{0.039}** & \num{0.038}** &  & \num{0.039}** & \num{0.040}** & \num{0.041}** \\
+& (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) &  & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) \\
+identifica\_partido1 & \num{-0.014} & \num{-0.002} & \num{-0.003} & \num{-0.003} & \num{-0.003} & \num{-0.003} & \num{-0.003} & \num{-0.003} & \num{-0.003} & \num{-0.001} & \num{-0.005} & \num{-0.003} &  & \num{-0.004} \\
+& (\num{0.012}) & (\num{0.012}) & (\num{0.012}) & (\num{0.012}) & (\num{0.012}) & (\num{0.012}) & (\num{0.012}) & (\num{0.012}) & (\num{0.012}) & (\num{0.011}) & (\num{0.012}) & (\num{0.012}) &  & (\num{0.012}) \\
+voto\_anterior1 & \num{-0.095}*** & \num{-0.082}*** & \num{-0.080}*** & \num{-0.079}*** & \num{-0.080}*** & \num{-0.079}*** & \num{-0.080}*** & \num{-0.080}*** & \num{-0.080}*** & \num{-0.079}*** & \num{-0.080}*** & \num{-0.080}*** & \num{-0.080}*** &  \\
+& (\num{0.023}) & (\num{0.024}) & (\num{0.024}) & (\num{0.024}) & (\num{0.024}) & (\num{0.024}) & (\num{0.024}) & (\num{0.023}) & (\num{0.023}) & (\num{0.024}) & (\num{0.024}) & (\num{0.024}) & (\num{0.024}) &  \\
+share\_1936\_1955 × edad & \num{-0.002}** &  &  &  &  &  &  &  &  &  &  &  &  &  \\
+& (\num{0.001}) &  &  &  &  &  &  &  &  &  &  &  &  &  \\
+share\_1956\_1978 × edad & \num{-0.001} &  &  &  &  &  &  &  &  &  &  &  &  &  \\
+& (\num{0.004}) &  &  &  &  &  &  &  &  &  &  &  &  &  \\
+edad &  & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** & \num{-0.004}*** \\
+&  & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) \\
+share\_1936\_1955 × hombre &  & \num{-0.008} &  &  &  &  &  &  &  &  &  &  &  &  \\
+&  & (\num{0.026}) &  &  &  &  &  &  &  &  &  &  &  &  \\
+share\_1956\_1978 × hombre &  & \num{0.229}** &  &  &  &  &  &  &  &  &  &  &  &  \\
+&  & (\num{0.106}) &  &  &  &  &  &  &  &  &  &  &  &  \\
+share\_1936\_1955 × rural &  &  & \num{-0.019} &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & (\num{0.021}) &  &  &  &  &  &  &  &  &  &  &  \\
+share\_1956\_1978 × rural &  &  & \num{-0.033} &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & (\num{0.087}) &  &  &  &  &  &  &  &  &  &  &  \\
+share\_1936\_1955 × anios\_educ &  &  &  & \num{-0.001} &  &  &  &  &  &  &  &  &  &  \\
+&  &  &  & (\num{0.003}) &  &  &  &  &  &  &  &  &  &  \\
+share\_1956\_1978 × anios\_educ &  &  &  & \num{0.018} &  &  &  &  &  &  &  &  &  &  \\
+&  &  &  & (\num{0.015}) &  &  &  &  &  &  &  &  &  &  \\
+sit\_lab\_mig2 &  &  &  &  & \num{0.034} &  &  &  &  &  &  &  &  &  \\
+&  &  &  &  & (\num{0.034}) &  &  &  &  &  &  &  &  &  \\
+share\_1936\_1955 × desempleado &  &  &  &  & \num{-0.018} &  &  &  &  &  &  &  &  &  \\
+&  &  &  &  & (\num{0.058}) &  &  &  &  &  &  &  &  &  \\
+share\_1956\_1978 × desempleado &  &  &  &  & \num{0.128} &  &  &  &  &  &  &  &  &  \\
+&  &  &  &  & (\num{0.294}) &  &  &  &  &  &  &  &  &  \\
+sit\_lab\_mig4 &  &  &  &  &  & \num{-0.008} &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & (\num{0.018}) &  &  &  &  &  &  &  &  \\
+share\_1936\_1955 × ocupado &  &  &  &  &  & \num{-0.028} &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & (\num{0.039}) &  &  &  &  &  &  &  &  \\
+share\_1956\_1978 × ocupado &  &  &  &  &  & \num{0.079} &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & (\num{0.144}) &  &  &  &  &  &  &  &  \\
+sit\_lab\_mig3 &  &  &  &  &  &  & \num{0.039} &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.044}) &  &  &  &  &  &  &  \\
+share\_1936\_1955 × estudiante &  &  &  &  &  &  & \num{0.068} &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.118}) &  &  &  &  &  &  &  \\
+share\_1956\_1978 × estudiante &  &  &  &  &  &  & \num{-0.188} &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.361}) &  &  &  &  &  &  &  \\
+share\_1936\_1955 × en\_pareja &  &  &  &  &  &  &  & \num{-0.040}* &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & (\num{0.023}) &  &  &  &  &  &  \\
+share\_1956\_1978 × en\_pareja &  &  &  &  &  &  &  & \num{0.028} &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & (\num{0.098}) &  &  &  &  &  &  \\
+share\_1936\_1955 × izq\_der &  &  &  &  &  &  &  &  & \num{0.004} &  &  &  &  &  \\
+&  &  &  &  &  &  &  &  & (\num{0.005}) &  &  &  &  &  \\
+share\_1956\_1978 × izq\_der &  &  &  &  &  &  &  &  & \num{-0.017} &  &  &  &  &  \\
+&  &  &  &  &  &  &  &  & (\num{0.022}) &  &  &  &  &  \\
+share\_1936\_1955 × interes\_pol\_mucho &  &  &  &  &  &  &  &  &  & \num{0.005} &  &  &  &  \\
+&  &  &  &  &  &  &  &  &  & (\num{0.032}) &  &  &  &  \\
+share\_1956\_1978 × interes\_pol\_mucho &  &  &  &  &  &  &  &  &  & \num{0.052} &  &  &  &  \\
+&  &  &  &  &  &  &  &  &  & (\num{0.132}) &  &  &  &  \\
+share\_1936\_1955 × voto\_blanco\_nulo &  &  &  &  &  &  &  &  &  &  & \num{0.010} &  &  &  \\
+&  &  &  &  &  &  &  &  &  &  & (\num{0.027}) &  &  &  \\
+share\_1956\_1978 × voto\_blanco\_nulo &  &  &  &  &  &  &  &  &  &  & \num{0.121} &  &  &  \\
+&  &  &  &  &  &  &  &  &  &  & (\num{0.127}) &  &  &  \\
+share\_1936\_1955 × sit\_lab\_mig2 &  &  &  &  &  &  &  &  &  &  &  & \num{-0.005} &  &  \\
+&  &  &  &  &  &  &  &  &  &  &  & (\num{0.061}) &  &  \\
+share\_1936\_1955 × sit\_lab\_mig3 &  &  &  &  &  &  &  &  &  &  &  & \num{0.074} &  &  \\
+&  &  &  &  &  &  &  &  &  &  &  & (\num{0.120}) &  &  \\
+share\_1936\_1955 × sit\_lab\_mig4 &  &  &  &  &  &  &  &  &  &  &  & \num{0.022} &  &  \\
+&  &  &  &  &  &  &  &  &  &  &  & (\num{0.032}) &  &  \\
+share\_1956\_1978 × sit\_lab\_mig2 &  &  &  &  &  &  &  &  &  &  &  & \num{0.086} &  &  \\
+&  &  &  &  &  &  &  &  &  &  &  & (\num{0.301}) &  &  \\
+share\_1956\_1978 × sit\_lab\_mig3 &  &  &  &  &  &  &  &  &  &  &  & \num{-0.206} &  &  \\
+&  &  &  &  &  &  &  &  &  &  &  & (\num{0.370}) &  &  \\
+share\_1956\_1978 × sit\_lab\_mig4 &  &  &  &  &  &  &  &  &  &  &  & \num{-0.086} &  &  \\
+&  &  &  &  &  &  &  &  &  &  &  & (\num{0.118}) &  &  \\
+share\_1936\_1955 × identifica\_partido1 &  &  &  &  &  &  &  &  &  &  &  &  & \num{0.025} &  \\
+&  &  &  &  &  &  &  &  &  &  &  &  & (\num{0.022}) &  \\
+share\_1956\_1978 × identifica\_partido1 &  &  &  &  &  &  &  &  &  &  &  &  & \num{-0.113} &  \\
+&  &  &  &  &  &  &  &  &  &  &  &  & (\num{0.089}) &  \\
+share\_1936\_1955 × voto\_anterior1 &  &  &  &  &  &  &  &  &  &  &  &  &  & \num{-0.003} \\
+&  &  &  &  &  &  &  &  &  &  &  &  &  & (\num{0.049}) \\
+share\_1956\_1978 × voto\_anterior1 &  &  &  &  &  &  &  &  &  &  &  &  &  & \num{-0.235} \\
+&  &  &  &  &  &  &  &  &  &  &  &  &  & (\num{0.244}) \\
+Predetermined controls & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Nonpolitical individual controls & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Political controls & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Municipality pre-2023 controls \$\textbackslash{}times\$ post & No & No & No & No & No & No & No & No & No & No & No & No & No & No \\
+Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Municipality FE & No & No & No & No & No & No & No & No & No & No & No & No & No & No \\
+\end{talltblr}
+\end{table}

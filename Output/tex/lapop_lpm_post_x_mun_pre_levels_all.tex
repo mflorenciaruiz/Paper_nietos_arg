@@ -1,0 +1,66 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+entry=none,label=none,
+note{}={* p \num{< 0.1}, ** p \num{< 0.05}, *** p \num{< 0.01}},
+note{ }={Outcome is migration intention. Survey weights used. Standard errors clustered at the municipality level. Each column estimates post interacted with one municipality-level pre-2023 characteristic. Other municipality-level pre-2023 characteristics enter as level controls, not interacted with post. These models include year fixed effects but not municipality fixed effects. Individual contemporaneous controls potentially affected by the post-2023 context are not included.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+hline{2}={1-12}{solid, black, 0.05em},
+hline{1}={1-12}{solid, black, 0.08em},
+hline{50}={1-12}{solid, black, 0.08em},
+column{2-12}={}{halign=c},
+column{1}={}{halign=l},
+}                     %% tabularray inner close
+& mun\_pre\_all\_mean\_edad & mun\_pre\_all\_share\_hombre & mun\_pre\_all\_share\_rural & mun\_pre\_all\_share\_desempleado & mun\_pre\_all\_share\_ocupado & mun\_pre\_all\_share\_estudiante & mun\_pre\_all\_share\_en\_pareja & mun\_pre\_all\_mean\_educ & mun\_pre\_all\_mean\_izq\_der & mun\_pre\_all\_share\_interes\_pol\_mucho & mun\_pre\_all\_share\_voto\_blanco\_nulo \\
+mun\_pre\_all\_mean\_edad & \num{-0.011}* & \num{-0.010} & \num{-0.010} & \num{-0.010} & \num{-0.010} & \num{-0.010} & \num{-0.010} & \num{-0.010} & \num{-0.010} & \num{-0.010} & \num{-0.010} \\
+& (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) & (\num{0.006}) \\
+edad & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** & \num{-0.005}*** \\
+& (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) & (\num{0.000}) \\
+hombre & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** & \num{0.046}*** \\
+& (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) & (\num{0.010}) \\
+mun\_pre\_all\_share\_hombre & \num{-0.560} & \num{-0.611} & \num{-0.562} & \num{-0.562} & \num{-0.557} & \num{-0.558} & \num{-0.559} & \num{-0.559} & \num{-0.566} & \num{-0.566} & \num{-0.560} \\
+& (\num{0.566}) & (\num{0.642}) & (\num{0.564}) & (\num{0.568}) & (\num{0.568}) & (\num{0.566}) & (\num{0.566}) & (\num{0.565}) & (\num{0.564}) & (\num{0.565}) & (\num{0.565}) \\
+mun\_pre\_all\_share\_rural & \num{-0.011} & \num{-0.011} & \num{-0.004} & \num{-0.010} & \num{-0.010} & \num{-0.011} & \num{-0.011} & \num{-0.011} & \num{-0.012} & \num{-0.011} & \num{-0.011} \\
+& (\num{0.018}) & (\num{0.018}) & (\num{0.013}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) & (\num{0.018}) \\
+mun\_pre\_all\_share\_desempleado & \num{0.192} & \num{0.195} & \num{0.183} & \num{0.103} & \num{0.208} & \num{0.193} & \num{0.193} & \num{0.193} & \num{0.183} & \num{0.190} & \num{0.190} \\
+& (\num{0.191}) & (\num{0.191}) & (\num{0.192}) & (\num{0.199}) & (\num{0.190}) & (\num{0.191}) & (\num{0.191}) & (\num{0.192}) & (\num{0.193}) & (\num{0.192}) & (\num{0.192}) \\
+mun\_pre\_all\_share\_ocupado & \num{0.218} & \num{0.218} & \num{0.220} & \num{0.214} & \num{0.262}* & \num{0.218} & \num{0.218} & \num{0.218} & \num{0.219} & \num{0.217} & \num{0.219} \\
+& (\num{0.144}) & (\num{0.144}) & (\num{0.143}) & (\num{0.143}) & (\num{0.144}) & (\num{0.144}) & (\num{0.144}) & (\num{0.144}) & (\num{0.144}) & (\num{0.144}) & (\num{0.144}) \\
+mun\_pre\_all\_share\_estudiante & \num{0.127} & \num{0.128} & \num{0.127} & \num{0.127} & \num{0.127} & \num{0.082} & \num{0.128} & \num{0.127} & \num{0.127} & \num{0.124} & \num{0.128} \\
+& (\num{0.185}) & (\num{0.185}) & (\num{0.186}) & (\num{0.184}) & (\num{0.184}) & (\num{0.197}) & (\num{0.185}) & (\num{0.185}) & (\num{0.186}) & (\num{0.186}) & (\num{0.185}) \\
+mun\_pre\_all\_share\_en\_pareja & \num{-0.052} & \num{-0.052} & \num{-0.053} & \num{-0.049} & \num{-0.050} & \num{-0.052} & \num{-0.045} & \num{-0.052} & \num{-0.053} & \num{-0.053} & \num{-0.053} \\
+& (\num{0.119}) & (\num{0.119}) & (\num{0.119}) & (\num{0.119}) & (\num{0.119}) & (\num{0.119}) & (\num{0.110}) & (\num{0.119}) & (\num{0.119}) & (\num{0.119}) & (\num{0.119}) \\
+mun\_pre\_all\_mean\_educ & \num{0.014} & \num{0.014} & \num{0.014} & \num{0.014} & \num{0.014} & \num{0.014} & \num{0.014} & \num{0.014} & \num{0.014} & \num{0.014} & \num{0.014} \\
+& (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) & (\num{0.012}) & (\num{0.013}) & (\num{0.013}) & (\num{0.013}) \\
+mun\_pre\_all\_mean\_izq\_der & \num{0.020} & \num{0.020} & \num{0.019} & \num{0.020} & \num{0.020} & \num{0.020} & \num{0.020} & \num{0.020} & \num{0.030} & \num{0.020} & \num{0.020} \\
+& (\num{0.021}) & (\num{0.021}) & (\num{0.020}) & (\num{0.021}) & (\num{0.021}) & (\num{0.021}) & (\num{0.021}) & (\num{0.021}) & (\num{0.020}) & (\num{0.021}) & (\num{0.021}) \\
+mun\_pre\_all\_share\_interes\_pol\_mucho & \num{-0.020} & \num{-0.020} & \num{-0.021} & \num{-0.017} & \num{-0.017} & \num{-0.020} & \num{-0.020} & \num{-0.020} & \num{-0.021} & \num{-0.073} & \num{-0.021} \\
+& (\num{0.130}) & (\num{0.130}) & (\num{0.131}) & (\num{0.130}) & (\num{0.130}) & (\num{0.130}) & (\num{0.130}) & (\num{0.130}) & (\num{0.130}) & (\num{0.131}) & (\num{0.130}) \\
+mun\_pre\_all\_share\_voto\_blanco\_nulo & \num{-0.008} & \num{-0.006} & \num{-0.011} & \num{-0.000} & \num{-0.001} & \num{-0.007} & \num{-0.007} & \num{-0.007} & \num{-0.011} & \num{-0.008} & \num{0.010} \\
+& (\num{0.081}) & (\num{0.081}) & (\num{0.081}) & (\num{0.081}) & (\num{0.081}) & (\num{0.081}) & (\num{0.081}) & (\num{0.081}) & (\num{0.082}) & (\num{0.081}) & (\num{0.094}) \\
+mun\_pre\_all\_mean\_edad × post & \num{0.005} &  &  &  &  &  &  &  &  &  &  \\
+& (\num{0.012}) &  &  &  &  &  &  &  &  &  &  \\
+mun\_pre\_all\_share\_hombre × post &  & \num{0.268} &  &  &  &  &  &  &  &  &  \\
+&  & (\num{1.081}) &  &  &  &  &  &  &  &  &  \\
+mun\_pre\_all\_share\_rural × post &  &  & \num{-0.039} &  &  &  &  &  &  &  &  \\
+&  &  & (\num{0.046}) &  &  &  &  &  &  &  &  \\
+mun\_pre\_all\_share\_desempleado × post &  &  &  & \num{0.523} &  &  &  &  &  &  &  \\
+&  &  &  & (\num{0.407}) &  &  &  &  &  &  &  \\
+mun\_pre\_all\_share\_ocupado × post &  &  &  &  & \num{-0.234} &  &  &  &  &  &  \\
+&  &  &  &  & (\num{0.161}) &  &  &  &  &  &  \\
+mun\_pre\_all\_share\_estudiante × post &  &  &  &  &  & \num{0.227} &  &  &  &  &  \\
+&  &  &  &  &  & (\num{0.275}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_en\_pareja × post &  &  &  &  &  &  & \num{-0.033} &  &  &  &  \\
+&  &  &  &  &  &  & (\num{0.179}) &  &  &  &  \\
+mun\_pre\_all\_mean\_educ × post &  &  &  &  &  &  &  & \num{0.002} &  &  &  \\
+&  &  &  &  &  &  &  & (\num{0.013}) &  &  &  \\
+mun\_pre\_all\_mean\_izq\_der × post &  &  &  &  &  &  &  &  & \num{-0.054}*** &  &  \\
+&  &  &  &  &  &  &  &  & (\num{0.017}) &  &  \\
+mun\_pre\_all\_share\_interes\_pol\_mucho × post &  &  &  &  &  &  &  &  &  & \num{0.264} &  \\
+&  &  &  &  &  &  &  &  &  & (\num{0.193}) &  \\
+mun\_pre\_all\_share\_voto\_blanco\_nulo × post &  &  &  &  &  &  &  &  &  &  & \num{-0.090} \\
+&  &  &  &  &  &  &  &  &  &  & (\num{0.246}) \\
+\end{talltblr}
+\end{table}
