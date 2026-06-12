@@ -1,0 +1,74 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+entry=none,label=none,
+note{}={* p \num{< 0.1}, ** p \num{< 0.05}, *** p \num{< 0.01}},
+note{ }={Outcome is migration intention. Survey weights used. Standard errors clustered at the municipality level. Main coefficients are post x share\_1936\_1955 and post x share\_1956\_1978. Municipality pre-2023 controls are computed using all pre-2023 waves. Individual contemporaneous controls potentially affected by the post-2023 context are not included. Whiteness and ethnicity variables are excluded to preserve sample size.},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]Q[]},
+hline{2}={1-10}{solid, black, 0.05em},
+hline{1}={1-10}{solid, black, 0.08em},
+hline{58}={1-10}{solid, black, 0.08em},
+column{2-10}={}{halign=c},
+column{1}={}{halign=l},
+}                     %% tabularray inner close
+& Exposure, year FE & Exposure + individual controls, year FE & Exposure + municipal pre controls, year FE & Exposure + municipal pre controls + politics, year FE & Post x exposure & Post x exposure + individual controls & Post x exposure + municipal pre controls & Post x exposure + individual controls + municipal pre controls & Post x exposure + individual controls + municipal pre controls + politics \\
+share\_1936\_1955 & \num{0.889} & \num{0.874} & \num{1.037} & \num{1.083} &  &  &  &  &  \\
+& (\num{0.101}) & (\num{0.102}) & (\num{0.127}) & (\num{0.139}) &  &  &  &  &  \\
+share\_1956\_1978 & \num{3.043}*** & \num{3.552}*** & \num{1.746} & \num{2.280}** &  &  &  &  &  \\
+& (\num{1.120}) & (\num{1.364}) & (\num{0.677}) & (\num{0.916}) &  &  &  &  &  \\
+edad &  & \num{0.952}*** &  &  &  & \num{0.952}*** &  & \num{0.952}*** & \num{0.952}*** \\
+&  & (\num{0.002}) &  &  &  & (\num{0.002}) &  & (\num{0.002}) & (\num{0.002}) \\
+hombre &  & \num{1.455}*** &  &  &  & \num{1.467}*** &  & \num{1.471}*** & \num{1.471}*** \\
+&  & (\num{0.108}) &  &  &  & (\num{0.111}) &  & (\num{0.112}) & (\num{0.112}) \\
+mun\_pre\_all\_mean\_edad &  &  & \num{0.884}*** & \num{0.923}* &  &  &  &  &  \\
+&  &  & (\num{0.040}) & (\num{0.039}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_hombre &  &  & \num{0.006} & \num{0.096} &  &  &  &  &  \\
+&  &  & (\num{0.032}) & (\num{0.497}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_rural &  &  & \num{0.878} & \num{0.840} &  &  &  &  &  \\
+&  &  & (\num{0.104}) & (\num{0.111}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_desempleado &  &  & \num{0.986} & \num{5.235} &  &  &  &  &  \\
+&  &  & (\num{1.603}) & (\num{8.270}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_ocupado &  &  & \num{5.076} & \num{7.066}* &  &  &  &  &  \\
+&  &  & (\num{5.039}) & (\num{7.074}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_estudiante &  &  & \num{5.666} & \num{8.466} &  &  &  &  &  \\
+&  &  & (\num{8.137}) & (\num{15.197}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_en\_pareja &  &  & \num{0.715} & \num{0.768} &  &  &  &  &  \\
+&  &  & (\num{0.558}) & (\num{0.637}) &  &  &  &  &  \\
+mun\_pre\_all\_mean\_educ &  &  & \num{1.029} & \num{1.099} &  &  &  &  &  \\
+&  &  & (\num{0.077}) & (\num{0.083}) &  &  &  &  &  \\
+mun\_pre\_all\_mean\_izq\_der &  &  &  & \num{1.338}** &  &  &  &  &  \\
+&  &  &  & (\num{0.165}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_interes\_pol\_mucho &  &  &  & \num{0.280} &  &  &  &  &  \\
+&  &  &  & (\num{0.296}) &  &  &  &  &  \\
+mun\_pre\_all\_share\_voto\_blanco\_nulo &  &  &  & \num{1.804} &  &  &  &  &  \\
+&  &  &  & (\num{1.158}) &  &  &  &  &  \\
+post × share\_1936\_1955 &  &  &  &  & \num{1.097} & \num{1.116} & \num{0.941} & \num{0.963} & \num{0.933} \\
+&  &  &  &  & (\num{0.230}) & (\num{0.265}) & (\num{0.201}) & (\num{0.219}) & (\num{0.204}) \\
+post × share\_1956\_1978 &  &  &  &  & \num{1.190} & \num{1.224} & \num{2.234} & \num{2.392} & \num{1.552} \\
+&  &  &  &  & (\num{0.861}) & (\num{1.011}) & (\num{1.455}) & (\num{1.681}) & (\num{1.020}) \\
+post × mun\_pre\_all\_mean\_edad &  &  &  &  &  &  & \num{1.102} & \num{1.079} & \num{1.029} \\
+&  &  &  &  &  &  & (\num{0.067}) & (\num{0.074}) & (\num{0.081}) \\
+post × mun\_pre\_all\_share\_hombre &  &  &  &  &  &  & \num{2879.296} & \num{6454.532} & \num{37.361} \\
+&  &  &  &  &  &  & (\num{16876.549}) & (\num{42765.964}) & (\num{263.216}) \\
+post × mun\_pre\_all\_share\_rural &  &  &  &  &  &  & \num{0.693} & \num{0.671} & \num{0.716} \\
+&  &  &  &  &  &  & (\num{0.193}) & (\num{0.221}) & (\num{0.218}) \\
+post × mun\_pre\_all\_share\_desempleado &  &  &  &  &  &  & \num{3.065} & \num{1.870} & \num{0.567} \\
+&  &  &  &  &  &  & (\num{8.265}) & (\num{5.798}) & (\num{1.566}) \\
+post × mun\_pre\_all\_share\_ocupado &  &  &  &  &  &  & \num{0.052}* & \num{0.026}** & \num{0.031}* \\
+&  &  &  &  &  &  & (\num{0.085}) & (\num{0.047}) & (\num{0.057}) \\
+post × mun\_pre\_all\_share\_estudiante &  &  &  &  &  &  & \num{0.466} & \num{0.402} & \num{1.381} \\
+&  &  &  &  &  &  & (\num{1.113}) & (\num{1.044}) & (\num{4.200}) \\
+post × mun\_pre\_all\_share\_en\_pareja &  &  &  &  &  &  & \num{1.469} & \num{1.312} & \num{1.829} \\
+&  &  &  &  &  &  & (\num{1.664}) & (\num{1.591}) & (\num{2.276}) \\
+post × mun\_pre\_all\_mean\_educ &  &  &  &  &  &  & \num{1.009} & \num{1.047} & \num{0.923} \\
+&  &  &  &  &  &  & (\num{0.104}) & (\num{0.118}) & (\num{0.103}) \\
+post × mun\_pre\_all\_mean\_izq\_der &  &  &  &  &  &  &  &  & \num{0.620}*** \\
+&  &  &  &  &  &  &  &  & (\num{0.107}) \\
+post × mun\_pre\_all\_share\_interes\_pol\_mucho &  &  &  &  &  &  &  &  & \num{13.121} \\
+&  &  &  &  &  &  &  &  & (\num{23.355}) \\
+post × mun\_pre\_all\_share\_voto\_blanco\_nulo &  &  &  &  &  &  &  &  & \num{2.955} \\
+&  &  &  &  &  &  &  &  & (\num{4.785}) \\
+\end{talltblr}
+\end{table}
