@@ -325,6 +325,9 @@ dip_nac_wide_small <- dip_nac_wide %>%
   dplyr::select(-matches("_(\\d+)$")) %>% 
   arrange(tipo_eleccion, provincia, seccion, id, anio)
 
+# Guardo para despues
+write_csv(dip_nac_wide_small, "Data Int/dip_nac_wide_small.csv")
+
 # Guardo los nombres de los partidos para clasificarlos según ideología
 nombres_partidos <- dip_nac %>% 
   dplyr::select(partido, provincia, anio) %>% 

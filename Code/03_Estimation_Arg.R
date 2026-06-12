@@ -46,6 +46,8 @@ dip_nac_mun_pesos <- dip_nac_mun_eb %>%
 # Censo de 2010
 censo_2010 <- read_dta("Data Int/censo_2010_arg_mun.dta")
 
+spanish_cohorts_arg <- read_csv("Data Int/spanish_cohorts_arg.csv")
+
 # Settings para exportar
 options("modelsummary_format_numeric_latex" = "plain") # Números sin formato en tablas de modelsummary.
 
@@ -669,18 +671,42 @@ gm <- tibble::tribble(
   "nobs",      "Observations", 0,
   "r.squared", "R$^2$",        3)
 
-add_rows <- tibble::tibble(
-  term = c("Municipality FE", "Time FE", "Election type FE", "General elections only"),
-  m1 = c("Yes", "Yes", "Yes", "No"),
-  m2 = c("Yes", "Yes", "No", "Yes"),
-  m3 = c("Yes", "Yes", "Yes", "No"),
-  m4 = c("Yes", "Yes", "Yes", "No"),
-  m5 = c("Yes", "Yes", "No", "Yes"),
-  m6 = c("Yes", "Yes", "Yes", "No"),)
-names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
-
 models_list <- list("(1)" = att_b2, "(2)" = att_b4, "(3)" = att_b2_l, 
                     "(4)" = att_p2, "(5)" = att_p3, "(6)" = att_p2_l)
+
+# Función para calcular el p-valor del test β_1936-1955 = β_1956-1978
+get_p_equal <- function(m) {
+  betas <- coef(m)
+  V     <- vcov(m)
+  
+  # Buscar los nombres dinámicamente (por si R los escribe en orden distinto)
+  name1 <- grep("1936_1955", names(betas), value = TRUE)
+  name2 <- grep("1956_1978", names(betas), value = TRUE)
+  if (length(name1) != 1 || length(name2) != 1) return(NA)
+  
+  diff    <- betas[name1] - betas[name2]
+  se_diff <- sqrt(V[name1, name1] + V[name2, name2] - 2 * V[name1, name2])
+  t_stat  <- diff / se_diff
+  p_val   <- 2 * pnorm(-abs(t_stat))
+  
+  as.numeric(p_val)
+}
+
+# Aplicar a los 6 modelos
+p_values  <- sapply(models_list, get_p_equal)
+p_strings <- sprintf("%.3f", p_values)
+
+add_rows <- tibble::tibble(
+  term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
+           "Municipality FE", "Time FE", "Election type FE", "General elections only"),
+  m1 = c(p_strings[1], "Yes", "Yes", "Yes", "No"),
+  m2 = c(p_strings[2], "Yes", "Yes", "No", "Yes"),
+  m3 = c(p_strings[3], "Yes", "Yes", "Yes", "No"),
+  m4 = c(p_strings[4], "Yes", "Yes", "Yes", "No"),
+  m5 = c(p_strings[5], "Yes", "Yes", "No", "Yes"),
+  m6 = c(p_strings[6], "Yes", "Yes", "Yes", "No")
+)
+names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
 
 tex <- modelsummary(
   models_list,
@@ -1016,15 +1042,18 @@ cm <- c("share_1936_1955:post" = "Spanish share 1936-1955$\\times$Post",
         "share_izq_l" = "Lagged left vote share",
         "share_izq_amplia_l" = "Lagged broad left vote share")
 
-add_rows <- tibble::tibble(
-  term = c("Municipality FE", "Time FE", "Election type FE"),
-  m1 = c("Yes", "Yes", "Yes"),
-  m2 = c("Yes", "Yes", "Yes"),
-  m3 = c("Yes", "Yes", "Yes"),
-  m4 = c("Yes", "Yes", "Yes"))
-names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)")
-  
 models_list <- list("(1)" = att_iz1, "(2)" = att_iz1_l, "(3)" = att_iza1, "(4)" = att_iza1_l)
+p_values  <- sapply(models_list, get_p_equal)
+p_strings <- sprintf("%.3f", p_values)
+
+add_rows <- tibble::tibble(
+  term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
+           "Municipality FE", "Time FE", "Election type FE"),
+  m1 = c(p_strings[1], "Yes", "Yes", "Yes"),
+  m2 = c(p_strings[2], "Yes", "Yes", "Yes"),
+  m3 = c(p_strings[3], "Yes", "Yes", "Yes"),
+  m4 = c(p_strings[4], "Yes", "Yes", "Yes"))
+names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)")
   
 tex <- modelsummary(
   models_list,
@@ -1097,16 +1126,19 @@ cm <- c("share_1936_1955:post" = "Spanish share 1936-1955$\\times$Post",
         "post:share_1956_1978" = "Spanish share 1956-1978$\\times$Post",
         "share_der_l" = "Lagged right vote share",
         "share_der_amplia_l" = "Lagged broad right vote share")
-  
-add_rows <- tibble::tibble(
-  term = c("Municipality FE", "Time FE", "Election type FE"),
-  m1 = c("Yes", "Yes", "Yes"),
-  m2 = c("Yes", "Yes", "Yes"),
-  m3 = c("Yes", "Yes", "Yes"),
-  m4 = c("Yes", "Yes", "Yes"))
-names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)")
-  
+
 models_list <- list("(1)" = att_de1, "(2)" = att_de1_l, "(3)" = att_dea1, "(4)" = att_dea1_l)
+p_values  <- sapply(models_list, get_p_equal)
+p_strings <- sprintf("%.3f", p_values)
+
+add_rows <- tibble::tibble(
+ term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
+           "Municipality FE", "Time FE", "Election type FE"),
+  m1 = c(p_strings[1],"Yes", "Yes", "Yes"),
+  m2 = c(p_strings[2], "Yes", "Yes", "Yes"),
+  m3 = c(p_strings[3],"Yes", "Yes", "Yes"),
+  m4 = c(p_strings[4],"Yes", "Yes", "Yes"))
+names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)")
   
 tex <- modelsummary(
     models_list,
@@ -1183,18 +1215,6 @@ cm <- c(
   "alternancia_l"        = "Lagged ideological alternation"
 )
 
-add_rows <- tibble::tibble(
-  term = c("Municipality FE", "Time FE", "Election type FE"),
-  m1 = c("Yes", "Yes", "Yes"),
-  m2 = c("Yes", "Yes", "Yes"),
-  m3 = c("Yes", "Yes", "Yes"),
-  m4 = c("Yes", "Yes", "Yes"),
-  m5 = c("Yes", "Yes", "Yes"),
-  m6 = c("Yes", "Yes", "Yes")
-)
-
-names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
-
 models_list <- list(
   "(1)" = att_peron1,
   "(2)" = att_peron1_l,
@@ -1203,6 +1223,21 @@ models_list <- list(
   "(5)" = att_al1,
   "(6)" = att_al1_l
 )
+p_values  <- sapply(models_list, get_p_equal)
+p_strings <- sprintf("%.3f", p_values)
+
+add_rows <- tibble::tibble(
+  term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
+           "Municipality FE", "Time FE", "Election type FE"),
+  m1 = c(p_strings[1],"Yes", "Yes", "Yes"),
+  m2 = c(p_strings[2], "Yes", "Yes", "Yes"),
+  m3 = c(p_strings[3],"Yes", "Yes", "Yes"),
+  m4 = c(p_strings[4],"Yes", "Yes", "Yes"),
+  m5 = c(p_strings[5],"Yes", "Yes", "Yes"),
+  m6 = c(p_strings[6],"Yes", "Yes", "Yes")
+)
+
+names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
 
 tex <- modelsummary(
   models_list,
@@ -3087,12 +3122,21 @@ make_panel_tabular <- function(models, group_names, group_sizes, panel_label) {
     ~raw,        ~clean,         ~fmt,
     "nobs",      "Observations", 0,
     "r.squared", "R$^2$",        3)
-  yes_mat <- matrix("Yes", nrow = 3, ncol = length(models))
-  colnames(yes_mat) <- names(models)
+  
+  # Calcular p-valor del test de igualdad para cada modelo
+  p_values  <- sapply(models, get_p_equal)
+  p_strings <- sprintf("%.3f", p_values)
+  
+  # Combinar fila de p-valores + filas de FE en un solo bloque
+  yes_mat  <- matrix("Yes", nrow = 3, ncol = length(models))
+  data_mat <- rbind(p_strings, yes_mat)
+  
   add_rows <- cbind(
-    data.frame(term = c("Year FE", "Municipality FE", "Election Type FE"),
+    data.frame(term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
+                        "Year FE", "Municipality FE", "Election Type FE"),
                stringsAsFactors = FALSE),
-    as.data.frame(yes_mat, stringsAsFactors = FALSE))
+    as.data.frame(data_mat, stringsAsFactors = FALSE))
+  names(add_rows) <- c("term", names(models))
   
   tex <- modelsummary(
     models, output = "latex",
@@ -3291,13 +3335,13 @@ censo_2010 <- censo_2010 %>%
 chars <- c(
   "mean_yrschool"     = "Mean years of education",
   "median_age"        = "Median age",
-  "mean_age"          = "Mean age",
-  "share_age_65plus"  = "Share aged 65+",
-  "share_age_25_44"   = "Share aged 25–44",
+  #"mean_age"          = "Mean age",
+  #"share_age_65plus"  = "Share aged 65+",
+  #"share_age_25_44"   = "Share aged 25–44",
   "popdensgeo2"       = "Pop. density",
-  "share_female"      = "Share female",
-  "share_unemployed"  = "Share unemployed",
-  "share_laborforce"  = "Share in labor force"
+  "share_female"      = "Share female"
+  #"share_unemployed"  = "Share unemployed",
+  #"share_laborforce"  = "Share in labor force"
 )
 
 # Regresiones sin estandarizar el outcome
@@ -3307,7 +3351,6 @@ results_raw <- lapply(names(chars), function(v) {
   tidy(m, conf.int = TRUE) %>% mutate(outcome = v)
 }) %>% bind_rows()
 
-# Función: 
 test_char_std <- function(data, char_var) {
   # Estandarizar el outcome
   data <- data %>%
@@ -3315,31 +3358,53 @@ test_char_std <- function(data, char_var) {
              sd(!!sym(char_var), na.rm = TRUE))
   
   # Correr la regresión
-  m <- feols(y_std ~ share_1936_1955 + share_1956_1978, data = data, vcov = "hetero")
+  m <- feols(
+    y_std ~ share_1936_1955 + share_1956_1978,
+    data = data,
+    vcov = "hetero"
+  )
   
   # Wald test: H0: beta_36 = beta_56
   betas <- coef(m)
   V     <- vcov(m)
-  diff  <- betas["share_1936_1955"] - betas["share_1956_1978"]
+  
+  diff <- betas["share_1936_1955"] - betas["share_1956_1978"]
+  
   se_diff <- sqrt(
     V["share_1936_1955", "share_1936_1955"] +
       V["share_1956_1978", "share_1956_1978"] -
       2 * V["share_1936_1955", "share_1956_1978"]
   )
+  
   t_stat <- diff / se_diff
   p_val  <- 2 * pnorm(-abs(t_stat))
   
+  # F-test global de la regresión
+  ftest <- fitstat(m, "f")
+  
+  f_stat <- ftest$f$stat
+  f_pval <- ftest$f$p
+  
   broom::tidy(m, conf.int = TRUE) %>%
     filter(term %in% c("share_1936_1955", "share_1956_1978")) %>%
-    mutate(p_equal = p_val,
-           sig_equal = case_when(
-             p_val < 0.01 ~ "***",
-             p_val < 0.05 ~ "**",
-             p_val < 0.10 ~ "*",
-             TRUE         ~ ""
-           ))
+    mutate(
+      p_equal = p_val,
+      sig_equal = case_when(
+        p_val < 0.01 ~ "***",
+        p_val < 0.05 ~ "**",
+        p_val < 0.10 ~ "*",
+        TRUE         ~ ""
+      ),
+      f_stat = f_stat,
+      f_pval = f_pval,
+      sig_f = case_when(
+        f_pval < 0.01 ~ "***",
+        f_pval < 0.05 ~ "**",
+        f_pval < 0.10 ~ "*",
+        TRUE          ~ ""
+      )
+    )
 }
-
 # Correr todas las regresiones y juntar resultados
 results <- bind_rows(lapply(names(chars), function(v) {
   test_char_std(censo_2010, v) %>%
@@ -3356,13 +3421,108 @@ results <- results %>%
     characteristic = factor(characteristic, levels = rev(unname(chars)))
   )
 
-# Registro de los p-valores para mostrar en el plot
-sig_labels <- results %>%
-  distinct(characteristic, p_equal, sig_equal) %>%
-  mutate(label = sprintf("p = %.3f%s", p_equal, sig_equal))
+# Outcomes electorales pre tratamiento a agregar al mismo plot
+chars_panel <- c(
+  "share_izq"    = "Left vote share, pre-period",
+  "alternancia"  = "Alternation, pre-period"
+)
+
+test_char_panel_std <- function(data, char_var) {
+  
+  data_reg <- data %>%
+    mutate(
+      y_std = (!!sym(char_var) - mean(!!sym(char_var), na.rm = TRUE)) /
+        sd(!!sym(char_var), na.rm = TRUE)
+    )
+  
+  # Regresión con FE de municipio y año
+  m <- feols(
+    y_std ~ share_1936_1955 + share_1956_1978 |  anio,
+    data = data_reg,
+    cluster = ~ mun_code
+  )
+  
+  # Wald test: H0 beta_36 = beta_56
+  betas <- coef(m)
+  V     <- vcov(m)
+  
+  diff <- betas["share_1936_1955"] - betas["share_1956_1978"]
+  
+  se_diff <- sqrt(
+    V["share_1936_1955", "share_1936_1955"] +
+      V["share_1956_1978", "share_1956_1978"] -
+      2 * V["share_1936_1955", "share_1956_1978"]
+  )
+  
+  t_stat <- diff / se_diff
+  p_val  <- 2 * pnorm(-abs(t_stat))
+  
+  # F-test global de los regresores
+  ftest <- fitstat(m, "f")
+  
+  f_stat <- ftest$f$stat
+  f_pval <- ftest$f$p
+  
+  broom::tidy(m, conf.int = TRUE) %>%
+    filter(term %in% c("share_1936_1955", "share_1956_1978")) %>%
+    mutate(
+      p_equal = p_val,
+      sig_equal = case_when(
+        p_val < 0.01 ~ "***",
+        p_val < 0.05 ~ "**",
+        p_val < 0.10 ~ "*",
+        TRUE         ~ ""
+      ),
+      f_stat = f_stat,
+      f_pval = f_pval,
+      sig_f = case_when(
+        f_pval < 0.01 ~ "***",
+        f_pval < 0.05 ~ "**",
+        f_pval < 0.10 ~ "*",
+        TRUE          ~ ""
+      )
+    )
+}
+
+# Correr las regresiones de panel
+results_panel <- bind_rows(lapply(names(chars_panel), function(v) {
+  test_char_panel_std(dip_nac_mun_pre, v) %>%
+    mutate(characteristic = chars_panel[v])
+}))
+
+# Limpiar resultados de panel para que tengan el mismo formato
+results_panel <- results_panel %>%
+  mutate(
+    window = case_when(
+      term == "share_1936_1955" ~ "1936–1955",
+      term == "share_1956_1978" ~ "1956–1978"
+    )
+  )
+
+# Unir resultados del censo + resultados electorales pre
+results_all <- bind_rows(
+  results %>% mutate(source = "Census 2010"),
+  results_panel %>% mutate(source = "Electoral panel, pre-period")
+)
+
+# Orden deseado en el gráfico
+char_order_all <- c(
+  unname(chars),
+  unname(chars_panel)
+)
+
+results_all <- results_all %>%
+  mutate(
+    characteristic = factor(characteristic, levels = rev(char_order_all))
+  )
+
+# Labels de p-valores
+sig_labels <- results_all %>%
+  distinct(characteristic, p_equal) %>%
+  mutate(label = sprintf("p = %.3f", p_equal))
 
 # Coefplot
-(p <- ggplot(results, aes(x = estimate, y = characteristic,
+(p <- ggplot(results_all, aes(x = estimate, y = characteristic,
                          color = window, shape = window)) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "grey60") +
   geom_errorbarh(aes(xmin = conf.low, xmax = conf.high),
@@ -3376,16 +3536,16 @@ sig_labels <- results %>%
   labs(
     x = "Standardized coefficient (SD of characteristic per unit of share)",
     y = NULL,
-    title = "Municipal characteristics and Spanish-immigration shares"
+    #title = "Municipal characteristics and Spanish-immigration shares"
   ) +
   theme_minimal(base_family = "Times New Roman") +
   theme(
     legend.position  = "bottom",
     plot.title       = element_text(hjust = 0.5, size = 12),
-    axis.title.x     = element_text(size = 11),
-    axis.text        = element_text(size = 11),
-    legend.text      = element_text(size = 11),
-    legend.title     = element_text(size = 11), 
+    axis.title.x     = element_text(size = 15, color = "black"),
+    axis.text        = element_text(size = 15, color = "black"),
+    legend.text      = element_text(size = 15, color = "black"),
+    legend.title     = element_text(size = 15, color = "black"), 
     panel.grid.minor = element_blank(),
     panel.grid.major.y = element_blank(),
     axis.line        = element_line(color = "black", linewidth = 0.4)
@@ -3397,12 +3557,283 @@ sig_labels <- results %>%
             aes(x = Inf, y = characteristic, label = label),
             inherit.aes = FALSE,
             hjust = 1.1, vjust = 0.5,
-            size = 3,
-            color = "grey30"))
+            size = 4,
+            color = "black"))
 
 ggsave("Output/coef_plot_chars.pdf", p, width = 9, height = 6)
 ggsave("Output/coef_plot_chars.png", p, width = 9, height = 6, dpi = 300)
 
 }
 
+# ------------------------------------------ #
+# 9. Estimación sin ventanas por separado
+# ------------------------------------------ #
 
+### 9.1 Voto en blanco ###
+
+# Censo de 1970
+att_b2_c70 <- feols(porcentaje_blanco ~ share_36_78_c70:post | 
+                  mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+
+event_b2_c70 <- feols(porcentaje_blanco ~ i(anio, share_36_78_c70, ref = 2021) |
+                       mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+summary(event_b2_c70)
+iplot(event_b2_c70)
+summary(att_b2_c70)
+
+# Censo de 1980
+att_b2_c80 <- feols(porcentaje_blanco ~ share_36_78_c80:post | 
+                      mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+
+event_b2_c80 <- feols(porcentaje_blanco ~ i(anio, share_36_78_c80, ref = 2021) |
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+summary(event_b2_c80)
+iplot(event_b2_c80)
+summary(att_b2_c80)
+
+### 9.2 Participación ###
+  
+# Censo de 1970
+att_p2_c70 <- feols(participacion ~ share_36_78_c70:post | 
+                      mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+
+event_p2_c70 <- feols(participacion ~ i(anio, share_36_78_c70, ref = 2021) |
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+summary(event_p2_c70)
+iplot(event_p2_c70)
+summary(att_p2_c70)
+
+# Censo de 1980
+att_p2_c80 <- feols(participacion ~ share_36_78_c80:post | 
+                      mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+
+event_p2_c80 <- feols(participacion ~ i(anio, share_36_78_c80, ref = 2021) |
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun)
+summary(event_p2_c80)
+iplot(event_p2_c80)
+summary(att_p2_c80)
+
+### 9.3 Exportar ### 
+
+cm <- c("share_36_78_c80:post" = "Spanish share 1936-1978$\\times$Post",
+        "share_36_78_c70:post" = "Spanish share 1936-1978$\\times$Post"
+)
+
+gm <- tibble::tribble(
+  ~raw,        ~clean,         ~fmt,
+  "nobs",      "Observations", 0,
+  "r.squared", "R$^2$",        3)
+
+models_list <- list("(1)" = att_b2_c70, "(2)" = att_b2_c80, 
+                    "(3)" = att_p2_c70, "(4)" = att_p2_c80)
+
+add_rows <- tibble::tibble(
+  term = c("Municipality FE", "Time FE", "Election type FE", 
+           "General elections only", "Spanish share census"),
+  m1 = c("Yes", "Yes", "Yes", "No", "1970"),
+  m2 = c("Yes", "Yes", "No", "Yes", "1980"),
+  m3 = c("Yes", "Yes", "Yes", "No", "1970"),
+  m4 = c("Yes", "Yes", "Yes", "No", "1980")
+)
+names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)")
+
+tex <- modelsummary(
+  models_list,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE)
+
+lines <- strsplit(tex, "\n")[[1]]
+ncols <- 7   # 1 label + 6 modelos
+
+# 1) Caption, más espacio vertical y horizontal en la tabla
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Effects on Blank Votes and Voter Turnout}",
+    "\\renewcommand{\\arraystretch}{1.25}",
+    "\\setlength{\\tabcolsep}{6pt}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+
+# 2) Header agrupado: "Share of blank votes" (cols 2-4) + "Voter turnout" (cols 5-7)
+#    AMBOS en una sola fila
+top_idx <- grep("\\\\toprule", lines)
+if (length(top_idx) >= 1) {
+  multicol <- " & \\multicolumn{2}{c}{Share of blank votes} & \\multicolumn{2}{c}{Voter turnout} \\\\"
+  cmidrule <- "\\cmidrule(l){2-3} \\cmidrule(l){4-5}"
+  lines <- c(lines[1:top_idx[1]],
+             multicol,
+             cmidrule,
+             lines[(top_idx[1] + 1):length(lines)])
+}
+
+# 3) booktabs -> \hline
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 4) Midrules
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 5) Fila vacía arriba de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  empty <- paste0(strrep(" &", ncols - 1), " \\\\")
+  lines <- c(lines[1:(obs[1] - 1)], empty, lines[obs[1]:length(lines)])
+}
+
+# 6) Nota centrada en footnotesize
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c("\\vspace{0.4em}",
+            "\\begin{minipage}{\\textwidth}",
+            "\\footnotesize Notes: Spanish share is defined as the share of Spanish-born immigrants who arrived between 1936 and 1978 over the total municipal population. Models (1) and (3) identify this variable using the 1970 census; models (2) and (4) use the 1980 census. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+            "\\end{minipage}"
+            )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+writeLines(lines, "Output/att_blankvotes_turnout_nowindow.tex")
+
+## Exporto event study en un mismo gráfico
+
+# Votos en blanco
+
+# 1) Extraer coeficientes de cada event study
+coefs <- bind_rows(
+  extract_es(event_b2_c70, "share_36_78_c70"),
+  extract_es(event_b2_c80, "share_36_78_c80"),
+  # Año de referencia (2021): coeficiente = 0, sin IC
+  tibble::tibble(
+    anio = 2021,
+    window = c("share_36_78_c70", "share_36_78_c80"),
+    estimate = 0,
+    conf.low = NA_real_,
+    conf.high = NA_real_
+  )) %>% 
+  rename(census = window) %>%
+  mutate(census = case_when(
+    census == "share_36_78_c70" ~ "Spanish share: 1970 Census",
+    census == "share_36_78_c80" ~ "Spanish share: 1980 Census",
+    TRUE ~ census
+  ))
+
+# 2) Plot
+(pb <- ggplot(coefs %>% filter(anio != 2021), aes(x = anio, y = estimate, shape = census, group = census)) +
+    geom_hline(yintercept = 0, linetype = "dotted", color = "black") +
+    geom_vline(xintercept = 2021, linetype = "solid", linewidth = 0.3, color = "black") +
+    geom_errorbar(
+      aes(ymin = conf.low, ymax = conf.high),
+      width = 0.3,
+      position = position_dodge(width = 0.5),
+      linewidth = 0.35,
+      linetype = "solid",
+      color = "grey60",
+      show.legend = FALSE
+    ) +
+    geom_point(size = 2, position = position_dodge(width = 0.5), color = "black") +
+    scale_shape_manual(values = c("Spanish share: 1970 Census" = 16, "Spanish share: 1980 Census" = 17), 
+                       name = NULL) +
+    scale_x_continuous(breaks = seq(2011, 2025, by = 2)) +
+    labs(
+      x = "Year",
+      y = "Estimate and 95% CI",
+      #title = "Effect on share of blank votes"
+    ) +
+    guides(shape = guide_legend(nrow = 1, byrow = TRUE)) +
+    theme_minimal(base_family = "Times New Roman", base_size = 12) +
+    theme(
+      legend.position = "bottom",
+      legend.justification = "center",
+      legend.box = "horizontal",
+      legend.margin = margin(t = -5, r = 0, b = 0, l = 0),
+      plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+      
+      plot.title = element_text(hjust = 0.5, size = 12),
+      panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_blank(),
+      panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.text = element_text(color = "black", size = 11),
+      axis.title = element_text(color = "black", size = 11),
+      legend.text = element_text(size = 11)
+    ))
+
+# 3) Guardar
+ggsave("Output/event_b2_combined_nowindow.pdf", pb,
+       width = 6.5, height = 4.5, dpi = 300)
+
+# Participacion
+{
+# 1) Extraer coeficientes de cada event study
+coefs <- bind_rows(
+  extract_es(event_p2_c70, "share_36_78_c70"),
+  extract_es(event_p2_c80, "share_36_78_c80"),
+  # Año de referencia (2021): coeficiente = 0, sin IC
+  tibble::tibble(
+    anio = 2021,
+    window = c("share_36_78_c70", "share_36_78_c80"),
+    estimate = 0,
+    conf.low = NA_real_,
+    conf.high = NA_real_
+  )) %>% 
+  rename(census = window) %>%
+  mutate(census = case_when(
+    census == "share_36_78_c70" ~ "Spanish share: 1970 Census",
+    census == "share_36_78_c80" ~ "Spanish share: 1980 Census",
+    TRUE ~ census
+  ))
+
+# 2) Plot
+(pp <- ggplot(coefs %>% filter(anio != 2021), aes(x = anio, y = estimate, shape = census, group = census)) +
+    geom_hline(yintercept = 0, linetype = "dotted", color = "black") +
+    geom_vline(xintercept = 2021, linetype = "solid", linewidth = 0.3, color = "black") +
+    geom_errorbar(
+      aes(ymin = conf.low, ymax = conf.high),
+      width = 0.3,
+      position = position_dodge(width = 0.5),
+      linewidth = 0.35,
+      linetype = "solid",
+      color = "grey60",
+      show.legend = FALSE
+    ) +
+    geom_point(size = 2, position = position_dodge(width = 0.5), color = "black") +
+    scale_shape_manual(values = c("Spanish share: 1970 Census" = 16, "Spanish share: 1980 Census" = 17), 
+                       name = NULL) +
+    scale_x_continuous(breaks = seq(2011, 2025, by = 2)) +
+    labs(
+      x = "Year",
+      y = "Estimate and 95% CI",
+      #title = "Effect on share of blank votes"
+    ) +
+    guides(shape = guide_legend(nrow = 1, byrow = TRUE)) +
+    theme_minimal(base_family = "Times New Roman", base_size = 12) +
+    theme(
+      legend.position = "bottom",
+      legend.justification = "center",
+      legend.box = "horizontal",
+      legend.margin = margin(t = -5, r = 0, b = 0, l = 0),
+      plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+      
+      plot.title = element_text(hjust = 0.5, size = 12),
+      panel.grid.minor = element_blank(),
+      panel.grid.major.x = element_blank(),
+      panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
+      axis.line = element_line(color = "black", linewidth = 0.4),
+      axis.text = element_text(color = "black", size = 11),
+      axis.title = element_text(color = "black", size = 11),
+      legend.text = element_text(size = 11)
+    ))
+
+# 3) Guardar
+ggsave("Output/event_p2_combined_nowindow.pdf", pp,
+       width = 6.5, height = 4.5, dpi = 300)
+}
