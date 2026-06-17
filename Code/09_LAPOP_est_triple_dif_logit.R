@@ -21,6 +21,9 @@ dir.create("Output/tex", showWarnings = FALSE)
 
 lapop <- read_csv("Data Out/lapop_data_merge.csv", show_col_types = FALSE)
 
+censo_2010_density <- read_dta("Data Int/censo_2010_arg_mun.dta") %>%
+  select(mun_code, popdensgeo2)
+
 # ---------------------------------------------------------------------------- #
 # 1. Preparar base
 # ---------------------------------------------------------------------------- #
@@ -30,6 +33,10 @@ lapop <- lapop %>%
     year_num = as.numeric(year),
     post = if_else(year_num >= 2023, 1, 0)
   )
+
+lapop <- lapop %>%
+  left_join(censo_2010_density, by = "mun_code")%>%
+  mutate(popdensgeo2 = log(popdensgeo2))
 
 # ---------------------------------------------------------------------------- #
 # 2. Funciones auxiliares
@@ -94,7 +101,7 @@ latex_escape <- function(x) {
 variable_labels <- c(
   "mun_pre_all_mean_edad" = "Mean age",
   "mun_pre_all_share_hombre" = "Share male",
-  "mun_pre_all_share_rural" = "Share rural",
+  "popdensgeo2" = "Log Density",
   "mun_pre_all_share_desempleado" = "Share unemployed",
   "mun_pre_all_share_en_pareja" = "Share partnered",
   "mun_pre_all_mean_educ" = "Mean years of education",
@@ -128,7 +135,7 @@ mun_pre_all_controls <- pre_period_all %>%
     ~ tibble(
       mun_pre_all_mean_edad = safe_wmean(.x, "edad"),
       mun_pre_all_share_hombre = safe_wmean(.x, "hombre"),
-      mun_pre_all_share_rural = safe_wmean(.x, "rural"),
+      #mun_pre_all_share_rural = safe_wmean(.x, "rural"),
       mun_pre_all_share_desempleado = safe_wmean(.x, "desempleado"),
       mun_pre_all_share_en_pareja = safe_wmean(.x, "en_pareja"),
       mun_pre_all_mean_educ = safe_wmean(.x, "anios_educ"),
@@ -153,7 +160,7 @@ lapop <- lapop %>%
 triple_vars_core <- c(
   "mun_pre_all_mean_edad",
   "mun_pre_all_share_hombre",
-  "mun_pre_all_share_rural",
+  "popdensgeo2",
   "mun_pre_all_share_desempleado",
   "mun_pre_all_share_en_pareja",
   "mun_pre_all_mean_educ"

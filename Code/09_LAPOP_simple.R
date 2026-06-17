@@ -60,6 +60,9 @@ dir.create("Output/models", showWarnings = FALSE, recursive = TRUE)
 
 lapop <- read_csv("Data Out/lapop_data_merge.csv", show_col_types = FALSE)
 
+censo_2010_density <- read_dta("Data Int/censo_2010_arg_mun.dta") %>%
+  select(mun_code, popdensgeo2)
+
 # ---------------------------------------------------------------------------- #
 # 1. Preparar base
 # ---------------------------------------------------------------------------- #
@@ -70,6 +73,10 @@ lapop <- lapop %>%
     mun_code = as.factor(mun_code),
     year = as.factor(year_num)
   )
+
+lapop <- lapop %>%
+  left_join(censo_2010_density, by = "mun_code")%>%
+  mutate(popdensgeo2 = log(popdensgeo2))
 
 # ---------------------------------------------------------------------------- #
 # 2. Funciones auxiliares
@@ -142,7 +149,7 @@ latex_escape <- function(x) {
 variable_labels <- c(
   "edad" = "Age",
   "hombre" = "Male",
-  "rural" = "Rural",
+  #"rural" = "Rural",
   "desempleado" = "Unemployed",
   "en_pareja" = "Partnered",
   "secundaria_completa_o_mas" = "High School or more",
@@ -167,7 +174,7 @@ individual_specs <- list(
   full = c(
     "edad",
     "hombre",
-    "rural",
+    #"rural",
     "desempleado",
     "en_pareja",
     "secundaria_completa_o_mas",
@@ -179,7 +186,7 @@ individual_specs <- list(
   no_blank_null_vote = c(
     "edad",
     "hombre",
-    "rural",
+    #"rural",
     "desempleado",
     "en_pareja",
     "secundaria_completa_o_mas",
@@ -190,7 +197,7 @@ individual_specs <- list(
   no_ideology = c(
     "edad",
     "hombre",
-    "rural",
+    #"rural",
     "desempleado",
     "en_pareja",
     "secundaria_completa_o_mas",
