@@ -13,14 +13,13 @@ library(haven)
 library(stringi)
 
 # Definir el path a la carpeta del proyecto: ARGENTINA
-#path_flor <- "/Users/florenciaruiz/Library/CloudStorage/OneDrive-Personal/BID/Papers Valerie/Ley de nietos/Argentina"
-#setwd(path_flor)
+path <- "/Users/florenciaruiz/Library/CloudStorage/OneDrive-Personal/BID/Papers Valerie/Ley de nietos/Argentina"
 
-path_pili <- "C:\\Users\\pilih\\Documents\\Papers German\\Valerie\\Paper_nietos_arg"
-setwd(path_pili)
+#path <- "C:\\Users\\pilih\\Documents\\Papers German\\Valerie\\Paper_nietos_arg"
+setwd(path)
 
 # ----------------------- #
-#         Data
+# 1. Data
 # ----------------------- #
 {
   # 1. Cargar la data de LAPOP
@@ -110,7 +109,7 @@ setwd(path_pili)
     select(mun_code, province_code, admin_name_clean, provincia, share_1936_1955, share_1956_1978)
 }
 # ----------------------- #
-#  Unir LAPOP y españoles 
+# 2. Unir LAPOP y españoles 
 # ----------------------- #
 {
   # Hago un crosswalk entre las dos bases de datos para detectar matches entre los nombres de municipios de LAPOP y los nombres de municipios de españoles del censo. 
@@ -257,10 +256,12 @@ setwd(path_pili)
   write.csv(lapop_data_merge, "Data Out/lapop_data_merge.csv", row.names = FALSE)
 }
 # ----------------------- #
-#      Estimaciones 
+# 3. Estimaciones 
 # ----------------------- #
 {
-  ## Estadísticas descriptivas
+  lapop_data_merge <-  read.csv("Data Out/lapop_data_merge.csv")
+  
+### 3.1 Estadísticas descriptivas ### 
   
   # Resumen de outcomes políticos y características personales
   skimr::skim(lapop_data_merge %>% 
@@ -370,7 +371,7 @@ setwd(path_pili)
   
   saveWorkbook(wb, file = "Output/lapop_descriptive_means.xlsx", overwrite = TRUE)
   
-  ### Corro y exporto los modelos 
+### 3.2 Modelos estimados sobre variables políticas ### 
   
   outcome_labels <- c(
     izq_der = "Left-right ideology",
@@ -414,6 +415,52 @@ setwd(path_pili)
     statistic = "std.error",
     gof_map = c("nobs", "r.squared")
   )
+
+# Efectos de la ley en variables políticas
+  
+  # Creo el post
+  lapop_data_merge <- lapop_data_merge %>% 
+    mutate(post = ifelse(year >= 2023, 1, 0))
+  
+  feols(reuniones_comunidad ~ post : share_1936_1955 + post : share_1956_1978 + 
+          edad + hombre  | year + name_censo, 
+        data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo)
+  
+  feols(identifica_partido ~ post : share_1936_1955 + post : share_1956_1978 + 
+          edad + hombre  | year + name_censo, 
+        data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo)
+  
+  feols(voto_anterior ~ post : share_1936_1955 + post : share_1956_1978 + 
+          edad + hombre  | year + name_censo, 
+        data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo)
+  
+  feols(intencion_migrar ~ post : share_1936_1955 + post : share_1956_1978 + 
+          edad + hombre  | year + name_censo, 
+        data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo)
+  
+  feols(intencion_voto ~ post : share_1936_1955 + post : share_1956_1978 + 
+          edad + hombre  | year + name_censo, 
+        data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo)
+  
+  feols(interes_pol_mucho ~ post : share_1936_1955 + post : share_1956_1978 + 
+          edad + hombre  | year + name_censo, 
+        data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo)
+  
+  feols(interes_pol_nada ~ post : share_1936_1955 + post : share_1956_1978 + 
+         edad + hombre  | year + name_censo, 
+       data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo)
+  
+  feols(interes_pol_algo ~ post : share_1936_1955 + post : share_1956_1978 + 
+          edad + hombre  | year + name_censo, 
+        data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo)
+  
+  iplot(feols(interes_pol_nada ~ i(year, share_1936_1955) + 
+          edad + hombre  | year + name_censo, 
+        data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo))
+  
+  iplot(feols(interes_pol_nada ~ i(year, share_1956_1978) + 
+                edad + hombre  | year + name_censo, 
+              data = lapop_data_merge, weights = ~ wt, cluster = ~ name_censo))
 }
 
 
