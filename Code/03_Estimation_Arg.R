@@ -15,6 +15,13 @@ library(sandwich)
 library(openxlsx)
 library(broom)
 library(showtext)
+library(patchwork)
+
+# Instalar Honest Did desde github
+install.packages("remotes")
+Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true") # Turn off warning-error-conversion, because the tiniest warning stops installation
+remotes::install_github("asheshrambachan/HonestDiD")
+library(HonestDiD)
 
 # ------------------------------------------ #
 # 0. Data
@@ -63,6 +70,24 @@ font_add( # Agrego times new roman
 )
 showtext_auto()
 showtext_opts(dpi = 300)   # para que el tamaño del texto se vea bien al exportar a 300 dpi
+
+my_theme <- theme_minimal(base_family = "Times New Roman") +
+  theme(
+  legend.position = "bottom",
+  legend.justification = "center",
+  legend.box = "horizontal",
+  legend.margin = margin(t = -5, r = 0, b = 0, l = 0),
+  plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
+  
+  plot.title = element_text(hjust = 0.5, size = 12),
+  panel.grid.minor = element_blank(),
+  panel.grid.major.x = element_blank(),
+  panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
+  axis.line = element_line(color = "black", linewidth = 0.4),
+  axis.text = element_text(color = "black", size = 18),
+  axis.title = element_text(color = "black", size = 18),
+  legend.text = element_text(size = 18)
+)
 
 # ------------------------------------------ #
 #  1. Estimaciones (nivel municipal)
@@ -3568,7 +3593,7 @@ ggsave("Output/coef_plot_chars.png", p, width = 9, height = 6, dpi = 300)
 # ------------------------------------------ #
 # 9. Estimación sin ventanas por separado
 # ------------------------------------------ #
-
+{
 ### 9.1 Voto en blanco ###
 
 # Censo de 1970
@@ -3836,4 +3861,269 @@ coefs <- bind_rows(
 # 3) Guardar
 ggsave("Output/event_p2_combined_nowindow.pdf", pp,
        width = 6.5, height = 4.5, dpi = 300)
+}
+}
+
+# ------------------------------------------ #
+# 10. Sensitivity: Honest DiD
+# ------------------------------------------ #
+{
+# ============================ #
+# 10.1 Helpers internos
+# ============================ #
+
+# Settin para gráficos
+theme_honestdid_sd <- list(
+  my_theme,
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank()
+  ),
+  labs(
+    color = NULL,
+    linetype = NULL,
+    fill = NULL,
+    x = "Delta",
+    y = "Estimated effect"
+  ),
+  scale_color_manual(
+    values = c("Original" = "steelblue4", "FLCI" = "tomato3"),
+    labels = c("Original" = "OLS", "FLCI" = "Honest DiD")
+  )
+)
+
+theme_honestdid_rm <- list(
+  my_theme,
+  theme(
+    panel.background = element_blank(),
+    plot.background = element_blank()
+  ),
+  labs(
+    color = NULL,
+    linetype = NULL,
+    fill = NULL,
+    x = "Delta",
+    y = "Estimated effect"
+  ),
+  scale_color_manual(
+    values = c("Original" = "steelblue4", "C-LF" = "tomato3"),
+    labels = c("Original" = "OLS", "C-LF" = "Honest DiD")
+  )
+)
+
+# Definir el vector l según si se quiere el ATT o solo el primer post
+.build_l_vec <- function(att, numPostPeriods) {
+  if (att) rep(1 / numPostPeriods, numPostPeriods)         # promedio post
+  else     c(1, rep(0, numPostPeriods - 1))                # solo primer post
+}
+.target_label <- function(att) if (att) "att" else "first"
+
+# Extrae betahat y sigma del modelo, opcionalmente filtrando por cohorte
+.extract_beta_sigma <- function(model, cohort = NULL) {
+  all_coefs <- coef(model)
+  all_vcov  <- vcov(model)
+  
+  if (is.null(cohort)) {
+    return(list(betahat = all_coefs, sigma = all_vcov))
+  }
+  
+  # Construir el pattern segun la cohorte
+  pattern <- switch(as.character(cohort),
+                    "36" = "share_1936_1955",
+                    "56" = "share_1956_1978",
+                    cohort)   # si no es 36 ni 56, asume que cohort es ya un pattern
+  
+  idx <- grep(pattern, names(all_coefs))
+  if (length(idx) == 0) {
+    stop(sprintf("No se encontraron coeficientes que coincidan con '%s'", pattern))
+  }
+  
+  list(betahat = all_coefs[idx],
+       sigma   = all_vcov[idx, idx])
+}
+
+# ============================ #
+# 10.2 Smoothness Restrictions 
+# ============================ #
+honestdid_smoothness <- function(model,
+                                 label,
+                                 cohort = NULL,             # Seleccionar sets de coeficientes solo si el modelo tiene ambos (36 / 56)
+                                 att = FALSE,
+                                 Mvec = seq(0, 4, by = 0.5),
+                                 numPrePeriods  = 5,
+                                 numPostPeriods = 2,
+                                 alpha = 0.05,
+                                 output_dir = "Output/Sensitivity",
+                                 width = 6.5, height = 4.5, dpi = 300) {
+  
+  bs <- .extract_beta_sigma(model, cohort)
+  betahat <- bs$betahat
+  sigma   <- bs$sigma
+  
+  l_vec        <- .build_l_vec(att, numPostPeriods)
+  target_label <- .target_label(att)
+  
+  sensitivity_results <- HonestDiD::createSensitivityResults(
+    betahat        = betahat,
+    sigma          = sigma,
+    numPrePeriods  = numPrePeriods,
+    numPostPeriods = numPostPeriods,
+    method         = "FLCI",
+    Mvec           = Mvec,
+    l_vec          = l_vec,
+    alpha          = alpha
+  )
+  
+  original_results <- HonestDiD::constructOriginalCS(
+    betahat        = betahat,
+    sigma          = sigma,
+    numPrePeriods  = numPrePeriods,
+    numPostPeriods = numPostPeriods,
+    l_vec          = l_vec,
+    alpha          = alpha
+  )
+  
+  p <- HonestDiD::createSensitivityPlot(sensitivity_results, original_results) +
+    theme_honestdid_sd
+  
+  if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+  outfile <- file.path(output_dir,
+                       sprintf("honestdid_%s_smoothness_%s.pdf",
+                               label, target_label))
+  ggsave(outfile, p, width = width, height = height, dpi = dpi)
+  
+  invisible(list(sensitivity = sensitivity_results,
+                 original    = original_results,
+                 plot        = p,
+                 file        = outfile))
+}
+
+
+# ============================ #
+# 10.2 Magnitudes Restrictions
+# ============================ #
+honestdid_magnitudes <- function(model,
+                                 label,
+                                 cohort = NULL,             # NUEVO
+                                 att = FALSE,
+                                 Mbarvec = seq(0.25, 2, by = 0.25),
+                                 numPrePeriods  = 5,
+                                 numPostPeriods = 2,
+                                 alpha = 0.05,
+                                 output_dir = "Output/Sensitivity",
+                                 width = 6.5, height = 4.5, dpi = 300) {
+  
+  bs <- .extract_beta_sigma(model, cohort)
+  betahat <- bs$betahat
+  sigma   <- bs$sigma
+  
+  l_vec        <- .build_l_vec(att, numPostPeriods)
+  target_label <- .target_label(att)
+  
+  sensitivity_results <- HonestDiD::createSensitivityResults_relativeMagnitudes(
+    betahat        = betahat,
+    sigma          = sigma,
+    numPrePeriods  = numPrePeriods,
+    numPostPeriods = numPostPeriods,
+    Mbarvec        = Mbarvec,
+    l_vec          = l_vec,
+    alpha          = alpha
+  )
+  
+  original_results <- HonestDiD::constructOriginalCS(
+    betahat        = betahat,
+    sigma          = sigma,
+    numPrePeriods  = numPrePeriods,
+    numPostPeriods = numPostPeriods,
+    l_vec          = l_vec,
+    alpha          = alpha
+  )
+  
+  p <- HonestDiD::createSensitivityPlot_relativeMagnitudes(
+    sensitivity_results, original_results) +
+    theme_honestdid_rm
+  
+  if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+  outfile <- file.path(output_dir,
+                       sprintf("honestdid_%s_magnitudes_%s.pdf",
+                               label, target_label))
+  ggsave(outfile, p, width = width, height = height, dpi = dpi)
+  
+  invisible(list(sensitivity = sensitivity_results,
+                 original    = original_results,
+                 plot        = p,
+                 file        = outfile))
+}
+
+# ============================ #
+# 10.3 Votos en blanco
+# ============================ #
+
+event_b2_joint <- feols(porcentaje_blanco ~
+                          i(anio, share_1936_1955, ref = 2021) +
+                          i(anio, share_1956_1978, ref = 2021) |
+                          mun_code + anio + tipo_eleccion,
+                        data = dip_nac_mun)
+
+## Smoothness Restrictions
+
+# First year
+honestdid_smoothness(event_b2_36, label = "b2_36", att = FALSE) 
+honestdid_smoothness(event_b2_56, label = "b2_56", att = FALSE)
+
+# ATT
+honestdid_smoothness(event_b2_joint, label = "b2_36_joint", cohort = "36", att = TRUE)
+honestdid_smoothness(event_b2_joint, label = "b2_56_joint", cohort = "56", att = TRUE)
+
+honestdid_smoothness(event_b2_36, label = "b2_36", att = TRUE) 
+honestdid_smoothness(event_b2_56, label = "b2_56", att = TRUE)
+
+## Magnitudes Restrictions
+
+# First year
+honestdid_magnitudes(event_b2_36, label = "b2_36", att = FALSE)
+honestdid_magnitudes(event_b2_56, label = "b2_56", att = FALSE)
+
+# ATT
+honestdid_magnitudes(event_b2_joint, label = "b2_36_joint", cohort = "36", att = TRUE)
+honestdid_magnitudes(event_b2_joint, label = "b2_56_joint", cohort = "56", att = TRUE)
+
+honestdid_magnitudes(event_b2_36, label = "b2_36", att = TRUE)
+honestdid_magnitudes(event_b2_56, label = "b2_56", att = TRUE)
+
+# ============================ #
+# 10.3 Participación
+# ============================ #
+
+event_p2_joint <- feols(participacion ~
+                          i(anio, share_1936_1955, ref = 2021) +
+                          i(anio, share_1956_1978, ref = 2021) |
+                          mun_code + anio + tipo_eleccion,
+                        data = dip_nac_mun)
+
+## Smoothness Restrictions
+
+# First year
+honestdid_smoothness(event_p2_36, label = "p2_36", att = FALSE) 
+honestdid_smoothness(event_p2_56, label = "p2_56", att = FALSE)
+
+# ATT
+honestdid_smoothness(event_p2_joint, label = "p2_36_joint", cohort = "36", att = TRUE)
+honestdid_smoothness(event_p2_joint, label = "p2_56_joint", cohort = "56", att = TRUE)
+
+honestdid_smoothness(event_p2_36, label = "p2_36", att = TRUE) 
+honestdid_smoothness(event_p2_56, label = "p2_56", att = TRUE)
+
+## Magnitudes Restrictions
+
+# First year
+honestdid_magnitudes(event_p2_36, label = "p2_36", att = FALSE)
+honestdid_magnitudes(event_p2_56, label = "p2_56", att = FALSE)
+
+# ATT
+honestdid_magnitudes(event_p2_joint, label = "p2_36_joint", cohort = "36", att = TRUE)
+honestdid_magnitudes(event_p2_joint, label = "p2_56_joint", cohort = "56", att = TRUE)
+
+honestdid_magnitudes(event_p2_36, label = "p2_36", att = TRUE)
+honestdid_magnitudes(event_p2_56, label = "p2_56", att = TRUE)
 }
