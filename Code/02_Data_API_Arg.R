@@ -1139,5 +1139,6 @@ dip_nac_mun_2 <- dip_nac_mun_2 %>%
 
 # Sobreescribo la data
 write_csv(dip_nac_mun_2, "Data Out/dip_nac_mun.csv") 
+write_dta(dip_nac_mun, "Data Out/dip_nac_mun.dta") 
 # Creo dip_nac_mun_2 para no tener que volver a correr todo si hay un problema, pero sobre escribo la data como dip_nac_mun y en el código 3 la importo como dip_nac_mun
 }
