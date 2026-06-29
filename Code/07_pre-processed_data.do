@@ -12,6 +12,9 @@ global data_int "$main/Data Int"
 global data_out "$main/Data Out"
 global data_raw "$main/Data Raw"
 global output "$main/Output"
+global output_eb "$main/Output/EB"
+
+cap mkdir "$output_eb"
 
 * ------------------------------------------------ *
 * 1. Censo 2010
@@ -565,7 +568,7 @@ rename _weight w_ss_1936_7
 ebct $covs8, treatvar(share_1936_1955) 
 rename _weight w_ss_1936_8
 
-* Pesos para el segundo tratamiento (1956-1978), incluyo el primero dentro del balance
+* Pesos para el segundo tratamiento (1956-1978)
 	* Alternativa 1:
 ebct $covs1, treatvar(share_1956_1978) 
 rename _weight w_ss_1956_1
@@ -854,9 +857,360 @@ save "$data_int/data_EB.dta", replace
 
 
 }
+* ------------------------------------------------ *
+* 5. Entropy Balance versión 3
+* ------------------------------------------------ *
+* En esta versión corro el EB con la lógica del SC (outcomes lageado + variables demográficas) y pesos diferentes por outcome
+
+* -----    5.0 Data    -----*
+use "$data_out/dip_nac_mun.dta", clear
+
+keep mun_code anio tipo_eleccion participacion porcentaje_blanco share_1936_1955 share_1956_1978
+keep if anio < 2022
+
+bys mun_code anio: egen participacion_prom = mean(participacion)
+bys mun_code anio: egen blanco_prom = mean(porcentaje_blanco)
+
+* Paso a formato wide
+isid mun_code anio tipo_eleccion // Chequeo IDs unicos 
+
+gen elec_anio = string(anio) + "_" + tipo_eleccion
+drop tipo_eleccion anio
+
+reshape wide participacion porcentaje_blanco participacion_prom blanco_prom, ///
+    i(mun_code) j(elec_anio) string
+
+foreach y in 2011 2013 2015 2017 2019 2021{
+	drop participacion_prom`y'_GENERALES
+	rename participacion_prom`y'_PASO participacion_prom`y'
+	
+	drop blanco_prom`y'_GENERALES
+	rename blanco_prom`y'_PASO blanco_prom`y'
+}
+
+order participacion_prom* blanco_prom*, last
+	
+merge 1:1 mun_code using "$data_int/censo_2010_arg_mun.dta"
+drop _merge
+
+gen log_pop = ln(pop)
+gen log_density = ln(popdensgeo2)
+
+* Data de migración de LAPOP
+preserve
+
+use "$data_out/lapop_data_merge.dta", clear
+codebook mun_code
+keep mun_code intencion_migrar year
+drop if year == 2023
+
+collapse (mean) intencion_migrar, by (mun_code year)
+
+* Paso a formato wide
+isid mun_code year  // Chequeo IDs unicos 
+tostring year, replace
+reshape wide intencion_migrar , ///
+    i(mun_code) j(year) string
+	
+tempfile intencion_migrar_mun
+save `intencion_migrar_mun', replace
+
+restore
+
+merge 1:1 mun_code using `intencion_migrar_mun'
+
+* ----- 5.1 Corro el EB -----*
+
+*** Blank vote share ***
+
+* Pesos para el primer tratamiento (1936-1955)
+
+	* Solo los outcome pre 
+ebct porcentaje_blanco*, treatvar(share_1936_1955)
+rename _weight w_b_1936_1
+
+	* Outcome pre + covariables demográficas
+ebct porcentaje_blanco* log_density share_female mean_age mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_b_1936_2
+
+ebct porcentaje_blanco* log_density mean_age mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_b_1936_3
+
+ebct porcentaje_blanco* log_density mean_age, treatvar(share_1936_1955)
+rename _weight w_b_1936_4
+
+ebct porcentaje_blanco* log_density mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_b_1936_5
+
+	* Outcome pre promedio + covariables demográficas
+ebct blanco_prom* log_density share_female mean_age mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_b_1936_6
+
+ebct blanco_prom* log_density mean_age mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_b_1936_7
+
+ebct blanco_prom* log_density mean_age, treatvar(share_1936_1955)
+rename _weight w_b_1936_8
+
+ebct blanco_prom* log_density mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_b_1936_9
+	// no se gana mucho en distribucion de los pesos por reducir los outcomes
+	
+* Pesos para el primer tratamiento (1956-1978)
+
+	* Solo los outcome pre 
+ebct porcentaje_blanco*, treatvar(share_1956_1978)
+rename _weight w_b_1956_1
+
+	* Outcome pre + covariables demográficas
+ebct porcentaje_blanco* log_density share_female mean_age mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_b_1956_2
+
+ebct porcentaje_blanco* log_density mean_age mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_b_1956_3
+
+ebct porcentaje_blanco* log_density mean_age, treatvar(share_1956_1978)
+rename _weight w_b_1956_4
+
+ebct porcentaje_blanco* log_density mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_b_1956_5
+
+	* Outcome pre promedio + covariables demográficas
+ebct blanco_prom* log_density share_female mean_age mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_b_1956_6
+
+ebct blanco_prom* log_density mean_age mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_b_1956_7
+
+ebct blanco_prom* log_density mean_age, treatvar(share_1956_1978)
+rename _weight w_b_1956_8
+
+ebct blanco_prom* log_density mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_b_1956_9
+	
+*** Turnout ***
+
+* Pesos para el primer tratamiento (1936-1955)
+
+	* Solo los outcome pre 
+ebct participacion*, treatvar(share_1936_1955)
+rename _weight w_p_1936_1
+
+	* Outcome pre + covariables demográficas
+ebct participacion* log_density share_female mean_age mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_p_1936_2
+
+ebct participacion* log_density mean_age mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_p_1936_3
+
+ebct participacion* log_density mean_age, treatvar(share_1936_1955)
+rename _weight w_p_1936_4
+
+ebct participacion* log_density mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_p_1936_5
+
+	* Outcome pre promedio + covariables demográficas
+ebct participacion_prom* log_density share_female mean_age mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_p_1936_6
+
+ebct participacion_prom* log_density mean_age mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_p_1936_7
+
+ebct participacion_prom* log_density mean_age, treatvar(share_1936_1955)
+rename _weight w_p_1936_8
+
+ebct participacion_prom* log_density mean_yrschool, treatvar(share_1936_1955)
+rename _weight w_p_1936_9
+	// no se gana mucho en distribucion de los pesos por reducir los outcomes
+	
+* Pesos para el primer tratamiento (1956-1978)
+
+	* Solo los outcome pre 
+ebct participacion*, treatvar(share_1956_1978)
+rename _weight w_p_1956_1
+
+	* Outcome pre + covariables demográficas
+ebct participacion* log_density share_female mean_age mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_p_1956_2
+
+ebct participacion* log_density mean_age mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_p_1956_3
+
+ebct participacion* log_density mean_age, treatvar(share_1956_1978)
+rename _weight w_p_1956_4
+
+ebct participacion* log_density mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_p_1956_5
+
+	* Outcome pre promedio + covariables demográficas
+ebct participacion_prom* log_density share_female mean_age mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_p_1956_6
+
+ebct participacion_prom* log_density mean_age mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_p_1956_7
+
+ebct participacion_prom* log_density mean_age, treatvar(share_1956_1978)
+rename _weight w_p_1956_8
+
+ebct participacion_prom* log_density mean_yrschool, treatvar(share_1956_1978)
+rename _weight w_p_1956_9
+
+*** Migration intention ***
+
+* Pesos para el primer tratamiento (1936-1955)
+
+	* Solo los outcome pre 
+ebct intencion_migrar* if _merge ==3, treatvar(share_1936_1955)
+rename _weight w_m_1936_1
+
+	* Outcome pre + covariables demográficas
+cap ebct intencion_migrar* log_density share_female mean_age mean_yrschool if _merge ==3, treatvar(share_1936_1955) //Hessian is not negative semidefinite
+cap rename _weight w_m_1936_2
+
+ebct intencion_migrar* log_density mean_age mean_yrschool if _merge ==3, treatvar(share_1936_1955)
+rename _weight w_m_1936_3
+
+ebct intencion_migrar* log_density mean_age if _merge ==3, treatvar(share_1936_1955)
+rename _weight w_m_1936_4
+
+ebct intencion_migrar* log_density mean_yrschool if _merge ==3, treatvar(share_1936_1955)
+rename _weight w_m_1936_5
+
+	* Outcome pre promedio + covariables demográficas
+cap ebct intencion_migrar* log_density share_female mean_age mean_yrschool if _merge ==3, treatvar(share_1936_1955) // Hessian is not negative semidefinite
+cap rename _weight w_m_1936_6 
+
+ebct intencion_migrar* log_density mean_age mean_yrschool if _merge ==3, treatvar(share_1936_1955)
+rename _weight w_m_1936_7
+
+ebct intencion_migrar* log_density mean_age if _merge ==3, treatvar(share_1936_1955)
+rename _weight w_m_1936_8
+
+ebct intencion_migrar* log_density mean_yrschool if _merge ==3, treatvar(share_1936_1955)
+rename _weight w_m_1936_9
+
+* Pesos para el primer tratamiento (1956-1978)
+
+	* Solo los outcome pre 
+ebct intencion_migrar* if _merge ==3, treatvar(share_1956_1978)
+rename _weight w_m_1956_1
+
+	* Outcome pre + covariables demográficas
+ebct intencion_migrar* log_density share_female mean_age mean_yrschool if _merge ==3, treatvar(share_1956_1978)
+rename _weight w_m_1956_2
+
+ebct intencion_migrar* log_density mean_age mean_yrschool if _merge ==3, treatvar(share_1956_1978) // convergence not achieved
+rename _weight w_m_1956_3
+
+ebct intencion_migrar* log_density mean_age if _merge ==3, treatvar(share_1956_1978)
+rename _weight w_m_1956_4
+
+ebct intencion_migrar* log_density mean_yrschool if _merge ==3, treatvar(share_1956_1978)
+rename _weight w_m_1956_5
+
+	* Outcome pre promedio + covariables demográficas
+ebct intencion_migrar* log_density share_female mean_age mean_yrschool if _merge ==3, treatvar(share_1956_1978)
+rename _weight w_m_1956_6
+
+ebct intencion_migrar* log_density mean_age mean_yrschool if _merge ==3, treatvar(share_1956_1978)
+rename _weight w_m_1956_7
+
+ebct intencion_migrar* log_density mean_age if _merge ==3, treatvar(share_1956_1978)
+rename _weight w_m_1956_8
+
+ebct intencion_migrar* log_density mean_yrschool if _merge ==3, treatvar(share_1956_1978)
+rename _weight w_m_1956_9
+
+* ----- 5.2 Resumen de distribución de pesos ----- *
+
+*** Blank vote share ***
+
+set graphics off
+	* Distrubución de pesos de 1936
+local graphs36 ""
+forvalues i = 1/9 {
+	histogram w_b_1936_`i', percent title("Covariate set `i'", size(*0.8)) ///
+	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1936_b_`i', replace)
+    local graphs36 "`graphs36' hist_w1936_b_`i'"
+}
+graph combine `graphs36', cols(3) title("Distribution of EBCT weights", size(medsmall)) ///
+                          subtitle("Treatment: spanish share 1936-1955 - Outcome: blank vote share", size(medsmall)) ///
+                          name(hist_weights_b_1936, replace)
+graph export "$output_eb/hist_weights_b_1936.png", replace width(2400)
+
+	* Distrubución de pesos de 1956
+local graphs56 ""
+forvalues i = 1/9 {
+    histogram w_b_1956_`i', percent title("Covariate set `i'", size(*0.8)) ///
+	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1956_b_`i', replace)
+    local graphs56 "`graphs56' hist_w1956_b_`i'"
+}
+graph combine `graphs56', cols(3) title("Distribution of EBCT weights: share 1956-1978", size(medsmall)) ///
+								  subtitle("Treatment: spanish share 1956-1978 - Outcome: blank vote share", size(medsmall)) ///
+                                  name(hist_weights_b_1956, replace)
+graph export "$output_eb/hist_weights_b_1956.png", replace width(2400)
+
+*** Turnout ***
+	* Distrubución de pesos de 1936
+local graphs36 ""
+forvalues i = 1/9 {
+	histogram w_p_1936_`i', percent title("Covariate set `i'", size(*0.8)) ///
+	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1936_p_`i', replace)
+    local graphs36 "`graphs36' hist_w1936_p_`i'"
+}
+graph combine `graphs36', cols(3) title("Distribution of EBCT weights", size(medsmall)) ///
+                          subtitle("Treatment: spanish share 1936-1955 - Outcome: turnout", size(medsmall)) ///
+                          name(hist_weights_p_1936, replace)
+graph export "$output_eb/hist_weights_p_1936.png", replace width(2400)
+
+	* Distrubución de pesos de 1956
+local graphs56 ""
+forvalues i = 1/9 {
+    histogram w_p_1956_`i', percent title("Covariate set `i'", size(*0.8)) ///
+	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1956_p_`i', replace)
+    local graphs56 "`graphs56' hist_w1956_p_`i'"
+}
+graph combine `graphs56', cols(3) title("Distribution of EBCT weights: share 1956-1978", size(medsmall)) ///
+								  subtitle("Treatment: spanish share 1956-1978 - Outcome: turnout", size(medsmall)) ///
+                                  name(hist_weights_p_1956, replace)
+graph export "$output_eb/hist_weights_p_1956.png", replace width(2400)
+
+*** Migration intention ***
+	* Distrubución de pesos de 1936
+local graphs36 ""
+foreach i in 1 3 4 5 7 8 9 {
+	histogram w_m_1936_`i', percent title("Covariate set `i'", size(*0.8)) ///
+	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1936_m_`i', replace)
+    local graphs36 "`graphs36' hist_w1936_m_`i'"
+}
+graph combine `graphs36', cols(3) title("Distribution of EBCT weights", size(medsmall)) ///
+                          subtitle("Treatment: spanish share 1936-1955 - Outcome: intention to migrate", size(medsmall)) ///
+                          name(hist_weights_m_1936, replace)
+graph export "$output_eb/hist_weights_m_1936.png", replace width(2400)
+
+	* Distrubución de pesos de 1956
+local graphs56 ""
+foreach i in 1 2 4 5 6 7 8 9 {
+    histogram w_m_1956_`i', percent title("Covariate set `i'", size(*0.8)) ///
+	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1956_m_`i', replace)
+    local graphs56 "`graphs56' hist_w1956_m_`i'"
+}
+graph combine `graphs56', cols(3) title("Distribution of EBCT weights: share 1956-1978", size(medsmall)) ///
+						  subtitle("Treatment: spanish share 1956-1978 - Outcome: intention to migrate", size(medsmall)) ///
+                          name(hist_weights_m_1956, replace)
+graph export "$output_eb/hist_weights_m_1956.png", replace width(2400)
+
+set graphics on
+
+* ----- 5.3 Tabla de estadísticas descriptivas de los pesos ----- *
+
+* ----- 5.4 Guardo la data con los pesos ----- *
+keep mun_code w_*
+save "$data_int/data_EB_v2.dta", replace
+
 
 * ------------------------------------------------ * 
-* 5. Pesos de CBGPS (de R)
+* 6. Pesos de CBGPS (de R)
 * ------------------------------------------------ *
 {
 // Traigo la data de R con los pesos generados usando CBGPS para generar las distribuciones

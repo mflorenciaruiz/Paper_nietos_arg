@@ -254,6 +254,7 @@ setwd(path)
            province_code, everything())
   
   write.csv(lapop_data_merge, "Data Out/lapop_data_merge.csv", row.names = FALSE)
+  write_dta(lapop_data_merge, "Data Out/lapop_data_merge.dta")
 }
 # ----------------------- #
 # 3. Estimaciones 

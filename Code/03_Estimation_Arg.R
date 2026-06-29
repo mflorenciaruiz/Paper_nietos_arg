@@ -45,6 +45,11 @@ data_eb <- read_dta("Data Int/data_EB.dta")
 dip_nac_mun_eb <- dip_nac_mun %>% 
   left_join(data_eb, by = "mun_code")
 
+data_eb2 <- read_dta("Data Int/data_EB_v2.dta")
+# Uno la data final para estimar con los pesos de EB
+dip_nac_mun_eb2 <- dip_nac_mun %>% 
+  left_join(data_eb2, by = "mun_code")
+
 pesos_cbgps <- read_dta("Data Int/pesos_cbgps.dta") 
 # Uno la data final para estimar con los pesos de EB y CBGPS
 dip_nac_mun_pesos <- dip_nac_mun_eb %>% 
@@ -57,6 +62,8 @@ spanish_cohorts_arg <- read_csv("Data Int/spanish_cohorts_arg.csv")
 
 # Settings para exportar
 options("modelsummary_format_numeric_latex" = "plain") # Números sin formato en tablas de modelsummary.
+options("modelsummary_factory_latex" = "kableExtra")
+options(knitr.table.format = "latex")
 
 #font_add(family = "Latin Modern Math", regular = "latinmodern-math.otf")
 #showtext_auto()
@@ -1630,6 +1637,9 @@ iplot(event_b2_56_s)
 
 ### 4.1 Voto en Blanco ###
 {
+  
+## Data versión 1
+  
 # Set de pesos 1
   event_b2_36_eb1 <- feols(porcentaje_blanco ~ i(anio, share_1936_1955, ref = 2021) |
                          mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb, weights = ~ w_1936_1)
@@ -1717,7 +1727,7 @@ iplot(event_b2_56_s)
   summary(event_b2_36_eb8)
   summary(event_b2_56_eb8)
 
-# Exporto los resultados
+## Exporto los resultados de event study
 modelsummary(
   list(
     "No EB (36-55)" = event_b2_36,
@@ -1787,10 +1797,356 @@ modelsummary(
   notes = "Standard errors clustered at the municipality level in parentheses."
 )
   
+## Data versión 2
+
+# Set de pesos 1
+event_b2_36_eb2_1 <- feols(porcentaje_blanco ~ i(anio, share_1936_1955, ref = 2021) |
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1936_1)
+event_b2_56_eb2_1 <- feols(porcentaje_blanco ~ i(anio, share_1956_1978, ref = 2021) |
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1956_1)
+# Resumen pre balance
+summary(event_b2_36)
+summary(event_b2_56)
+# Resumen post balance
+summary(event_b2_36_eb2_1)
+summary(event_b2_56_eb2_1)
+iplot(event_b2_36_eb2_1)
+iplot(event_b2_56_eb2_1)
+iplot(event_b2_36)
+
+att_b2_eb2_1_36 <- feols(porcentaje_blanco ~ share_1936_1955:post  + share_1956_1978:post | 
+                  mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1936_1)
+att_b2_eb2_1_56 <- feols(porcentaje_blanco ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1956_1)
+summary(att_b2_eb2_1_36)
+summary(att_b2_eb2_1_56)
+summary(att_b2)
+
+# Set de pesos 2
+event_b2_36_eb2_2 <- feols(porcentaje_blanco ~ i(anio, share_1936_1955, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1936_2)
+event_b2_56_eb2_2 <- feols(porcentaje_blanco ~ i(anio, share_1956_1978, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1956_2)
+
+iplot(event_b2_36_eb2_2)
+iplot(event_b2_56_eb2_2)
+
+att_b2_eb2_2_36 <- feols(porcentaje_blanco ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1936_2)
+att_b2_eb2_2_56 <- feols(porcentaje_blanco ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1956_2)
+summary(att_b2_eb2_1_36)
+summary(att_b2_eb2_1_56)
+
+# Set de pesos 4
+event_b2_36_eb2_4 <- feols(porcentaje_blanco ~ i(anio, share_1936_1955, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1936_4)
+event_b2_56_eb2_4 <- feols(porcentaje_blanco ~ i(anio, share_1956_1978, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1956_4)
+
+iplot(event_b2_36_eb2_4)
+iplot(event_b2_56_eb2_4)
+
+att_b2_eb2_4_36 <- feols(porcentaje_blanco ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1936_4)
+att_b2_eb2_4_56 <- feols(porcentaje_blanco ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1956_4)
+summary(att_b2_eb2_4_36)
+summary(att_b2_eb2_4_56) # cambia mucho el coeficiente de la segunda ventana
+
+# Set de pesos 5
+event_b2_36_eb2_5 <- feols(porcentaje_blanco ~ i(anio, share_1936_1955, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1936_5)
+event_b2_56_eb2_5 <- feols(porcentaje_blanco ~ i(anio, share_1956_1978, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1956_5)
+
+iplot(event_b2_36_eb2_5)
+iplot(event_b2_56_eb2_5)
+
+att_b2_eb2_5_36 <- feols(porcentaje_blanco ~ share_1936_1955:post  + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1936_5)
+att_b2_eb2_5_56 <- feols(porcentaje_blanco ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_b_1956_5)
+summary(att_b2_eb2_5_36)
+summary(att_b2_eb2_5_56) # cambia mucho el coeficiente de la segunda ventana
+
+## Exporto los resultados de los att (versión 2)
+
+# Mapeo de coeficientes a etiquetas
+cm <- c(
+  "share_1936_1955:post" = "Spanish share 1936-1955$\\times$post",
+  "post:share_1956_1978" = "Spanish share 1956-1978$\\times$post"
+)
+
+# Estadísticas: Obs y R^2
+gm <- tibble::tribble(
+  ~raw,        ~clean,         ~fmt,
+  "nobs",      "Observations", 0,
+  "r.squared", "R$^2$",        3
+)
+
+# FE rows (todas Yes)
+add_rows <- tibble::tibble(
+  term = c("Municipality FE", "Year FE", "Election type FE"),
+  m1 = c("Yes", "Yes", "Yes"),
+  m2 = c("Yes", "Yes", "Yes"),
+  m3 = c("Yes", "Yes", "Yes"),
+  m4 = c("Yes", "Yes", "Yes"),
+  m5 = c("Yes", "Yes", "Yes"),
+  m6 = c("Yes", "Yes", "Yes"),
+  m7 = c("Yes", "Yes", "Yes"),
+  m8 = c("Yes", "Yes", "Yes")
+)
+names(add_rows) <- c(" ", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)")
+
+# Modelos votos en blanco 36
+models_blank <- list(
+  "(1)" = att_b2_eb2_1_36,
+  "(2)" = att_b2_eb2_1_56,
+  "(3)" = att_b2_eb2_2_36,
+  "(4)" = att_b2_eb2_2_56,
+  "(5)" = att_b2_eb2_4_36,
+  "(6)" = att_b2_eb2_4_56,
+  "(7)" = att_b2_eb2_5_36,
+  "(8)" = att_b2_eb2_5_56
+)
+
+# Generar LaTeX para votos en blanco
+tex <- modelsummary(
+  models_blank,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Effect on Blank Vote Share Under Entropy Balancing Weights}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Columns (1), (3), (5), and (7) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (2), (4), (6), and (8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1966–1978. Column (1) and (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) and (4) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (5) and (6) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (7) and (8) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_b2_att.tex")
+
+## Exporto los resultados de los event study
+
+# Mapeo de coeficientes a etiquetas
+cm <- c(
+  "anio::2011:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2011",
+  "anio::2013:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2013",
+  "anio::2015:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2015",
+  "anio::2017:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2017",
+  "anio::2019:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2019",
+  "anio::2023:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2023",
+  "anio::2025:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2025"
+)
+
+# Estadísticas: Obs y R^2
+gm <- tibble::tribble(
+  ~raw,        ~clean,         ~fmt,
+  "nobs",      "Observations", 0,
+  "r.squared", "R$^2$",        3
+)
+
+# FE rows (todas Yes)
+add_rows <- tibble::tibble(
+  term = c("Municipality FE", "Year FE", "Election type FE", "EB weights"),
+  m1 = c("Yes", "Yes", "Yes", "No"),
+  m2 = c("Yes", "Yes", "Yes", "Yes"),
+  m3 = c("Yes", "Yes", "Yes", "Yes"),
+  m4 = c("Yes", "Yes", "Yes", "Yes"),
+  m5 = c("Yes", "Yes", "Yes", "Yes")
+)
+names(add_rows) <- c(" ", "(1)", "(2)", "(3)", "(4)", "(5)")
+
+# Modelos votos en blanco 36
+models_blank <- list(
+  "(1)" = event_b2_36,
+  "(2)" = event_b2_36_eb2_1,
+  "(3)" = event_b2_36_eb2_2,
+  "(4)" = event_b2_36_eb2_4,
+  "(5)" = event_b2_36_eb2_5
+)
+
+# Generar LaTeX para votos en blanco
+tex <- modelsummary(
+  models_blank,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Event Study Estimates on Blank Vote Share Under Entropy Balancing Weights — Spanish Share 1936-1955}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_b2_36.tex")
+
+# Modelos voto en blanco 56
+models_blank_56 <- list(
+  "(1)" = event_b2_56,
+  "(2)" = event_b2_56_eb2_1,
+  "(3)" = event_b2_56_eb2_2,
+  "(4)" = event_b2_56_eb2_4,
+  "(5)" = event_b2_56_eb2_5
+)
+
+cm <- c(
+  "anio::2011:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2011",
+  "anio::2013:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2013",
+  "anio::2015:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2015",
+  "anio::2017:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2017",
+  "anio::2019:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2019",
+  "anio::2023:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2023",
+  "anio::2025:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2025"
+)
+
+# Generar LaTeX para votos en blanco
+tex <- modelsummary(
+  models_blank_56,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Event Study Estimates on Blank Vote Share Under Entropy Balancing Weights — Spanish Share 1956-1978}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_b2_56.tex")
+
 }
 
 ### 4.2 Participación ###
 {
+## Data versión 1
+  
   # Set de pesos 1
   event_p2_36_eb1 <- feols(participacion ~ i(anio, share_1936_1955, ref = 2021) |
                              mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb, weights = ~ w_1936_1)
@@ -1863,7 +2219,7 @@ modelsummary(
   summary(event_p2_36_eb8)
   summary(event_p2_56_eb8)
   
-# Exporto los resultados
+## Exporto los resultados de los event study
 modelsummary(
   list(
     "No EB (36-55)" = event_p2_36,
@@ -1933,6 +2289,347 @@ modelsummary(
   notes = "Standard errors clustered at the municipality level in parentheses."
 )
 
+## Data versión 2
+
+# Set de pesos 1
+event_p2_36_eb2_1 <- feols(participacion ~ i(anio, share_1936_1955, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1936_1)
+event_p2_56_eb2_1 <- feols(participacion ~ i(anio, share_1956_1978, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1956_1)
+# Resumen pre balance
+summary(event_p2_36)
+summary(event_p2_56)
+# Resumen post balance
+summary(event_p2_36_eb2_1)
+summary(event_p2_56_eb2_1)
+iplot(event_p2_36_eb2_1)
+iplot(event_p2_56_eb2_1)
+iplot(event_p2_36)
+
+att_p2_eb2_1_36 <- feols(participacion ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1936_1)
+att_p2_eb2_1_56 <- feols(participacion ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1956_1)
+summary(att_p2_eb2_1_36)
+summary(att_p2_eb2_1_56)
+summary(att_p2)
+
+# Set de pesos 2
+event_p2_36_eb2_2 <- feols(participacion ~ i(anio, share_1936_1955, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1936_2)
+event_p2_56_eb2_2 <- feols(participacion ~ i(anio, share_1956_1978, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1956_2)
+
+iplot(event_p2_36_eb2_2)
+iplot(event_p2_56_eb2_2)
+
+att_p2_eb2_2_36 <- feols(participacion ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1936_2)
+att_p2_eb2_2_56 <- feols(participacion ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1956_2)
+summary(att_p2_eb2_1_36)
+summary(att_p2_eb2_1_56)
+
+# Set de pesos 4
+event_p2_36_eb2_4 <- feols(participacion ~ i(anio, share_1936_1955, ref = 2021) |
+                            mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1936_4)
+event_p2_56_eb2_4 <- feols(participacion ~ i(anio, share_1956_1978, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1956_4)
+
+iplot(event_p2_36_eb2_4)
+iplot(event_p2_56_eb2_4)
+
+att_p2_eb2_4_36 <- feols(participacion ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1936_4)
+att_p2_eb2_4_56 <- feols(participacion ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1956_4)
+summary(att_p2_eb2_4_36)
+summary(att_p2_eb2_4_56) # cambia mucho el coeficiente de la segunda ventana
+
+# Set de pesos 5
+event_p2_36_eb2_5 <- feols(participacion ~ i(anio, share_1936_1955, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1936_5)
+event_p2_56_eb2_5 <- feols(participacion ~ i(anio, share_1956_1978, ref = 2021) |
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1956_5)
+
+iplot(event_p2_36_eb2_5)
+iplot(event_p2_56_eb2_5)
+
+att_p2_eb2_5_36 <- feols(participacion ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1936_5)
+att_p2_eb2_5_56 <- feols(participacion ~ share_1936_1955:post  + share_1956_1978:post | 
+                           mun_code + anio + tipo_eleccion, data = dip_nac_mun_eb2, weights = ~ w_p_1956_5)
+summary(att_p2_eb2_5_36)
+summary(att_p2_eb2_5_56) # cambia mucho el coeficiente de la segunda ventana
+
+## Exporto los resultados de los att (versión 2)
+
+# Mapeo de coeficientes a etiquetas
+cm <- c(
+  "share_1936_1955:post" = "Spanish share 1936-1955$\\times$post",
+  "post:share_1956_1978" = "Spanish share 1956-1978$\\times$post"
+)
+
+# Estadísticas: Obs y R^2
+gm <- tibble::tribble(
+  ~raw,        ~clean,         ~fmt,
+  "nobs",      "Observations", 0,
+  "r.squared", "R$^2$",        3
+)
+
+# FE rows (todas Yes)
+add_rows <- tibble::tibble(
+  term = c("Municipality FE", "Year FE", "Election type FE"),
+  m1 = c("Yes", "Yes", "Yes"),
+  m2 = c("Yes", "Yes", "Yes"),
+  m3 = c("Yes", "Yes", "Yes"),
+  m4 = c("Yes", "Yes", "Yes"),
+  m5 = c("Yes", "Yes", "Yes"),
+  m6 = c("Yes", "Yes", "Yes"),
+  m7 = c("Yes", "Yes", "Yes"),
+  m8 = c("Yes", "Yes", "Yes")
+)
+names(add_rows) <- c(" ", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)")
+
+# Modelos votos en blanco 36
+models_blank <- list(
+  "(1)" = att_p2_eb2_1_36,
+  "(2)" = att_p2_eb2_1_56,
+  "(3)" = att_p2_eb2_2_36,
+  "(4)" = att_p2_eb2_2_56,
+  "(5)" = att_p2_eb2_4_36,
+  "(6)" = att_p2_eb2_4_56,
+  "(7)" = att_p2_eb2_5_36,
+  "(8)" = att_p2_eb2_5_56
+)
+
+# Generar LaTeX para votos en blanco
+tex <- modelsummary(
+  models_blank,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Effect on Voter Turnout Under Entropy Balancing Weights}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is voter turnout. Columns (1), (3), (5), and (7) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (2), (4), (6), and (8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1966–1978. Column (1) and (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) and (4) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (5) and (6) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (7) and (8) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_p2_att.tex")
+
+## Exporto los resultados de los event study
+cm <- c(
+  "anio::2011:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2011",
+  "anio::2013:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2013",
+  "anio::2015:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2015",
+  "anio::2017:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2017",
+  "anio::2019:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2019",
+  "anio::2023:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2023",
+  "anio::2025:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2025"
+)
+
+# Estadísticas: Obs y R^2
+gm <- tibble::tribble(
+  ~raw,        ~clean,         ~fmt,
+  "nobs",      "Observations", 0,
+  "r.squared", "R$^2$",        3
+)
+
+# FE rows (todas Yes)
+add_rows <- tibble::tibble(
+  term = c("Municipality FE", "Year FE", "Election type FE", "EB weights"),
+  m1 = c("Yes", "Yes", "Yes", "No"),
+  m2 = c("Yes", "Yes", "Yes", "Yes"),
+  m3 = c("Yes", "Yes", "Yes", "Yes"),
+  m4 = c("Yes", "Yes", "Yes", "Yes"),
+  m5 = c("Yes", "Yes", "Yes", "Yes"),
+)
+names(add_rows) <- c(" ", "(1)", "(2)", "(3)", "(4)", "(5)")
+
+# Modelos participacion 36
+models_blank <- list(
+  "(1)" = event_p2_36,
+  "(2)" = event_p2_36_eb2_1,
+  "(3)" = event_p2_36_eb2_2,
+  "(4)" = event_p2_36_eb2_4,
+  "(5)" = event_p2_36_eb2_5
+)
+
+# Generar LaTeX para votos en blanco
+tex <- modelsummary(
+  models_blank,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Event Study Estimates on Voter Turnout Under Entropy Balancing Weights — Spanish Share 1936-1955}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is voter turnout. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_p2_36.tex")
+
+# Modelos voto en participacion 56
+models_blank_56 <- list(
+  "(1)" = event_p2_56,
+  "(2)" = event_p2_56_eb2_1,
+  "(3)" = event_p2_56_eb2_2,
+  "(4)" = event_p2_56_eb2_4,
+  "(5)" = event_p2_56_eb2_5
+)
+
+cm <- c(
+  "anio::2011:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2011",
+  "anio::2013:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2013",
+  "anio::2015:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2015",
+  "anio::2017:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2017",
+  "anio::2019:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2019",
+  "anio::2023:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2023",
+  "anio::2025:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2025"
+)
+
+# Generar LaTeX para votos en blanco
+tex <- modelsummary(
+  models_blank_56,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Event Study Estimates on Voter Turnout Under Entropy Balancing Weights — Spanish Share 1956-1978}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is voter turnout. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_p2_56.tex")
 }
 
 ### 4.3 Exporto los att de los mejores set ###

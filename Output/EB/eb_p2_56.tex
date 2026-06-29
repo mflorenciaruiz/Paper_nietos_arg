@@ -1,0 +1,37 @@
+\begin{table}
+\caption{Event Study Estimates on Voter Turnout Under Entropy Balancing Weights — Spanish Share 1956-1978}
+\renewcommand{\arraystretch}{1.25}
+\centering
+\begin{tabular}[t]{lccccc}
+\hline
+  & (1) & (2) & (3) & (4) & (5)\\
+\hline
+Spanish share 1936-1955 $\times$ 2011 & 5.170** & -0.000 & 0.000 & 0.000 & -0.000\\
+ & (2.070) & (4.202) & (3.450) & (4.012) & (4.174)\\
+Spanish share 1936-1955 $\times$ 2013 & 1.330 & -0.000 & -0.000 & -0.000 & 0.000\\
+ & (1.741) & (2.224) & (2.855) & (2.333) & (2.276)\\
+Spanish share 1936-1955 $\times$ 2015 & -1.438 & -0.000 & 0.000 & -0.000 & -0.000\\
+ & (1.643) & (1.625) & (1.587) & (1.744) & (1.531)\\
+Spanish share 1936-1955 $\times$ 2017 & -3.714** & -0.000 & -0.000 & -0.000 & -0.000\\
+ & (1.882) & (1.751) & (2.404) & (1.761) & (1.934)\\
+Spanish share 1936-1955 $\times$ 2019 & 0.449 & -0.000 & 0.000 & 0.000 & 0.000\\
+ & (1.362) & (2.430) & (2.399) & (2.498) & (2.474)\\
+Spanish share 1936-1955 $\times$ 2023 & 1.898* & 1.374 & 0.442 & 1.107 & 1.341\\
+ & (1.121) & (1.533) & (1.570) & (1.597) & (1.500)\\
+Spanish share 1936-1955 $\times$ 2025 & 2.131 & 3.855* & 2.777 & 3.234 & 3.644\\
+ & (1.567) & (2.286) & (2.469) & (2.201) & (2.382)\\
+
+\addlinespace
+Observations & 4680 & 4680 & 4680 & 4680 & 4680\\
+R$^2$ & 0.743 & 0.764 & 0.760 & 0.761 & 0.758\\
+Municipality FE & Yes & Yes & Yes & Yes & Yes\\
+Year FE & Yes & Yes & Yes & Yes & Yes\\
+Election type FE & Yes & Yes & Yes & Yes & Yes\\
+EB weights & No & Yes & Yes & Yes & Yes\\
+\hline
+\end{tabular}
+\vspace{0.4em}
+\begin{minipage}{\textwidth}
+\footnotesize Notes: The dependent variable is voter turnout. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.
+\end{minipage}
+\end{table}
