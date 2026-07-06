@@ -1128,8 +1128,7 @@ rename _weight w_m_1956_9
 set graphics off
 	* Distrubución de pesos de 1936
 local graphs36 ""
-*forvalues i = 1/9 {
-foreach i in 1 2 4 5 {
+forvalues i = 1/9 {
 	histogram w_b_1936_`i', percent title("Covariate set `i'", size(*0.8)) ///
 	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1936_b_`i', replace)
     local graphs36 "`graphs36' hist_w1936_b_`i'"
@@ -1139,10 +1138,23 @@ graph combine `graphs36', cols(3) title("Distribution of EBCT weights", size(med
                           name(hist_weights_b_1936, replace)
 graph export "$output_eb/hist_weights_b_1936.png", replace width(2400)
 
+preserve
+	* Exporto solo los que voy a usar
+	drop w_b_1936_3
+	rename w_b_1936_4 w_b_1936_3
+	rename w_b_1936_5 w_b_1936_4
+		foreach i in 1 2 3 4 {
+			histogram w_b_1936_`i', percent  name(hist_w1936_b_`i', replace) ///
+			          xtitle("EBCT weight", size(vlarge)) ///
+			          ytitle("Percent", size(vlarge))  fcolor(gs12) lcolor(gs8)  ///
+			          xlabel(, labsize(vlarge)) ylabel(0(10)50, labsize(vlarge)) 
+			graph export "$output_eb/hist_weights_`i'_b_1936.png", replace width(2400)
+		}
+restore
+
 	* Distrubución de pesos de 1956
 local graphs56 ""
-*forvalues i = 1/9 {
-foreach i in 1 2 4 5 {
+forvalues i = 1/9 {
     histogram w_b_1956_`i', percent title("Covariate set `i'", size(*0.8)) ///
 	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1956_b_`i', replace)
     local graphs56 "`graphs56' hist_w1956_b_`i'"
@@ -1152,11 +1164,24 @@ graph combine `graphs56', cols(3) title("Distribution of EBCT weights: share 195
                                   name(hist_weights_b_1956, replace)
 graph export "$output_eb/hist_weights_b_1956.png", replace width(2400)
 
+preserve
+	* Exporto solo los que voy a usar
+	drop w_b_1956_3
+	rename w_b_1956_4 w_b_1956_3
+	rename w_b_1956_5 w_b_1956_4
+		foreach i in 1 2 3 4 {
+			histogram w_b_1956_`i', percent name(hist_w1956_b_`i', replace) ///
+			          xtitle("EBCT weight", size(vlarge)) ///
+					  ytitle("Percent", size(vlarge))  fcolor(gs12) lcolor(gs8)  ///
+					  xlabel(, labsize(vlarge)) ylabel(0(10)50, labsize(vlarge)) 
+			graph export "$output_eb/hist_weights_`i'_b_1956.png", replace width(2400)
+		}
+restore
+
 *** Turnout ***
 	* Distrubución de pesos de 1936
 local graphs36 ""
-*forvalues i = 1/9 {
-foreach i in 1 2 4 5 {
+forvalues i = 1/9 {
 	histogram w_p_1936_`i', percent title("Covariate set `i'", size(*0.8)) ///
 	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1936_p_`i', replace)
     local graphs36 "`graphs36' hist_w1936_p_`i'"
@@ -1166,10 +1191,23 @@ graph combine `graphs36', cols(3) title("Distribution of EBCT weights", size(med
                           name(hist_weights_p_1936, replace)
 graph export "$output_eb/hist_weights_p_1936.png", replace width(2400)
 
+preserve
+	* Exporto solo los que voy a usar
+	drop w_p_1936_3
+	rename w_p_1936_4 w_p_1936_3
+	rename w_p_1936_5 w_p_1936_4
+		foreach i in 1 2 3 4 {
+			histogram w_p_1936_`i', percent name(hist_w1936_p_`i', replace) ///
+			          xtitle("EBCT weight", size(vlarge)) /// 
+			          ytitle("Percent", size(vlarge))  fcolor(gs12) lcolor(gs8)  ///
+			          xlabel(, labsize(vlarge)) ylabel(0(10)40, labsize(vlarge)) 
+			graph export "$output_eb/hist_weights_`i'_p_1936.png", replace width(2400)
+		}
+restore
+
 	* Distrubución de pesos de 1956
 local graphs56 ""
-*forvalues i = 1/9 {
-foreach i in 1 2 4 5 {
+forvalues i = 1/9 {
     histogram w_p_1956_`i', percent title("Covariate set `i'", size(*0.8)) ///
 	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1956_p_`i', replace)
     local graphs56 "`graphs56' hist_w1956_p_`i'"
@@ -1179,11 +1217,24 @@ graph combine `graphs56', cols(3) title("Distribution of EBCT weights: share 195
                                   name(hist_weights_p_1956, replace)
 graph export "$output_eb/hist_weights_p_1956.png", replace width(2400)
 
+preserve
+	* Exporto solo los que voy a usar
+	drop w_p_1956_3
+	rename w_p_1956_4 w_p_1956_3
+	rename w_p_1956_5 w_p_1956_4
+		foreach i in 1 2 3 4 {
+			histogram w_p_1956_`i', percent name(hist_w1956_p_`i', replace) ///
+			           xtitle("EBCT weight", size(vlarge)) ///
+			          ytitle("Percent", size(vlarge))  fcolor(gs12) lcolor(gs8)  ///
+			          xlabel(, labsize(vlarge)) ylabel(0(10)40, labsize(vlarge)) 
+			graph export "$output_eb/hist_weights_`i'_p_1956.png", replace width(2400)
+		}
+restore
+
 *** Migration intention ***
 	* Distrubución de pesos de 1936
 local graphs36 ""
-*foreach i in 1 3 4 5 7 8 9 {
-foreach i in 1 4 5 {
+foreach i in 1 3 4 5 7 8 9 {
 	histogram w_m_1936_`i', percent title("Covariate set `i'", size(*0.8)) ///
 	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1936_m_`i', replace)
     local graphs36 "`graphs36' hist_w1936_m_`i'"
@@ -1193,18 +1244,46 @@ graph combine `graphs36', cols(3) title("Distribution of EBCT weights", size(med
                           name(hist_weights_m_1936, replace)
 graph export "$output_eb/hist_weights_m_1936.png", replace width(2400)
 
+preserve
+	* Exporto solo los que voy a usar
+	drop w_m_1936_3
+	rename w_m_1936_4 w_m_1936_3
+	rename w_m_1936_5 w_m_1936_4
+		foreach i in 1 3 4 {
+			histogram w_m_1936_`i', percent name(hist_w1936_m_`i', replace) ///
+			          xtitle("EBCT weight", size(vlarge)) ///
+			          ytitle("Percent", size(vlarge))  fcolor(gs12) lcolor(gs8)  ///
+			          xlabel(, labsize(vlarge)) ylabel(0(10)85, labsize(vlarge)) 
+			graph export "$output_eb/hist_weights_`i'_m_1936.png", replace width(2400)
+		}
+restore
+
 	* Distrubución de pesos de 1956
 local graphs56 ""
-*foreach i in 1 2 4 5 6 7 8 9 {
-foreach i in 1 4 5 {
+foreach i in 1 2 4 5 6 7 8 9 {
     histogram w_m_1956_`i', percent title("Covariate set `i'", size(*0.8)) ///
 	                        xtitle("EBCT weight") ytitle("Percent") name(hist_w1956_m_`i', replace)
     local graphs56 "`graphs56' hist_w1956_m_`i'"
 }
 graph combine `graphs56', cols(3) title("Distribution of EBCT weights: share 1956-1978", size(medsmall)) ///
-						  subtitle("Treatment: spanish share 1956-1978 - Outcome: intention to migrate", size(medsmall)) ///
+						  subtitle("Treatment: spanish share 1956-1978 - Outcome: intention to migrate", ///
+						  size(medsmall)) ///
                           name(hist_weights_m_1956, replace)
 graph export "$output_eb/hist_weights_m_1956.png", replace width(2400)
+
+preserve
+	* Exporto solo los que voy a usar
+	drop w_m_1956_3
+	rename w_m_1956_4 w_m_1956_3
+	rename w_m_1956_5 w_m_1956_4
+		foreach i in 1 3 4 {
+			histogram w_m_1956_`i', percent name(hist_w1956_m_`i', replace) ///
+			           xtitle("EBCT weight", size(vlarge)) ///
+			          ytitle("Percent", size(vlarge))  fcolor(gs12) lcolor(gs8)  ///
+			          xlabel(, labsize(vlarge)) ylabel(0(10)85, labsize(vlarge)) 
+			graph export "$output_eb/hist_weights_`i'_m_1956.png", replace width(2400)
+		}
+restore
 
 set graphics on
 

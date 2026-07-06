@@ -3667,15 +3667,25 @@ dip_nac_mun %>%
 # Indicador económico
 
   # Divido en sub-muestras en base a terciles del share de personas desempleadas
-feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
-        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
-        filter(t_unemp_2010 == 1))
-feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
-        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
-        filter(t_unemp_2010 == 2))
-feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
-        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
-        filter(t_unemp_2010 == 3))
+att_b2_ut1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                       mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                       filter(t_unemp_2010 == 1))
+att_b2_ut2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                      mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                      filter(t_unemp_2010 == 2))
+att_b2_ut3 <-  feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                       mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                       filter(t_unemp_2010 == 3))
+
+att_b2_peat1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                      mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                      filter(t_pea_2010 == 1))
+att_b2_peat2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                      mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                      filter(t_pea_2010 == 2))
+att_b2_peat3 <-  feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                       mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                       filter(t_pea_2010 == 3))
 
 # Características políticas
 
@@ -3806,6 +3816,30 @@ att_p2_at3 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post 
                       mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
                       filter(t_med_dage_2010 == 3))
 
+# Características económicas
+
+  # Divido en sub-muestras en base a terciles del share de personas desempleadas
+att_p2_ut1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                       mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                       filter(t_unemp_2010 == 1))
+att_p2_ut2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                      mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                      filter(t_unemp_2010 == 2))
+att_p2_ut3 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                      mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                      filter(t_unemp_2010 == 3))
+
+  # Divido en sub-muestras en abse a terciles de la pea
+att_p2_peat1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                       mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                       filter(t_pea_2010 == 1))
+att_p2_peat2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post |
+                       mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                       filter(t_pea_2010 == 2))
+att_p2_peat3 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post |
+                       mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                       filter(t_pea_2010 == 3))
+
 # Características políticas
 
   # Divido en sub-muestras en base a terciles del share de votos a la izquierda amplia
@@ -3837,13 +3871,15 @@ att_p2_alt3 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post
 {
 ## Tabla para votos en blanco
 
-make_panel_tabular <- function(models, group_names, group_sizes, panel_label) {
+make_panel_tabular <- function(models, group_names, group_sizes, panel_label,
+                               data = NULL, panel_vars = NULL, digits = 2) {
   cm <- c("share_1936_1955:post" = "Spanish share 1936-1955$\\times$Post",
           "post:share_1956_1978" = "Spanish share 1956-1978$\\times$Post")
   gm <- tibble::tribble(
     ~raw,        ~clean,         ~fmt,
-    "nobs",      "Observations", 0,
-    "r.squared", "R$^2$",        3)
+    "nobs",      "Observations", 0
+    #"r.squared", "R$^2$",        3
+    )
   
   # Calcular p-valor del test de igualdad para cada modelo
   p_values  <- sapply(models, get_p_equal)
@@ -3853,19 +3889,47 @@ make_panel_tabular <- function(models, group_names, group_sizes, panel_label) {
   yes_mat  <- matrix("Yes", nrow = 3, ncol = length(models))
   data_mat <- rbind(p_strings, yes_mat)
   
+  # Descomentar si quiero poner los FE tambien en la tabla
+  #add_rows <- cbind(
+  #  data.frame(term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
+  #                      "Year FE", "Municipality FE", "Election Type FE"),
+  #             stringsAsFactors = FALSE),
+  #  as.data.frame(data_mat, stringsAsFactors = FALSE))
+  #names(add_rows) <- c("term", names(models))
+  
+  # add_rows: solo la fila del p-valor del test de igualdad
   add_rows <- cbind(
-    data.frame(term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
-                        "Year FE", "Municipality FE", "Election Type FE"),
+    data.frame(term = "$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
                stringsAsFactors = FALSE),
-    as.data.frame(data_mat, stringsAsFactors = FALSE))
+    as.data.frame(matrix(p_strings, nrow = 1), stringsAsFactors = FALSE))
   names(add_rows) <- c("term", names(models))
+  
+  # Fila con los rangos de cada tercil (si se pasan data y panel_vars)
+  if (!is.null(data) && !is.null(panel_vars)) {
+    cutoff_strings <- unlist(lapply(seq_along(panel_vars), function(i) {
+      v <- panel_vars[i]
+      d <- if (length(digits) == 1) digits else digits[i]
+      q <- quantile(data[[v]], probs = c(1/3, 2/3, 1), na.rm = TRUE)
+      c(sprintf("$%.*f$", d, q[1]),
+        sprintf("$%.*f$", d, q[2]),
+        sprintf("$%.*f$", d, q[3]))
+    }))
+    
+    cutoff_row <- cbind(
+      data.frame(term = "Tercile upper bound", stringsAsFactors = FALSE),
+      as.data.frame(matrix(cutoff_strings, nrow = 1), stringsAsFactors = FALSE))
+    names(cutoff_row) <- names(add_rows)
+    
+    add_rows <- rbind(add_rows, cutoff_row)
+  }
   
   tex <- modelsummary(
     models, output = "latex",
     coef_map = cm, gof_map = gm,
     estimate = "{estimate}{stars}", statistic = "({std.error})",
     stars = c("*" = .10, "**" = .05, "***" = .01),
-    add_rows = add_rows, escape = FALSE)
+    add_rows = add_rows, 
+    escape = FALSE)
   
   lines <- strsplit(tex, "\n")[[1]]
   ncols <- 1 + length(models)
@@ -3894,11 +3958,10 @@ make_panel_tabular <- function(models, group_names, group_sizes, panel_label) {
   if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
   if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
   
-  # Fila vacía arriba del obs.
+  # \addlinespace arriba de Observations
   obs <- grep("Observations", lines)
   if (length(obs) >= 1) {
-    empty <- paste0(strrep(" &", ncols - 1), " \\\\")
-    lines <- c(lines[1:(obs[1] - 1)], empty, lines[obs[1]:length(lines)])
+    lines <- c(lines[1:(obs[1] - 1)], "\\addlinespace", lines[obs[1]:length(lines)])
   }
   
   # Quitar \begin{table}, \end{table}, \centering, \caption: dejar solo el tabular
@@ -3932,19 +3995,31 @@ panel_B_models <- list(
   "T1 "  = att_b2_at1,      "T2 "  = att_b2_at2,      "T3 "  = att_b2_at3)
 
 panel_C_models <- list(
+  "T1"   = att_b2_ut1,      "T2" = att_b2_ut2,   "T3"   = att_b2_ut3,
+  "T1 "  = att_b2_peat1, "T2 "  = att_b2_peat2, "T3 "  = att_b2_peat3)
+
+panel_D_models <- list(
   "T1"   = att_b2_izt1, "T2"   = att_b2_izt2, "T3"   = att_b2_izt3,
-  "T1 "  = att_b2_alt1,      "T2 "  = att_b2_alt2,      "T3 "  = att_b2_alt3)
+  "T1 "  = att_b2_alt1, "T2 "  = att_b2_alt2, "T3 "  = att_b2_alt3)
 
 panel_A <- make_panel_tabular(
-  panel_A_models,
-  c("Pop. density", "Female pop."),
-  c(3, 3)
+  models = panel_A_models,
+  group_names = c("Pop. density", "Female pop."),
+  group_sizes = c(3, 3),
+  panel_label = "Panel A",
+  data        = data_eff_het,
+  panel_vars  = c("popdensgeo2_2010", "share_female_2010"),
+  digits      = c(3, 3)   
   )
 
 panel_B <- make_panel_tabular(
-  panel_B_models,
-  c("Mean years educ.", "Median age"),
-  c(3, 3)
+  models      = panel_B_models,
+  group_names = c("Mean years educ.", "Median age"),
+  group_sizes = c(3, 3),
+  panel_label = "Panel B",
+  data        = data_eff_het,
+  panel_vars  = c("mean_yrschool_2010", "median_age_2010"),
+  digits      = c(3, 3)
   )
 # Sacar la hline de arriba del panel B
 first_hline_B <- grep("^\\\\hline$", panel_B)[1]
@@ -3953,15 +4028,119 @@ if (!is.na(first_hline_B)) {
 }
 
 panel_C <- make_panel_tabular(
-  panel_C_models,
-  c("Left vote share", "Ideological alternation"),
-  c(3, 3)
+  models      = panel_C_models,
+  group_names = c("Share in labor force", "Share unemployed"),
+  group_sizes = c(3, 3),
+  panel_label = "Panel D",
+  data        = data_eff_het,
+  panel_vars  = c("share_laborforce_2010", "share_unemployed_2010"),
+  digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel C
 first_hline_C <- grep("^\\\\hline$", panel_C)[1]
 if (!is.na(first_hline_C)) {
   panel_C <- panel_C[-first_hline_C]
 }
+
+panel_D <- make_panel_tabular(
+  models      = panel_D_models,
+  group_names = c("Left vote share", "Ideological alternation"),
+  group_sizes = c(3, 3),
+  panel_label = "Panel C",
+  data        = data_eff_het,
+  panel_vars  = c("share_izq_pre_avg", "share_alt_pre_avg"),
+  digits      = c(3, 3)
+)
+# Sacar la hline de arriba del panel D
+first_hline_D <- grep("^\\\\hline$", panel_D)[1]
+if (!is.na(first_hline_D)) {
+  panel_D <- panel_D[-first_hline_D]
+}
+
+# Función para computar test de significativdad conjunta entre terciles
+compute_joint_test <- function(mod_T1, mod_T2, mod_T3, coef_name) {
+  b_T1 <- coef(mod_T1)[coef_name]
+  b_T2 <- coef(mod_T2)[coef_name]
+  b_T3 <- coef(mod_T3)[coef_name]
+  
+  v_T1 <- vcov(mod_T1)[coef_name, coef_name]
+  v_T2 <- vcov(mod_T2)[coef_name, coef_name]
+  v_T3 <- vcov(mod_T3)[coef_name, coef_name]
+  
+  # Vector de contrastes (T2 - T1) y (T3 - T1)
+  delta <- c(b_T2 - b_T1, b_T3 - b_T1)
+  
+  # Matriz de varianzas-covarianzas de delta (samples independientes)
+  V_delta <- matrix(c(v_T1 + v_T2, v_T1,
+                      v_T1,        v_T1 + v_T3),
+                    nrow = 2, byrow = TRUE)
+  
+  # Estadistico de Wald y p-valor de chi-cuadrado con 2 gl
+  W <- as.numeric(t(delta) %*% solve(V_delta) %*% delta)
+  as.numeric(pchisq(W, df = 2, lower.tail = FALSE))
+}
+
+# Función para cosntruir nota de test de igualdad de coeficientes entre terciles para todos los paneles
+build_joint_tests_note <- function(panels_list, panel_labels_list) {
+  # panels_list: lista de listas de modelos (una entrada por panel)
+  # panel_labels_list: lista de vectores con nombres de variables (una entrada por panel)
+  
+  parts <- character()
+  
+  for (p in seq_along(panels_list)) {
+    panel_models <- panels_list[[p]]
+    panel_labels <- panel_labels_list[[p]]
+    n_vars       <- length(panel_labels)
+    
+    for (v in seq_len(n_vars)) {
+      idx_T1 <- (v - 1) * 3 + 1
+      idx_T2 <- (v - 1) * 3 + 2
+      idx_T3 <- (v - 1) * 3 + 3
+      
+      p_36 <- compute_joint_test(panel_models[[idx_T1]],
+                                 panel_models[[idx_T2]],
+                                 panel_models[[idx_T3]],
+                                 "share_1936_1955:post")
+      p_56 <- compute_joint_test(panel_models[[idx_T1]],
+                                 panel_models[[idx_T2]],
+                                 panel_models[[idx_T3]],
+                                 "post:share_1956_1978")
+      
+      parts <- c(parts, sprintf("%s (%.3f / %.3f)", 
+                                panel_labels[v], p_36, p_56))
+    }
+  }
+  
+  paste(parts, collapse = "; ")
+}
+
+# Corro las funciones para hacer los test y crear la nota
+panels_list <- list(panel_A_models, panel_B_models, panel_C_models, panel_D_models)
+panel_labels_list <- list(
+  c("Pop.\\ density",       "Female pop."),
+  c("Mean years educ.",     "Median age"),
+  c("Share in labor force", "Share unemployed"),
+  c("Left vote share",      "Ideological alternation")
+)
+joint_tests_text <- build_joint_tests_note(panels_list, panel_labels_list)
+
+nota_completa <- paste0(
+  "\\caption*{\\footnotesize Notes: The dependent variable is the share of blank votes. ",
+  "Each column reports estimates for the subsample corresponding to a tercile ",
+  "of the specified municipal-level variable. Tercile upper bounds are shown ",
+  "at the bottom of each panel. All specifications include municipality, year, ",
+  "and election-type fixed effects. These specifications do not include a ",
+  "lagged version of the dependent variable as a control. Standard errors ",
+  "clustered at the municipality level in parentheses (104 clusters). ",
+  "Joint Wald tests of the null hypothesis that the coefficient on Spanish ",
+  "share $\\times$ Post is equal across the three terciles ",
+  "($H_0: \\beta_{T_1} = \\beta_{T_2} = \\beta_{T_3}$), computed under the ",
+  "independence of the tercile subsamples and following a $\\chi^2$ ",
+  "distribution with 2 degrees of freedom, yield the following p-values, ",
+  "reported as ($\\beta^{1936-1955}$ / $\\beta^{1956-1978}$) for each ",
+  "variable: ", joint_tests_text, ". ",
+  "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
+)
 
 # Combinar en una sola tabla con un único caption y una única nota
 final <- c(
@@ -3974,13 +4153,147 @@ final <- c(
   panel_A,
   panel_B,
   panel_C,
+  panel_D,
   "\\addvspace{0.3em}",
   "\\captionsetup{font=footnotesize, justification=justified, singlelinecheck=false}",
-  "\\caption*{Notes: The dependent variable is the share of blank votes. Each column reports estimates for the subsample corresponding to a tercile of the following municipal-level variables: population density; share of female population; average years of education; median age; average left-wing vote share and ideological alternation rate, both measured over 2011–2021. Standard errors clustered at the municipality level are reported in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}",
+  nota_completa,
   "\\end{table}"
 )
 
-writeLines(final, "Output/blank_votes_subsamples.tex")
+writeLines(final, "Output/blank_votes_subsamples_v2.tex")
+
+## Tabla para test de coeficietes por tercil - Votos en blanco
+
+# Función para calcular p-valor del test de igualdad de coeficientes entre dos modelos
+compute_pairwise_tests <- function(mod_T1, mod_T2, mod_T3, coef_name) {
+  test_pair <- function(mA, mB) {
+    bA <- coef(mA)[coef_name]
+    bB <- coef(mB)[coef_name]
+    vA <- vcov(mA)[coef_name, coef_name]
+    vB <- vcov(mB)[coef_name, coef_name]
+    z  <- (bB - bA) / sqrt(vA + vB)
+    2 * pnorm(-abs(z))
+  }
+  c(
+    T1_T2 = test_pair(mod_T1, mod_T2),
+    T1_T3 = test_pair(mod_T1, mod_T3),
+    T2_T3 = test_pair(mod_T2, mod_T3)
+  )
+}
+
+make_pvalue_panel <- function(models, group_names, group_sizes = c(3, 3)) {
+  
+  n_vars <- length(models) / 3
+  n_data_cols <- sum(group_sizes)
+  
+  # 1) Computar todos los p-valores
+  p_matrix <- matrix("", nrow = 2, ncol = n_data_cols)
+  
+  for (v in seq_len(n_vars)) {
+    idx_T1 <- (v - 1) * 3 + 1
+    idx_T2 <- (v - 1) * 3 + 2
+    idx_T3 <- (v - 1) * 3 + 3
+    
+    p_36 <- compute_pairwise_tests(models[[idx_T1]], models[[idx_T2]],
+                                   models[[idx_T3]], "share_1936_1955:post")
+    p_56 <- compute_pairwise_tests(models[[idx_T1]], models[[idx_T2]],
+                                   models[[idx_T3]], "post:share_1956_1978")
+    
+    col_start <- (v - 1) * 3 + 1
+    p_matrix[1, col_start:(col_start + 2)] <- sprintf("%.3f", p_36)
+    p_matrix[2, col_start:(col_start + 2)] <- sprintf("%.3f", p_56)
+  }
+  
+  # 2) Construir el LaTeX del panel
+  lines <- character()
+  col_spec <- paste0("l@{\\extracolsep{\\fill}}",
+                     paste(rep("c", n_data_cols), collapse = ""))
+  lines <- c(lines, paste0("\\begin{tabular*}{\\textwidth}{", col_spec, "}"))
+  lines <- c(lines, "\\hline")
+  
+  # Header agrupado (multicolumn con nombres de variables)
+  mc_parts <- paste0("\\multicolumn{", group_sizes, "}{c}{", group_names, "}")
+  lines <- c(lines, paste0(" & ", paste(mc_parts, collapse = " & "), " \\\\"))
+  
+  # cmidrules bajo los grupos
+  cmids <- c(); pos <- 2
+  for (gs in group_sizes) {
+    cmids <- c(cmids, paste0("\\cmidrule(l){", pos, "-", pos + gs - 1, "}"))
+    pos <- pos + gs
+  }
+  lines <- c(lines, paste(cmids, collapse = " "))
+  
+  # Sub-headers con los pares de comparacion
+  sub_headers <- rep(c("$T_1 = T_2$", "$T_1 = T_3$", "$T_2 = T_3$"), n_vars)
+  lines <- c(lines, paste0(" & ", paste(sub_headers, collapse = " & "), " \\\\"))
+  lines <- c(lines, "\\hline")
+  
+  # Filas de datos (una por cohorte)
+  row_36 <- paste0("Spanish share 1936-1955$\\times$Post & ", 
+                   paste(p_matrix[1,], collapse = " & "), " \\\\")
+  row_56 <- paste0("Spanish share 1956-1978$\\times$Post & ", 
+                   paste(p_matrix[2,], collapse = " & "), " \\\\")
+  lines <- c(lines, row_36, row_56)
+  
+  lines <- c(lines, "\\hline")
+  lines <- c(lines, "\\end{tabular*}")
+  
+  lines
+}
+
+panel_A_pv <- make_pvalue_panel(panel_A_models, 
+                                c("Pop. density", "Female pop."))
+
+panel_B_pv <- make_pvalue_panel(panel_B_models,
+                                c("Mean years educ.", "Median age"))
+# Sacar la hline de arriba del panel B
+first_hline_B <- grep("^\\\\hline$", panel_B_pv)[1]
+if (!is.na(first_hline_B)) {
+  panel_B_pv <- panel_B_pv[-first_hline_B]
+}
+
+panel_C_pv <- make_pvalue_panel(panel_C_models,
+                                c("Share in labor force", "Share unemployed"))
+# Sacar la hline de arriba del panel C
+first_hline_C <- grep("^\\\\hline$", panel_C_pv)[1]
+if (!is.na(first_hline_C)) {
+  panel_C_pv <- panel_C_pv[-first_hline_C]
+}
+
+panel_D_pv <- make_pvalue_panel(panel_D_models,
+                                c("Left vote share", "Ideological alternation"))
+# Sacar la hline de arriba del panel D
+first_hline_D <- grep("^\\\\hline$", panel_D_pv)[1]
+if (!is.na(first_hline_D)) {
+  panel_D_pv <- panel_D_pv[-first_hline_D]
+}
+
+final <- c(
+  "\\begin{table}[!h]",
+  "\\centering",
+  "\\renewcommand{\\arraystretch}{1.15}",
+  "\\setlength{\\tabcolsep}{4pt}",
+  "\\caption{Pairwise Tests of Coefficient Equality Across Terciles — Blank Vote Share}",
+  panel_A_pv,
+  panel_B_pv,
+  panel_C_pv,
+  panel_D_pv,
+  "\\vspace{0.4em}",
+  "\\captionsetup{jusitification=justified, singlelinecheck=false}",
+  "\\caption*{",
+  paste0(
+    "\\footnotesize Notes: This table reports p-values from tests of equality of ",
+    "the coefficient on the Spanish share $\\times$ Post interaction across pairs of ",
+    "terciles of each municipal characteristic. Each column corresponds to a pairwise ",
+    "comparison ($T_1 = T_2$, $T_1 = T_3$, or $T_2 = T_3$). Tests are computed as ",
+    "z-statistics on the difference between the two coefficients estimated on ",
+    "independent subsamples. The dependent variable is the share of blank votes. ",
+    "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
+  ),
+  "\\end{table}"
+)
+
+writeLines(final, "Output/blank_votes_tercile_pvalues.tex")
 
 ## Tabla para turnout
 
@@ -3994,19 +4307,31 @@ panel_B_models <- list(
   "T1 "  = att_p2_at1,      "T2 "  = att_p2_at2,      "T3 "  = att_p2_at3)
 
 panel_C_models <- list(
+  "T1"   = att_p2_ut1, "T2"   = att_p2_ut2, "T3"   = att_p2_ut3,
+  "T1 "  = att_p2_peat1, "T2 "  = att_p2_peat2, "T3 "  = att_p2_peat3)
+
+panel_D_models <- list(
   "T1"   = att_p2_izt1, "T2"   = att_p2_izt2, "T3"   = att_p2_izt3,
   "T1 "  = att_p2_alt1, "T2 "  = att_p2_alt2, "T3 "  = att_p2_alt3)
 
 panel_A <- make_panel_tabular(
-  panel_A_models,
-  c("Pop. density", "Female pop."),
-  c(3, 3)
+  models      = panel_A_models,
+  group_names = c("Pop. density", "Female pop."),
+  group_sizes = c(3, 3),
+  panel_label = "Panel A",
+  data        = data_eff_het,
+  panel_vars  = c("popdensgeo2_2010", "share_female_2010"),
+  digits      = c(3, 3)  
 )
 
 panel_B <- make_panel_tabular(
-  panel_B_models,
-  c("Mean years educ.", "Median age"),
-  c(3, 3)
+  models = panel_B_models,
+  group_names = c("Mean years educ.", "Median age"),
+  group_sizes = c(3, 3),
+  panel_label = "Panel B",
+  data        = data_eff_het,
+  panel_vars  = c("mean_yrschool_2010", "median_age_2010"),
+  digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel B
 first_hline_B <- grep("^\\\\hline$", panel_B)[1]
@@ -4015,15 +4340,62 @@ if (!is.na(first_hline_B)) {
 }
 
 panel_C <- make_panel_tabular(
-  panel_C_models,
-  c("Left vote share", "Ideological alternation"),
-  c(3, 3)
+  models      = panel_C_models,
+  group_names = c("Share in labor force", "Share unemployed"),
+  group_sizes = c(3, 3),
+  panel_label = "Panel C",
+  data        = data_eff_het,
+  panel_vars  = c("share_laborforce_2010", "share_unemployed_2010"),
+  digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel C
 first_hline_C <- grep("^\\\\hline$", panel_C)[1]
 if (!is.na(first_hline_C)) {
   panel_C <- panel_C[-first_hline_C]
 }
+
+panel_D <- make_panel_tabular(
+  models      = panel_D_models,
+  group_names = c("Left vote share", "Ideological alternation"),
+  group_sizes = c(3, 3),
+  panel_label = "Panel C",
+  data        = data_eff_het,
+  panel_vars  = c("share_izq_pre_avg", "share_alt_pre_avg"),
+  digits      = c(3, 3)
+)
+# Sacar la hline de arriba del panel D
+first_hline_D <- grep("^\\\\hline$", panel_D)[1]
+if (!is.na(first_hline_D)) {
+  panel_D <- panel_D[-first_hline_D]
+}
+
+# Corro las funciones para hacer los test y crear la nota
+panels_list <- list(panel_A_models, panel_B_models, panel_C_models, panel_D_models)
+panel_labels_list <- list(
+  c("Pop.\\ density",       "Female pop."),
+  c("Mean years educ.",     "Median age"),
+  c("Share in labor force", "Share unemployed"),
+  c("Left vote share",      "Ideological alternation")
+)
+joint_tests_text <- build_joint_tests_note(panels_list, panel_labels_list)
+
+nota_completa <- paste0(
+  "\\caption*{\\footnotesize Notes: The dependent variable is voter turnout. ",
+  "Each column reports estimates for the subsample corresponding to a tercile ",
+  "of the specified municipal-level variable. Tercile upper bounds are shown ",
+  "at the bottom of each panel. All specifications include municipality, year, ",
+  "and election-type fixed effects. These specifications do not include a ",
+  "lagged version of the dependent variable as a control. Standard errors ",
+  "clustered at the municipality level in parentheses (104 clusters). ",
+  "Joint Wald tests of the null hypothesis that the coefficient on Spanish ",
+  "share $\\times$ Post is equal across the three terciles ",
+  "($H_0: \\beta_{T_1} = \\beta_{T_2} = \\beta_{T_3}$), computed under the ",
+  "independence of the tercile subsamples and following a $\\chi^2$ ",
+  "distribution with 2 degrees of freedom, yield the following p-values, ",
+  "reported as ($\\beta^{1936-1955}$ / $\\beta^{1956-1978}$) for each ",
+  "variable: ", joint_tests_text, ". ",
+  "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
+)
 
 # Combinar en una sola tabla con un único caption y una única nota
 final <- c(
@@ -4036,12 +4408,70 @@ final <- c(
   panel_A,
   panel_B,
   panel_C,
+  panel_D,
   "\\addvspace{0.3em}",
   "\\captionsetup{font=footnotesize, justification=justified, singlelinecheck=false}",
-  "\\caption*{Notes: The dependent variable is voter turnout. Each column reports estimates for the subsample corresponding to a tercile of the following municipal-level variables: population density; share of female population; average years of education; median age; average left-wing vote share and ideological alternation rate, both measured over 2011–2021. Standard errors clustered at the municipality level are reported in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}",
+  nota_completa,
   "\\end{table}"
 )
-writeLines(final, "Output/turnout_subsamples.tex")
+
+writeLines(final, "Output/turnout_subsamples_v2.tex")
+
+## Tabla para test de coeficietes por tercil - Turnout
+
+panel_A_pv <- make_pvalue_panel(panel_A_models, 
+                                c("Pop. density", "Female pop."))
+
+panel_B_pv <- make_pvalue_panel(panel_B_models,
+                                c("Mean years educ.", "Median age"))
+# Sacar la hline de arriba del panel B
+first_hline_B <- grep("^\\\\hline$", panel_B_pv)[1]
+if (!is.na(first_hline_B)) {
+  panel_B_pv <- panel_B_pv[-first_hline_B]
+}
+
+panel_C_pv <- make_pvalue_panel(panel_C_models,
+                                c("Share in labor force", "Share unemployed"))
+# Sacar la hline de arriba del panel C
+first_hline_C <- grep("^\\\\hline$", panel_C_pv)[1]
+if (!is.na(first_hline_C)) {
+  panel_C_pv <- panel_C_pv[-first_hline_C]
+}
+
+panel_D_pv <- make_pvalue_panel(panel_D_models,
+                                c("Left vote share", "Ideological alternation"))
+# Sacar la hline de arriba del panel D
+first_hline_D <- grep("^\\\\hline$", panel_D_pv)[1]
+if (!is.na(first_hline_D)) {
+  panel_D_pv <- panel_D_pv[-first_hline_D]
+}
+
+final <- c(
+  "\\begin{table}[!h]",
+  "\\centering",
+  "\\renewcommand{\\arraystretch}{1.15}",
+  "\\setlength{\\tabcolsep}{4pt}",
+  "\\caption{Pairwise Tests of Coefficient Equality Across Terciles — Turnout}",
+  panel_A_pv,
+  panel_B_pv,
+  panel_C_pv,
+  panel_D_pv,
+  "\\vspace{0.4em}",
+  "\\captionsetup{jusitification=justified, singlelinecheck=false}",
+  "\\caption*{",
+  paste0(
+    "\\footnotesize Notes: This table reports p-values from tests of equality of ",
+    "the coefficient on the Spanish share $\\times$ Post interaction across pairs of ",
+    "terciles of each municipal characteristic. Each column corresponds to a pairwise ",
+    "comparison ($T_1 = T_2$, $T_1 = T_3$, or $T_2 = T_3$). Tests are computed as ",
+    "z-statistics on the difference between the two coefficients estimated on ",
+    "independent subsamples. The dependent variable is voter turnout. ",
+    "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
+  ),
+  "\\end{table}"
+)
+
+writeLines(final, "Output/turnout_tercile_pvalues.tex")
 }
 
 # ------------------------------------------ #
