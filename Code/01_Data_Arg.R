@@ -36,7 +36,7 @@ municipios_arg_sf <- municipios_arg_sf %>%
   )
 
 # Censos de Argentina
-censos_arg <- read_dta("Data Raw/Censos/Argentina/censos_arg.dta")
+censos_arg <- read_dta("Data Raw/Censo/censos_arg.dta")
 
 # -------------------- #
 #        Censo

@@ -757,6 +757,8 @@ ncols <- 7   # 1 label + 6 modelos
 # 1) Caption, más espacio vertical y horizontal en la tabla
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
   header <- c(
     "\\caption{Effects on Blank Votes and Voter Turnout}",
     "\\renewcommand{\\arraystretch}{1.25}",
@@ -786,20 +788,20 @@ mr <- grep("\\\\midrule", lines)
 if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
 if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 
-# 5) Fila vacía arriba de Observations
+# 5) Espacio vacío arriba de Observations
 obs <- grep("^Observations", lines)
 if (length(obs) >= 1) {
-  empty <- paste0(strrep(" &", ncols - 1), " \\\\")
-  lines <- c(lines[1:(obs[1] - 1)], empty, lines[obs[1]:length(lines)])
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
 }
 
 # 6) Nota centrada en footnotesize
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
-  nota <- c("\\vspace{0.4em}",
-            "\\begin{center}",
-            "\\footnotesize Notes: Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-            "\\end{center}")
+  nota <- c("\\vspace{0.3em}",
+            "\\captionsetup{justification=justified, singlelinecheck=false}",
+            "\\caption*{\\footnotesize Notes: The dependent variable in columns (1) and (2) is the share of blank votes over total voters. In columns (3) and (4), the dependent variable is voter turnout. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}")
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
 
@@ -1104,6 +1106,9 @@ ncols <- 5   # 1 label + 4 modelos
 # 1) Caption, más espacio vertical y horizontal en la tabla
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
+  
    header <- c(
     "\\caption{Effects on Left-Wing Vote Shares}",
     "\\renewcommand{\\arraystretch}{1.25}",
@@ -1133,20 +1138,20 @@ mr <- grep("\\\\midrule", lines)
 if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
 if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
   
-# 5) Fila vacía arriba de Observations
+# 5) Espacio vacío arriba de Observations
 obs <- grep("^Observations", lines)
 if (length(obs) >= 1) {
-   empty <- paste0(strrep(" &", ncols - 1), " \\\\")
-  lines <- c(lines[1:(obs[1] - 1)], empty, lines[obs[1]:length(lines)])
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
 }
-  
+
 # 6) Nota centrada en footnotesize
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
-  nota <- c("\\vspace{0.4em}",
-            "\\begin{center}",
-            "\\footnotesize Notes: Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-             "\\end{center}")
+  nota <- c("\\vspace{0.3em}",
+            "\\captionsetup{justification=justified}",
+            "\\caption*{\\footnotesize Notes: The dependent variable in columns (1) and (2) is the vote share of left-wing parties; the dependent variable in columns (3) and (4) is the vote share of center-left parties. In both cases, vote shares are computed over valid votes, excluding blank, null, and challenged ballots. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}")
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
   
@@ -1189,6 +1194,9 @@ ncols <- 5   # 1 label + 4 modelos
 # 1) Caption, más espacio vertical y horizontal en la tabla
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
+  
   header <- c(
     "\\caption{Effects on Right-Wing Vote Shares}",
     "\\renewcommand{\\arraystretch}{1.25}",
@@ -1218,20 +1226,21 @@ mr <- grep("\\\\midrule", lines)
 if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
 if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
   
-# 5) Fila vacía arriba de Observations
+# 5) Espacio vacío arriba de Observations
 obs <- grep("^Observations", lines)
 if (length(obs) >= 1) {
-  empty <- paste0(strrep(" &", ncols - 1), " \\\\")
-  lines <- c(lines[1:(obs[1] - 1)], empty, lines[obs[1]:length(lines)])
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
 }
   
 # 6) Nota centrada en footnotesize
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
-  nota <- c("\\vspace{0.4em}",
-            "\\begin{center}",
-            "\\footnotesize Notes: Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-            "\\end{center}")
+  nota <- c("\\vspace{0.3em}",
+            "\\captionsetup{justification=justified}",
+            "\\caption*{\\footnotesize Notes: The dependent variable in columns (1) and (2) is the vote share of right-wing parties; the dependent variable in columns (3) and (4) is the vote share of center-right parties. In both cases, vote shares are computed over valid votes, excluding blank, null, and challenged ballots. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
+            )
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
   
@@ -1289,6 +1298,9 @@ ncols <- 7   # 1 label + 6 modelos
 # 1) Caption, más espacio vertical y horizontal en la tabla
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
+  
   header <- c(
     "\\caption{Effects on Party Alignment and Electoral Competition}",
     "\\renewcommand{\\arraystretch}{1.25}",
@@ -1328,21 +1340,21 @@ mr <- grep("\\\\midrule", lines)
 if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
 if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 
-# 5) Fila vacía arriba de Observations
+# 5) Espacio vacío arriba de Observations
 obs <- grep("^Observations", lines)
 if (length(obs) >= 1) {
-  empty <- paste0(strrep(" &", ncols - 1), " \\\\")
-  lines <- c(lines[1:(obs[1] - 1)], empty, lines[obs[1]:length(lines)])
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
 }
 
 # 6) Nota centrada en footnotesize
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
   nota <- c(
-    "\\vspace{0.4em}",
-    "\\begin{center}",
-    "\\footnotesize Notes: Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-    "\\end{center}"
+    "\\vspace{0.3em}",
+    "\\captionsetup{justification=justified}",
+    "\\caption*{\\footnotesize Notes: The dependent variable in columns (1) and (2) is the vote share for Peronist parties; the dependent variable in columns (3) and (4) is the vote share for the party holding the national executive office at the time of each election. In both cases, vote shares are computed over valid votes, excluding blank, null, and challenged ballots. In columns 5 and 6, the dependent variable is an indicator equal to one if the ideological bloc of the winning party changes relative to the previous election of the same type -- where ideological blocs are defined as left, center-left, center, center-right, and right. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   )
   
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
@@ -1939,6 +1951,9 @@ if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 # 3) Caption y arraystretch despues de \begin{table}
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
+  
   header <- c(
     "\\caption{Effect on Blank Vote Share Under Entropy Balancing Weights}",
     "\\renewcommand{\\arraystretch}{1.25}"
@@ -1957,10 +1972,9 @@ if (length(obs) >= 1) {
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
   nota <- c(
-    "\\vspace{0.4em}",
-    "\\begin{minipage}{\\textwidth}",
-    "\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Columns (1), (3), (5), and (7) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (2), (4), (6), and (8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1956–1978. Column (1) and (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) and (4) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (5) and (6) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (7) and (8) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-    "\\end{minipage}"
+    "\\vspace{0.3em}",
+    "\\captionsetup{justification=justified, singlelinecheck=false}",
+    "\\caption*{\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Columns (1), (3), (5), and (7) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (2), (4), (6), and (8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1956–1978. Column (1) and (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) and (4) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (5) and (6) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (7) and (8) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   )
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
@@ -2036,6 +2050,9 @@ if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 # 3) Caption y arraystretch despues de \begin{table}
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
+  
   header <- c(
     "\\caption{Event Study Estimates on Blank Vote Share Under Entropy Balancing Weights — Spanish Share 1936-1955}",
     "\\renewcommand{\\arraystretch}{1.25}"
@@ -2054,10 +2071,9 @@ if (length(obs) >= 1) {
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
   nota <- c(
-    "\\vspace{0.4em}",
-    "\\begin{minipage}{\\textwidth}",
-    "\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-    "\\end{minipage}"
+    "\\vspace{0.3em}",
+    "\\captionsetup{justification=justified, singlelinecheck=false}",
+    "\\caption*{\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   )
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
@@ -2112,6 +2128,9 @@ if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 # 3) Caption y arraystretch despues de \begin{table}
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
+  
   header <- c(
     "\\caption{Event Study Estimates on Blank Vote Share Under Entropy Balancing Weights — Spanish Share 1956-1978}",
     "\\renewcommand{\\arraystretch}{1.25}"
@@ -2130,10 +2149,9 @@ if (length(obs) >= 1) {
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
   nota <- c(
-    "\\vspace{0.4em}",
-    "\\begin{minipage}{\\textwidth}",
-    "\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-    "\\end{minipage}"
+    "\\vspace{0.3em}",
+    "\\captionsetup{justification=justified, singlelinecheck=false}",
+    "\\caption*{\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   )
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
@@ -2431,6 +2449,8 @@ if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 # 3) Caption y arraystretch despues de \begin{table}
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
   header <- c(
     "\\caption{Effect on Voter Turnout Under Entropy Balancing Weights}",
     "\\renewcommand{\\arraystretch}{1.25}"
@@ -2449,10 +2469,9 @@ if (length(obs) >= 1) {
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
   nota <- c(
-    "\\vspace{0.4em}",
-    "\\begin{minipage}{\\textwidth}",
-    "\\footnotesize Notes: The dependent variable is voter turnout. Columns (1), (3), (5), and (7) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (2), (4), (6), and (8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1966–1978. Column (1) and (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) and (4) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (5) and (6) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (7) and (8) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-    "\\end{minipage}"
+    "\\vspace{0.3em}",
+    "\\captionsetup{justification=justified, singlelinecheck=false}",
+    "\\caption*{\\footnotesize Notes: The dependent variable is voter turnout. Columns (1), (3), (5), and (7) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (2), (4), (6), and (8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1966–1978. Column (1) and (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) and (4) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (5) and (6) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (7) and (8) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   )
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
@@ -2526,6 +2545,8 @@ if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 # 3) Caption y arraystretch despues de \begin{table}
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
   header <- c(
     "\\caption{Event Study Estimates on Voter Turnout Under Entropy Balancing Weights — Spanish Share 1936-1955}",
     "\\renewcommand{\\arraystretch}{1.25}"
@@ -2544,10 +2565,9 @@ if (length(obs) >= 1) {
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
   nota <- c(
-    "\\vspace{0.4em}",
-    "\\begin{minipage}{\\textwidth}",
-    "\\footnotesize Notes: The dependent variable is voter turnout. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-    "\\end{minipage}"
+    "\\vspace{0.3em}",
+    "\\captionsetup{justification=justified, singlelinecheck=false}",
+    "\\caption*{\\footnotesize Notes: The dependent variable is voter turnout. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   )
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
@@ -2602,6 +2622,8 @@ if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 # 3) Caption y arraystretch despues de \begin{table}
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
   header <- c(
     "\\caption{Event Study Estimates on Voter Turnout Under Entropy Balancing Weights — Spanish Share 1956-1978}",
     "\\renewcommand{\\arraystretch}{1.25}"
@@ -2620,10 +2642,9 @@ if (length(obs) >= 1) {
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
   nota <- c(
-    "\\vspace{0.4em}",
-    "\\begin{minipage}{\\textwidth}",
-    "\\footnotesize Notes: The dependent variable is voter turnout. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-    "\\end{minipage}"
+    "\\vspace{0.3em}",
+    "\\captionsetup{justification=justified, singlelinecheck=false}",
+    "\\caption*{\\footnotesize Notes: The dependent variable is voter turnout. Column (1) is estimated without entropy balancing weights. Column (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) balances on the pre-treatment values of the outcome and additionally on population density, mean age, and average years of education (all measured in 2010). Column (4) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (5) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   )
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
@@ -4125,7 +4146,7 @@ panel_labels_list <- list(
 joint_tests_text <- build_joint_tests_note(panels_list, panel_labels_list)
 
 nota_completa <- paste0(
-  "\\caption*{\\footnotesize Notes: The dependent variable is the share of blank votes. ",
+  "\\caption*{\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. ",
   "Each column reports estimates for the subsample corresponding to a tercile ",
   "of the specified municipal-level variable. Tercile upper bounds are shown ",
   "at the bottom of each panel. All specifications include municipality, year, ",
@@ -4278,8 +4299,8 @@ final <- c(
   panel_B_pv,
   panel_C_pv,
   panel_D_pv,
-  "\\vspace{0.4em}",
-  "\\captionsetup{jusitification=justified, singlelinecheck=false}",
+  "\\vspace{0.3em}",
+  "\\captionsetup{justification=justified, singlelinecheck=false}",
   "\\caption*{",
   paste0(
     "\\footnotesize Notes: This table reports p-values from tests of equality of ",
@@ -4287,7 +4308,7 @@ final <- c(
     "terciles of each municipal characteristic. Each column corresponds to a pairwise ",
     "comparison ($T_1 = T_2$, $T_1 = T_3$, or $T_2 = T_3$). Tests are computed as ",
     "z-statistics on the difference between the two coefficients estimated on ",
-    "independent subsamples. The dependent variable is the share of blank votes. ",
+    "independent subsamples. The dependent variable is the share of blank votes over total voters. ",
     "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   ),
   "\\end{table}"
@@ -4456,8 +4477,8 @@ final <- c(
   panel_B_pv,
   panel_C_pv,
   panel_D_pv,
-  "\\vspace{0.4em}",
-  "\\captionsetup{jusitification=justified, singlelinecheck=false}",
+  "\\vspace{0.3em}",
+  "\\captionsetup{justification=justified, singlelinecheck=false}",
   "\\caption*{",
   paste0(
     "\\footnotesize Notes: This table reports p-values from tests of equality of ",
@@ -4806,6 +4827,9 @@ ncols <- 7   # 1 label + 6 modelos
 # 1) Caption, más espacio vertical y horizontal en la tabla
 beg_table <- grep("\\\\begin\\{table\\}", lines)
 if (length(beg_table) >= 1) {
+  # Reemplazar \begin{table} por \begin{table}[!h]
+  lines[beg_table[1]] <- "\\begin{table}[!h]"
+  
   header <- c(
     "\\caption{Effects on Blank Votes and Voter Turnout}",
     "\\renewcommand{\\arraystretch}{1.25}",
@@ -4835,21 +4859,20 @@ mr <- grep("\\\\midrule", lines)
 if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
 if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
 
-# 5) Fila vacía arriba de Observations
+# 5) Espacio vacío arriba de Observations
 obs <- grep("^Observations", lines)
 if (length(obs) >= 1) {
-  empty <- paste0(strrep(" &", ncols - 1), " \\\\")
-  lines <- c(lines[1:(obs[1] - 1)], empty, lines[obs[1]:length(lines)])
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
 }
 
 # 6) Nota centrada en footnotesize
 endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
-  nota <- c("\\vspace{0.4em}",
-            "\\begin{minipage}{\\textwidth}",
-            "\\footnotesize Notes: Spanish share is defined as the share of Spanish-born immigrants who arrived between 1936 and 1978 over the total municipal population. Models (1) and (3) identify this variable using the 1970 census; models (2) and (4) use the 1980 census. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
-            "\\end{minipage}"
-            )
+  nota <- c("\\vspace{0.3em}",
+            "\\captionsetup{font=footnotesize, justification=justified, singlelinecheck=false}",
+            "\\caption*{\\footnotesize Notes: The dependent variable in columns (1) and (2) is the share of blank votes over total voters. In columns (3) and (4), the dependent variable is voter turnout. Spanish share is defined as the share of Spanish-born immigrants who arrived between 1936 and 1978 over the total municipal population. Columns (1) and (3) use the 1970 census to construct this variable; columns (2) and (4) use the 1980 census. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}")
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
 
