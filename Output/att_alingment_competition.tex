@@ -1,4 +1,4 @@
-\begin{table}
+\begin{table}[!h]
 \caption{Effects on Party Alignment and Electoral Competition}
 \renewcommand{\arraystretch}{1.25}
 \setlength{\tabcolsep}{6pt}
@@ -20,7 +20,7 @@ Lagged incumbent vote share &  &  &  & 0.059*** &  & \\
 Lagged ideological alternation &  &  &  &  &  & 0.019\\
  &  &  &  &  &  & (0.024)\\
 
- & & & & & & \\
+\addlinespace
 Observations & 4680 & 4056 & 4680 & 4056 & 4056 & 3432\\
 R$^2$ & 0.590 & 0.580 & 0.446 & 0.378 & 0.288 & 0.288\\
 $p$-value ($\beta_{36{-}55} = \beta_{56{-}78}$) & 0.208 & 0.182 & 0.271 & 0.199 & 0.146 & 0.363\\
@@ -29,8 +29,7 @@ Time FE & Yes & Yes & Yes & Yes & Yes & Yes\\
 Election type FE & Yes & Yes & Yes & Yes & Yes & Yes\\
 \hline
 \end{tabular}
-\vspace{0.4em}
-\begin{center}
-\footnotesize Notes: Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.
-\end{center}
+\vspace{0.3em}
+\captionsetup{justification=justified}
+\caption*{\footnotesize Notes: The dependent variable in columns (1) and (2) is the vote share for Peronist parties; the dependent variable in columns (3) and (4) is the vote share for the party holding the national executive office at the time of each election. In both cases, vote shares are computed over valid votes, excluding blank, null, and challenged ballots. In columns 5 and 6, the dependent variable is an indicator equal to one if the ideological bloc of the winning party changes relative to the previous election of the same type -- where ideological blocs are defined as left, center-left, center, center-right, and right. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}
 \end{table}

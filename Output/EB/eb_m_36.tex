@@ -1,0 +1,32 @@
+\begin{table}
+\caption{Event Study Estimates on Intention to Migrate Under Entropy Balancing Weights — Spanish Share 1936-1955}
+\renewcommand{\arraystretch}{1.25}
+\centering
+\begin{tabular}[t]{lcccccccc}
+\hline
+  & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)\\
+\hline
+Spanish share 1936-1955 $\times$ 2012 & 0.012 & 0.012 & 0.008 & 0.018 & -0.011 & -0.006 & -0.020 & -0.015\\
+ & (0.024) & (0.024) & (0.028) & (0.029) & (0.039) & (0.039) & (0.028) & (0.030)\\
+Spanish share 1936-1955 $\times$ 2014 & -0.036 & -0.036 & -0.009 & -0.002 & -0.031 & -0.028 & -0.034 & -0.032\\
+ & (0.025) & (0.025) & (0.024) & (0.026) & (0.030) & (0.030) & (0.028) & (0.028)\\
+Spanish share 1936-1955 $\times$ 2017 & -0.030 & -0.030 & -0.022 & -0.023 & -0.041 & -0.039 & -0.041 & -0.039\\
+ & (0.024) & (0.024) & (0.025) & (0.025) & (0.042) & (0.042) & (0.043) & (0.043)\\
+Spanish share 1936-1955 $\times$ 2023 & 0.019 & 0.019 & 0.020 & 0.019 & 0.026 & 0.019 & 0.030 & 0.027\\
+ & (0.025) & (0.025) & (0.030) & (0.031) & (0.027) & (0.031) & (0.024) & (0.027)\\
+
+\addlinespace
+Observations & 7448 & 7448 & 7342 & 7394 & 7342 & 7394 & 7342 & 7394\\
+R$^2$ & 0.138 & 0.138 & 0.120 & 0.046 & 0.042 & 0.020 & 0.050 & 0.024\\
+Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+Election type FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+EB weights & No & No & Yes & Yes & Yes & Yes & Yes & Yes\\
+Controls & No & Yes & No & Yes & No & Yes & No & Yes\\
+\hline
+\end{tabular}
+\vspace{0.4em}
+\begin{minipage}{\textwidth}
+\footnotesize Notes: The dependent variable is an indicator variable equal to one if the individual intends to migrate. All columns report estimates from logit models. Columns (1) and (2) are estimated without entropy balancing weights; columns (3)-(8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (3) and (4) use entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Columns (5) and (6) balance on the pre-treatment values of the outcome and additionally on mean age in 2010. Columns (7) and (8) balance on the pre-treatment values of the outcome and additionally on average years of education in 2010. Columns (2), (4), (6), and (8) include controls for age and a male indicator. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.
+\end{minipage}
+\end{table}

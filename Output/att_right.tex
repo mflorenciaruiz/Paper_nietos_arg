@@ -1,4 +1,4 @@
-\begin{table}
+\begin{table}[!h]
 \caption{Effects on Right-Wing Vote Shares}
 \renewcommand{\arraystretch}{1.25}
 \setlength{\tabcolsep}{8pt}
@@ -18,7 +18,7 @@ Lagged right vote share &  & 0.134*** &  & \\
 Lagged broad right vote share &  &  &  & -0.076***\\
  &  &  &  & (0.016)\\
 
- & & & & \\
+\addlinespace
 Observations & 4680 & 4056 & 4680 & 4056\\
 R$^2$ & 0.818 & 0.820 & 0.700 & 0.650\\
 $p$-value ($\beta_{36{-}55} = \beta_{56{-}78}$) & 0.680 & 0.653 & 0.959 & 0.856\\
@@ -27,8 +27,7 @@ Time FE & Yes & Yes & Yes & Yes\\
 Election type FE & Yes & Yes & Yes & Yes\\
 \hline
 \end{tabular}
-\vspace{0.4em}
-\begin{center}
-\footnotesize Notes: Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.
-\end{center}
+\vspace{0.3em}
+\captionsetup{justification=justified}
+\caption*{\footnotesize Notes: The dependent variable in columns (1) and (2) is the vote share of right-wing parties; the dependent variable in columns (3) and (4) is the vote share of center-right parties. In both cases, vote shares are computed over valid votes, excluding blank, null, and challenged ballots. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}
 \end{table}

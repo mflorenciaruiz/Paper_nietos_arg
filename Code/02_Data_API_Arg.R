@@ -1093,7 +1093,8 @@ censos_0110 <- censos_0110 %>%
     t_med_schyr_2010  = ntile(median_yrschool_2010, 3),
     t_med_dage_2010   = ntile(median_age_2010, 3),
     t_age2544_2010    = ntile(share_age_25_44_2010, 3),
-    t_unemp_2010      = ntile(share_unemployed_2010, 3)
+    t_unemp_2010      = ntile(share_unemployed_2010, 3),
+    t_pea_2010        = ntile(share_laborforce_2010, 3)
   )
 
 dip_nac_mun_2 <- dip_nac_mun %>% 
@@ -1137,7 +1138,13 @@ dip_nac_mun_pre_avg <- dip_nac_mun_pre_avg %>%
 dip_nac_mun_2 <- dip_nac_mun_2 %>% 
   left_join(dip_nac_mun_pre_avg, by = "mun_code")
 
+# Guardo la data con shares para efectos heterogéneos
+data_eff_het <- censos_0110 %>% 
+  left_join(dip_nac_mun_pre_avg, by = "mun_code")
+write_csv(data_eff_het, "Data Out/data_eff_het.csv")
+
 # Sobreescribo la data
 write_csv(dip_nac_mun_2, "Data Out/dip_nac_mun.csv") 
+write_dta(dip_nac_mun, "Data Out/dip_nac_mun.dta") 
 # Creo dip_nac_mun_2 para no tener que volver a correr todo si hay un problema, pero sobre escribo la data como dip_nac_mun y en el código 3 la importo como dip_nac_mun
 }

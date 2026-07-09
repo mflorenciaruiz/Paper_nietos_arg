@@ -36,7 +36,7 @@ municipios_arg_sf <- municipios_arg_sf %>%
   )
 
 # Censos de Argentina
-censos_arg <- read_dta("Data Raw/Censos/Argentina/censos_arg.dta")
+censos_arg <- read_dta("Data Raw/Censo/censos_arg.dta")
 
 # -------------------- #
 #        Censo
@@ -201,13 +201,6 @@ Hmisc::describe(spanish_cohorts_arg$share_1956_1978)
 
 class(spanish_cohorts_arg)
 
-saveRDS(spanish_cohorts_arg, "Data Out/spanish_cohorts_arg.rds")
-
-spanish_cohorts_arg_singeo <- spanish_cohorts_arg %>% 
-  st_drop_geometry()
-class(spanish_cohorts_arg_singeo$mun_code)
-write.csv(spanish_cohorts_arg_singeo, "Data Out/spanish_cohorts_arg.csv", row.names = FALSE)
-
 ## Españoles por municipio en cada ventana de llegada (USANDO CADA CENSO POR SEPARADO)
 spanish_counts_sep <- censos_arg %>%
   mutate(
@@ -277,6 +270,14 @@ Hmisc::describe(spanish_cohorts_sep$share_36_78_c80)
 # Uno la data a spanish_cohorts_arg
 spanish_cohorts_arg <- spanish_cohorts_arg %>% 
   left_join(spanish_cohorts_sep, by = "mun_code")
+
+saveRDS(spanish_cohorts_arg, "Data Out/spanish_cohorts_arg.rds")
+
+spanish_cohorts_arg_singeo <- spanish_cohorts_arg %>% 
+  st_drop_geometry()
+class(spanish_cohorts_arg_singeo$mun_code)
+write.csv(spanish_cohorts_arg_singeo, "Data Out/spanish_cohorts_arg.csv", row.names = FALSE)
+
 
 }
 # -------------------- #

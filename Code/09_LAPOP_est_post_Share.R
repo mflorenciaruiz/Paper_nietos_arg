@@ -48,8 +48,9 @@ library(openxlsx)
 # 0. Paths y carga
 # ---------------------------------------------------------------------------- #
 
-path_pili <- "C:\\Users\\pilih\\Documents\\Papers German\\Valerie\\Paper_nietos_arg"
-setwd(path_pili)
+#path <- "C:\\Users\\pilih\\Documents\\Papers German\\Valerie\\Paper_nietos_arg"
+path <- "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
+setwd(path)
 
 dir.create("Output", showWarnings = FALSE)
 dir.create("Output/tex", showWarnings = FALSE, recursive = TRUE)
@@ -59,6 +60,11 @@ lapop <- read_csv("Data Out/lapop_data_merge.csv", show_col_types = FALSE)
 
 censo_2010_density <- read_dta("Data Int/censo_2010_arg_mun.dta") %>%
   select(mun_code, popdensgeo2)
+
+data_eb2 <- read_dta("Data Int/data_EB_v2.dta")
+# Uno la data de lapop para estimar con los pesos de EB
+lapop <- lapop %>% 
+  left_join(data_eb2, by = "mun_code")
 
 # ---------------------------------------------------------------------------- #
 # 1. Preparar base
@@ -254,39 +260,59 @@ make_post_share_formula <- function(controls = character(0)) {
 # 6. Estimar LPM y Logit
 # ---------------------------------------------------------------------------- #
 
-run_lpm <- function(spec_name, spec) {
+run_lpm <- function(spec_name, spec,  weight_var = "wt") {
   
   fml <- make_post_share_formula(
     controls = spec$controls
   )
   
+  # Construir la formula de pesos dinamicamente
+  if (is.null(weight_var)) {
+    weight_formula <- NULL
+    weight_label   <- "sin pesos"
+  } else {
+    weight_formula <- as.formula(paste("~", weight_var))
+    weight_label   <- weight_var
+  }
+  
   cat("\nEstimando LPM post x share. Spec:", spec_name, "\n")
   cat("Controles:", spec$controls_label, "\n")
+  cat("Pesos:",    weight_label, "\n")
   cat(deparse(fml), "\n\n")
   
   feols(
     fml,
     data = lapop,
-    weights = ~ wt,
+    weights = weight_formula,
     cluster = ~ mun_code
   )
 }
 
-run_logit <- function(spec_name, spec) {
+run_logit <- function(spec_name, spec,  weight_var = "wt") {
   
   fml <- make_post_share_formula(
     controls = spec$controls
   )
   
+  # Construir la formula de pesos dinamicamente
+  if (is.null(weight_var)) {
+    weight_formula <- NULL
+    weight_label   <- "sin pesos"
+  } else {
+    weight_formula <- as.formula(paste("~", weight_var))
+    weight_label   <- weight_var
+  }
+  
   cat("\nEstimando Logit post x share. Spec:", spec_name, "\n")
   cat("Controles:", spec$controls_label, "\n")
+  cat("Pesos:",    weight_label, "\n")
   cat(deparse(fml), "\n\n")
   
   feglm(
     fml,
     data = lapop,
     family = binomial(link = "logit"),
-    weights = ~ wt,
+    weights = weight_formula,
     cluster = ~ mun_code
   )
 }
@@ -568,6 +594,441 @@ writeLines(
   "Output/tex/post_share_lpm_logit_key_coefficients.tex"
 )
 
+# ---------------------------------------------------------------------------- #
+# 10. Estimaciones con pesos de EB
+# ---------------------------------------------------------------------------- #
+
+### 10.1 ATT con pesos de EB
+
+## LPM
+
+weight_schemes <- c(eb36_1 = "w_m_1936_1", eb36_4 = "w_m_1936_4", eb36_5 = "w_m_1936_5",
+                    eb56_1 = "w_m_1956_1", eb56_4 = "w_m_1956_4", eb56_5 = "w_m_1956_5")
+
+# Lista anidada: para cada esquema de pesos, una lista de modelos por spec
+all_models_lpm <- map(weight_schemes, function(w) {
+  imap(post_share_specs,
+       ~ run_lpm(spec_name = .y, spec = .x, weight_var = w))
+})
+all_models_lpm$eb36_1
+all_models_lpm$eb36_4
+all_models_lpm$eb36_5
+
+all_models_lpm$eb56_1
+all_models_lpm$eb56_4
+all_models_lpm$eb56_5
+
+## Logit
+all_models_logit <- map(weight_schemes, function(w) {
+  imap(post_share_specs,
+       ~ run_logit(spec_name = .y, spec = .x, weight_var = w))
+})
+
+all_models_logit$eb36_1
+all_models_logit$eb36_4
+all_models_logit$eb36_5
+
+all_models_logit$eb56_1
+all_models_logit$eb56_4
+all_models_logit$eb56_5
+
+### 10.2 Event studies con pesos de EB
+
+## LPM
+  # Sin pesos
+event_m_36_lpm <- feols(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) + edad + hombre | mun_code + year, 
+                    data = lapop, cluster = ~ mun_code)
+event_m_36_lpm
+
+event_m_56_lpm <- feols(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) + edad + hombre | mun_code + year, 
+                      data = lapop, cluster = ~ mun_code)
+event_m_56_lpm
+
+  # Pesos 1
+event_m_36_w1_lpm <- feols(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1936_1, cluster = ~ mun_code)
+event_m_36_w1_lpm
+
+event_m_56_w1_lpm <- feols(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) + edad + hombre | mun_code + year, 
+                      data = lapop, weights = ~ w_m_1956_1, cluster = ~ mun_code)
+event_m_56_w1_lpm
+
+  # Pesos 4
+event_m_36_w4_lpm <- feols(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1936_4, cluster = ~ mun_code)
+event_m_36_w4_lpm
+
+event_m_56_w4_lpm <- feols(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1956_4, cluster = ~ mun_code)
+event_m_56_w4_lpm
+
+  # Pesos 5
+event_m_36_w5_lpm <- feols(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1936_5, cluster = ~ mun_code)
+event_m_36_w5_lpm
+
+event_m_56_w5_lpm <- feols(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1956_5, cluster = ~ mun_code)
+event_m_56_w5_lpm
+
+## LOGIT
+  
+  # Sin pesos
+event_m_36_logit_c <- feglm(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) + edad + hombre | mun_code + year, 
+                    data = lapop, cluster = ~ mun_code)
+event_m_36_logit_c
+
+event_m_36_logit_sc <- feglm(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) | mun_code + year, 
+                            data = lapop, cluster = ~ mun_code)
+event_m_36_logit_sc
+
+event_m_56_logit_c <- feglm(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) + edad + hombre | mun_code + year, 
+                    data = lapop, cluster = ~ mun_code)
+event_m_56_logit_c
+
+event_m_56_logit_sc <- feglm(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) | mun_code + year, 
+                          data = lapop, cluster = ~ mun_code)
+event_m_56_logit_sc
+
+  # Pesos 1
+event_m_36_w1_logit_c <- feglm(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1936_1, cluster = ~ mun_code)
+event_m_36_w1_logit_c
+
+event_m_36_w1_logit_sc <- feglm(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) | mun_code + year, 
+                             data = lapop, weights = ~ w_m_1936_1, cluster = ~ mun_code)
+event_m_36_w1_logit_sc
+
+event_m_56_w1_logit_c <- feglm(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1956_1, cluster = ~ mun_code)
+event_m_56_w1_logit_c
+
+event_m_56_w1_logit_sc <- feglm(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) | mun_code + year, 
+                               data = lapop, weights = ~ w_m_1956_1, cluster = ~ mun_code)
+event_m_56_w1_logit_sc
+
+  # Pesos 4
+event_m_36_w4_logit_c <- feglm(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1936_4, cluster = ~ mun_code)
+event_m_36_w4_logit_c
+
+event_m_36_w4_logit_sc <- feglm(intencion_migrar ~ i(year, share_1936_1955, ref = 2019)  | mun_code + year, 
+                             data = lapop, weights = ~ w_m_1936_4, cluster = ~ mun_code)
+event_m_36_w4_logit_sc
+
+event_m_56_w4_logit_c <- feglm(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1956_4, cluster = ~ mun_code)
+event_m_56_w4_logit_c
+
+event_m_56_w4_logit_sc <- feglm(intencion_migrar ~ i(year, share_1956_1978, ref = 2019)  | mun_code + year, 
+                             data = lapop, weights = ~ w_m_1956_4, cluster = ~ mun_code)
+event_m_56_w4_logit_sc
+
+  # Pesos 5
+event_m_36_w5_logit_c <- feglm(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1936_5, cluster = ~ mun_code)
+event_m_36_w5_logit_c
+
+event_m_36_w5_logit_sc <- feglm(intencion_migrar ~ i(year, share_1936_1955, ref = 2019) | mun_code + year, 
+                             data = lapop, weights = ~ w_m_1936_5, cluster = ~ mun_code)
+event_m_36_w5_logit_sc
+
+event_m_56_w5_logit_c <- feglm(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) + edad + hombre | mun_code + year, 
+                       data = lapop, weights = ~ w_m_1956_5, cluster = ~ mun_code)
+event_m_56_w5_logit_c
+
+event_m_56_w5_logit_sc <- feglm(intencion_migrar ~ i(year, share_1956_1978, ref = 2019) | mun_code + year, 
+                             data = lapop, weights = ~ w_m_1956_5, cluster = ~ mun_code)
+event_m_56_w5_logit_sc
+
+### 10.3 Exporto los resultados de los att
+
+# Mapeo de coeficientes a etiquetas
+cm <- c(
+  "post:share_1936_1955" = "Spanish share 1936-1955$\\times$post",
+  "post:share_1956_1978" = "Spanish share 1956-1978$\\times$post"
+)
+
+# Estadísticas: Obs y R^2
+gm <- tibble::tribble(
+  ~raw,        ~clean,         ~fmt,
+  "nobs",      "Observations", 0,
+  "r.squared", "R$^2$",        3
+)
+
+# FE rows (todas Yes)
+add_rows <- tibble::tibble(
+  term = c("Municipality FE", "Year FE", "Controls"),
+  m1 = c("Yes", "Yes", "No"),
+  m2 = c("Yes", "Yes", "Yes"),
+  m3 = c("Yes", "Yes", "No"),
+  m4 = c("Yes", "Yes", "Yes"),
+  m5 = c("Yes", "Yes", "No"),
+  m6 = c("Yes", "Yes", "Yes"),
+  m7 = c("Yes", "Yes", "No"),
+  m8 = c("Yes", "Yes", "Yes"),
+  m9 = c("Yes", "Yes", "No"),
+  m10 = c("Yes", "Yes", "Yes"),
+  m11 = c("Yes", "Yes", "No"),
+  m12 = c("Yes", "Yes", "Yes"),
+)
+names(add_rows) <- c(" ", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)",
+                     "(7)", "(8)", "(9)", "(10)", "(11)", "(12)")
+
+# Modelos migración
+models_blank <- list(
+  "(1)" = all_models_logit$eb36_1[[1]], # no controls
+  "(2)" = all_models_logit$eb36_1[[2]], # controls
+  "(3)" = all_models_logit$eb56_1[[1]],
+  "(4)" = all_models_logit$eb56_1[[2]],
+  "(5)" = all_models_logit$eb36_4[[1]],
+  "(6)" = all_models_logit$eb36_4[[2]],
+  "(7)" = all_models_logit$eb56_4[[1]],
+  "(8)" = all_models_logit$eb56_4[[2]],
+  "(9)" = all_models_logit$eb36_5[[1]],
+  "(10)" = all_models_logit$eb36_5[[2]],
+  "(11)" = all_models_logit$eb56_5[[1]],
+  "(12)" = all_models_logit$eb56_5[[2]]
+)
+
+# Generar LaTeX para migración
+tex <- modelsummary(
+  models_blank,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Effect on Intention to Migrate Under Entropy Balancing Weights}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is an indicator variable equal to one if the individual intends to migrate. All columns report estimates from logit models. Columns (1), (2), (5), (6), (9) and (10) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (3), (4), (7), (8), (11) and (12) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1956–1978. Column (1)-(4) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (5)-(8) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (9)-(12) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010.  Columns (2), (4), (6), (8), (10), and (12) include controls for age and a male indicator. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_m_att_logit.tex")
+
+## Exporto los resultados de los event study del 36
+
+# Mapeo de coeficientes a etiquetas
+cm <- c(
+  "year::2012:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2012",
+  "year::2014:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2014",
+  "year::2017:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2017",
+  "year::2023:share_1936_1955" = "Spanish share 1936-1955 $\\times$ 2023"
+)
+
+# Estadísticas: Obs y R^2
+gm <- tibble::tribble(
+  ~raw,        ~clean,         ~fmt,
+  "nobs",      "Observations", 0,
+  "r.squared", "R$^2$",        3
+)
+
+# FE rows (todas Yes)
+add_rows <- tibble::tibble(
+  term = c("Municipality FE", "Year FE", "Election type FE", "EB weights", "Controls"),
+  m1 = c("Yes", "Yes", "Yes", "No", "No"),
+  m2 = c("Yes", "Yes", "Yes", "No", "Yes"),
+  m3 = c("Yes", "Yes", "Yes", "Yes", "No"),
+  m4 = c("Yes", "Yes", "Yes", "Yes", "Yes"),
+  m5 = c("Yes", "Yes", "Yes", "Yes", "No"),
+  m6 = c("Yes", "Yes", "Yes", "Yes", "Yes"),
+  m7 = c("Yes", "Yes", "Yes", "Yes", "No"),
+  m8 = c("Yes", "Yes", "Yes", "Yes", "Yes")
+)
+names(add_rows) <- c(" ", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)", "(8)")
+
+# Modelos votos en blanco 36
+models_blank <- list(
+  "(1)" = event_m_36_logit_c,
+  "(2)" = event_m_36_logit_c,
+  "(3)" = event_m_36_w1_logit_c,
+  "(4)" = event_m_36_w1_logit_sc,
+  "(5)" = event_m_36_w4_logit_c,
+  "(6)" = event_m_36_w4_logit_sc,
+  "(7)" = event_m_36_w5_logit_c,
+  "(8)" = event_m_36_w5_logit_sc
+)
+
+# Generar LaTeX para votos en blanco
+tex <- modelsummary(
+  models_blank,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Event Study Estimates on Intention to Migrate Under Entropy Balancing Weights — Spanish Share 1936-1955}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is an indicator variable equal to one if the individual intends to migrate. All columns report estimates from logit models. Columns (1) and (2) are estimated without entropy balancing weights; columns (3)-(8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (3) and (4) use entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Columns (5) and (6) balance on the pre-treatment values of the outcome and additionally on mean age in 2010. Columns (7) and (8) balance on the pre-treatment values of the outcome and additionally on average years of education in 2010. Columns (2), (4), (6), and (8) include controls for age and a male indicator. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_m_36_logit.tex")
+
+
+## Exporto los resultados de los event study del 56
+
+# Mapeo de coeficientes a etiquetas
+cm <- c(
+  "year::2012:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2012",
+  "year::2014:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2014",
+  "year::2017:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2017",
+  "year::2023:share_1956_1978" = "Spanish share 1936-1955 $\\times$ 2023"
+)
+
+# Modelos votos en blanco 36
+models_blank <- list(
+  "(1)" = event_m_56_logit_c,
+  "(2)" = event_m_56_logit_c,
+  "(3)" = event_m_56_w1_logit_c,
+  "(4)" = event_m_56_w1_logit_sc,
+  "(5)" = event_m_56_w4_logit_c,
+  "(6)" = event_m_56_w4_logit_sc,
+  "(7)" = event_m_56_w5_logit_c,
+  "(8)" = event_m_56_w5_logit_sc
+)
+
+# Generar LaTeX para votos en blanco
+tex <- modelsummary(
+  models_blank,
+  output    = "latex",
+  coef_map  = cm,
+  gof_map   = gm,
+  estimate  = "{estimate}{stars}",
+  statistic = "({std.error})",
+  stars     = c("*" = .10, "**" = .05, "***" = .01),
+  add_rows  = add_rows,
+  escape    = FALSE
+)
+
+lines <- strsplit(as.character(tex), "\n")[[1]]
+
+# 1) booktabs -> \hline (arriba y abajo)
+lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+
+# 2) Midrules: el primero a \hline (despues del header de columnas),
+#    los demas se eliminan (no queres mas lineas internas)
+mr <- grep("\\\\midrule", lines)
+if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+
+# 3) Caption y arraystretch despues de \begin{table}
+beg_table <- grep("\\\\begin\\{table\\}", lines)
+if (length(beg_table) >= 1) {
+  header <- c(
+    "\\caption{Event Study Estimates on Intention to Migrate Under Entropy Balancing Weights — Spanish Share 1956-1978}",
+    "\\renewcommand{\\arraystretch}{1.25}"
+  )
+  lines <- c(lines[1:beg_table[1]], header, lines[(beg_table[1] + 1):length(lines)])
+}
+# 4) \addlinespace antes de Observations
+obs <- grep("^Observations", lines)
+if (length(obs) >= 1) {
+  lines <- c(lines[1:(obs[1] - 1)],
+             "\\addlinespace",
+             lines[obs[1]:length(lines)])
+}
+
+# 5) Nota al pie en footnotesize, justificada con minipage
+endtab <- grep("\\\\end\\{tabular\\}", lines)
+if (length(endtab) >= 1) {
+  nota <- c(
+    "\\vspace{0.4em}",
+    "\\begin{minipage}{\\textwidth}",
+    "\\footnotesize Notes: The dependent variable is an indicator variable equal to one if the individual intends to migrate. All columns report estimates from logit models. Columns (1) and (2) are estimated without entropy balancing weights; columns (3)-(8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1956–1978. Columns (3) and (4) use entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Columns (5) and (6) balance on the pre-treatment values of the outcome and additionally on mean age in 2010. Columns (7) and (8) balance on the pre-treatment values of the outcome and additionally on average years of education in 2010. Columns (2), (4), (6), and (8) include controls for age and a male indicator. Standard errors clustered at the municipality level in parentheses. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.",
+    "\\end{minipage}"
+  )
+  lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
+}
+
+# Guardar
+writeLines(lines, "Output/EB/eb_m_56_logit.tex")
+
+  
 # ---------------------------------------------------------------------------- #
 # 10. Mensaje final
 # ---------------------------------------------------------------------------- #

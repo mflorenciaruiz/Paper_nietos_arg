@@ -13,7 +13,7 @@ library(haven)
 library(stringi)
 
 # Definir el path a la carpeta del proyecto: ARGENTINA
-path <- "/Users/florenciaruiz/Library/CloudStorage/OneDrive-Personal/BID/Papers Valerie/Ley de nietos/Argentina"
+path <- "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
 
 #path <- "C:\\Users\\pilih\\Documents\\Papers German\\Valerie\\Paper_nietos_arg"
 setwd(path)
@@ -96,7 +96,7 @@ setwd(path)
       admin_name_clean = str_squish(admin_name_clean)
     )
   
-  dip_nac_wide_small <- read_csv("Data Out/dip_nac_wide_small.csv")
+  dip_nac_wide_small <- read_csv("Data Int/dip_nac_wide_small.csv")
   
   # Agrego los nombres de las provincias (los saco de dip_nac_wide_small porque ahí están limpios)
   provincias <- dip_nac_wide_small %>% 
@@ -254,6 +254,7 @@ setwd(path)
            province_code, everything())
   
   write.csv(lapop_data_merge, "Data Out/lapop_data_merge.csv", row.names = FALSE)
+  write_dta(lapop_data_merge, "Data Out/lapop_data_merge.dta")
 }
 # ----------------------- #
 # 3. Estimaciones 

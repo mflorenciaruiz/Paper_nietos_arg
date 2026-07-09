@@ -1,0 +1,25 @@
+\begin{table}[!h]
+\caption{Effect on Voter Turnout Under Entropy Balancing Weights}
+\renewcommand{\arraystretch}{1.25}
+\centering
+\begin{tabular}[t]{lcccccccc}
+\hline
+  & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8)\\
+\hline
+Spanish share 1936-1955$\times$post & 0.254 & -0.485 & -0.231 & -0.965** & 0.013 & -0.634 & 0.184 & -0.512\\
+ & (0.404) & (0.363) & (0.472) & (0.442) & (0.391) & (0.391) & (0.364) & (0.351)\\
+Spanish share 1956-1978$\times$post & 0.720 & 3.254** & 0.918 & 2.933* & 1.121 & 3.189** & 1.009 & 3.123**\\
+ & (1.568) & (1.554) & (1.360) & (1.544) & (1.294) & (1.522) & (1.376) & (1.542)\\
+
+\addlinespace
+Observations & 4680 & 4680 & 4680 & 4680 & 4680 & 4680 & 4680 & 4680\\
+R$^2$ & 0.745 & 0.764 & 0.742 & 0.760 & 0.741 & 0.761 & 0.741 & 0.758\\
+Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+Election type FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes\\
+\hline
+\end{tabular}
+\vspace{0.3em}
+\captionsetup{justification=justified, singlelinecheck=false}
+\caption*{\footnotesize Notes: The dependent variable is voter turnout. Columns (1), (3), (5), and (7) use entropy balancing weights computed with treatment defined as the share of Spaniards in the first migration window, 1936–1955. Columns (2), (4), (6), and (8) use entropy balancing weights computed with treatment defined as the share of Spaniards in the second migration window, 1966–1978. Column (1) and (2) uses entropy balancing weights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021). Column (3) and (4) balances on the pre-treatment values of the outcome and additionally on share of female population, population density, mean age, and average years of education (all measured in 2010). Column (5) and (6) balances on the pre-treatment values of the outcome and additionally on mean age in 2010. Column (7) and (8) balances on the pre-treatment values of the outcome and additionally on average years of education in 2010. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}
+\end{table}
