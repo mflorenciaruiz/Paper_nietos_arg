@@ -4512,9 +4512,9 @@ chars <- c(
   #"share_age_65plus"  = "Share aged 65+",
   #"share_age_25_44"   = "Share aged 25–44",
   "popdensgeo2"       = "Pop. density",
-  "share_female"      = "Share female"
-  #"share_unemployed"  = "Share unemployed",
-  #"share_laborforce"  = "Share in labor force"
+  "share_female"      = "Share female",
+  "share_unemployed"  = "Share unemployed",
+  "share_laborforce"  = "Share in labor force"
 )
 
 # Regresiones sin estandarizar el outcome
@@ -4596,8 +4596,8 @@ results <- results %>%
 
 # Outcomes electorales pre tratamiento a agregar al mismo plot
 chars_panel <- c(
-  "share_izq"    = "Left vote share, pre-period",
-  "alternancia"  = "Alternation, pre-period"
+  "participacion"    = "Turnout, pre-period",
+  "porcentaje_blanco"  = "Blank vote share, pre-period"
 )
 
 test_char_panel_std <- function(data, char_var) {
