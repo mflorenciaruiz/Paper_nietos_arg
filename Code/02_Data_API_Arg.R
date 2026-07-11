@@ -1142,6 +1142,7 @@ dip_nac_mun_2 <- dip_nac_mun_2 %>%
 data_eff_het <- censos_0110 %>% 
   left_join(dip_nac_mun_pre_avg, by = "mun_code")
 write_csv(data_eff_het, "Data Out/data_eff_het.csv")
+write_dta(data_eff_het, "Data Out/data_eff_het.dta")
 
 # Sobreescribo la data
 write_csv(dip_nac_mun_2, "Data Out/dip_nac_mun.csv") 
