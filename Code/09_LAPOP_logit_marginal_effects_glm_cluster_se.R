@@ -54,13 +54,15 @@ library(openxlsx)
 library(haven)
 library(marginaleffects)
 library(sandwich)
+library(readxl)
 
 # ---------------------------------------------------------------------------- #
 # 1. Paths y parametros
 # ---------------------------------------------------------------------------- #
 
-path_pili <- "C:/Users/pilih/Documents/Papers German/Valerie/Paper_nietos_arg"
-setwd(path_pili)
+#path <- "C:/Users/pilih/Documents/Papers German/Valerie/Paper_nietos_arg"
+path <- "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
+setwd(path)
 
 dir.create("Output", showWarnings = FALSE)
 dir.create("Output/tex", showWarnings = FALSE, recursive = TRUE)
@@ -183,6 +185,14 @@ format_ame <- function(estimate, se, p) {
     ")"
   )
 }
+
+# Helpers de formateo (para el LaTeX de la tabla de efectos heterogenos) 
+# A diferencia de format_ame, separan el se y beta para ponerlos en filas distintas
+fmt_ame <- function(b, p, d = 3) sprintf(paste0("%.", d, "f%s"), b, stars(p))
+fmt_se  <- function(s, d = 3)    sprintf(paste0("(%.", d, "f)"), s)
+fmt_p   <- function(x, d = 3)    sprintf(paste0("%.", d, "f"), x)
+fmt_ub  <- function(x, d = 3)    sprintf(paste0("$%.", d, "f$"), x)
+fmt_n   <- function(x)           format(x, big.mark = ",", trim = TRUE)
 
 latex_escape <- function(x) {
   x %>%
@@ -820,12 +830,280 @@ latex_lines <- c(
 write_latex_lines(latex_lines, "Output/tex/logit_triple_mfx_glm_cluster_se.tex")
 
 # ---------------------------------------------------------------------------- #
-# 12. Mensaje final
+# 12. Modelo 1 heterogeneo por terciles de variables municipales LAPOP
 # ---------------------------------------------------------------------------- #
 
-cat("\nListo. Outputs principales:\n")
-cat("- Output/logit_marginal_effects_glm_cluster_se.xlsx\n")
-cat("- Output/tex/logit_post_share_mfx_glm_cluster_se.tex\n")
-cat("- Output/tex/logit_post_x_mfx_glm_cluster_se.tex\n")
-cat("- Output/tex/logit_triple_mfx_glm_cluster_se.tex\n")
-cat("\nLos efectos estan reportados en: ", scale_label, "\n", sep = "")
+# Variables de tercil: nombre_categorica -> nombre_continua
+lapop_tercile_vars <- c(
+  "t_interes_pol_mucho" = "mun_pre_all_share_interes_pol_mucho",
+  "t_en_pareja"         = "mun_pre_all_share_en_pareja"
+)
+
+# Crear los terciles a nivel municipal (un valor por municipio y despues merge)
+mun_tercile_data <- lapop %>%
+  distinct(mun_code,
+           mun_pre_all_share_interes_pol_mucho,
+           mun_pre_all_share_en_pareja) %>%
+  mutate(
+    t_interes_pol_mucho = ntile(mun_pre_all_share_interes_pol_mucho, 3),
+    t_en_pareja         = ntile(mun_pre_all_share_en_pareja, 3)
+  ) %>%
+  select(mun_code, t_interes_pol_mucho, t_en_pareja)
+
+lapop <- lapop %>%
+  left_join(mun_tercile_data, by = "mun_code")
+
+# Helper: z-test entre coeficientes de submuestras independientes
+pairwise_test <- function(b1, b2, v1, v2) {
+  z <- (b2 - b1) / sqrt(v1 + v2)
+  2 * pnorm(-abs(z))
+}
+
+results_list  <- list()
+pairwise_list <- list()
+
+for (tv_idx in seq_along(lapop_tercile_vars)) {
+  tv <- names(lapop_tercile_vars)[tv_idx]
+  sv <- unname(lapop_tercile_vars[tv_idx])
+  
+  # Matrices acumuladoras para joint y pairwise tests
+  betas_36 <- numeric(3); betas_56 <- numeric(3)
+  vars_36  <- matrix(0, 3, 3); vars_56  <- matrix(0, 3, 3)
+  
+  tv_rows <- list()
+  
+  for (t in 1:3) {
+    data_sub <- lapop %>% filter(.data[[tv]] == t)
+    
+    cat("\n--- Estimando ", tv, " tercil ", t,
+        " (N=", nrow(data_sub), ") ---\n", sep = "")
+    
+    model <- glm(
+      make_post_share_formula(controls_individual),
+      data    = data_sub,
+      family  = binomial(link = "logit"),
+      weights = wt
+    )
+    
+    # AMEs de cada cohorte
+    ame_36_res <- extract_ame(model, int_post_share_1,
+                              "$Post \\times Share_{1936-1955}$", "Yes")
+    ame_56_res <- extract_ame(model, int_post_share_2,
+                              "$Post \\times Share_{1956-1978}$", "Yes")
+    
+    # Test AME_36 = AME_56 dentro del tercil (via marginaleffects::avg_slopes)
+    hyp <- marginaleffects::avg_slopes(
+      model,
+      variables  = c(int_post_share_1, int_post_share_2),
+      vcov       = ~ mun_code,
+      hypothesis = "b1 - b2 = 0"
+    ) %>% as.data.frame()
+    p_equal <- get_p_value(hyp)[1]
+    
+    # Upper bound del tercil (max de la variable continua en la submuestra)
+    ub <- max(data_sub[[sv]], na.rm = TRUE)
+    
+    # Almacenar
+    betas_36[t]   <- ame_36_res$ame
+    betas_56[t]   <- ame_56_res$ame
+    vars_36[t, t] <- ame_36_res$se^2
+    vars_56[t, t] <- ame_56_res$se^2
+    
+    tv_rows[[t]] <- tibble(
+      tercile_var     = tv,
+      tercile         = t,
+      ame_36          = ame_36_res$ame,
+      se_36           = ame_36_res$se,
+      p_36            = ame_36_res$p_value,
+      ame_56          = ame_56_res$ame,
+      se_56           = ame_56_res$se,
+      p_56            = ame_56_res$p_value,
+      nobs            = ame_36_res$nobs,
+      pseudo_r2       = 1 - model$deviance / model$null.deviance,
+      p_equal_cohorts = p_equal,
+      tercile_ub      = ub
+    )
+  }
+  
+  # Joint test H0: b_T1 = b_T2 = b_T3
+  R <- matrix(c(1, -1, 0,
+                0,  1, -1), nrow = 2, byrow = TRUE)
+  
+  Rb_36 <- R %*% betas_36
+  RVR_36 <- R %*% vars_36 %*% t(R)
+  W_36  <- as.numeric(t(Rb_36) %*% solve(RVR_36) %*% Rb_36)
+  p_joint_36 <- pchisq(W_36, df = 2, lower.tail = FALSE)
+  
+  Rb_56 <- R %*% betas_56
+  RVR_56 <- R %*% vars_56 %*% t(R)
+  W_56  <- as.numeric(t(Rb_56) %*% solve(RVR_56) %*% Rb_56)
+  p_joint_56 <- pchisq(W_56, df = 2, lower.tail = FALSE)
+  
+  tv_rows <- lapply(tv_rows, function(r) {
+    r %>% mutate(p_joint_36 = p_joint_36, p_joint_56 = p_joint_56)
+  })
+  results_list <- c(results_list, tv_rows)
+  
+  # Pairwise tests
+  pairwise_list[[length(pairwise_list) + 1]] <- tibble(
+    tercile_var = tv,
+    p_36_T1T2 = pairwise_test(betas_36[1], betas_36[2],
+                              vars_36[1,1], vars_36[2,2]),
+    p_36_T1T3 = pairwise_test(betas_36[1], betas_36[3],
+                              vars_36[1,1], vars_36[3,3]),
+    p_36_T2T3 = pairwise_test(betas_36[2], betas_36[3],
+                              vars_36[2,2], vars_36[3,3]),
+    p_56_T1T2 = pairwise_test(betas_56[1], betas_56[2],
+                              vars_56[1,1], vars_56[2,2]),
+    p_56_T1T3 = pairwise_test(betas_56[1], betas_56[3],
+                              vars_56[1,1], vars_56[3,3]),
+    p_56_T2T3 = pairwise_test(betas_56[2], betas_56[3],
+                              vars_56[2,2], vars_56[3,3])
+  )
+}
+
+heterog_results <- bind_rows(results_list) %>%
+  select(tercile_var, tercile,
+         ame_36, se_36, p_36,
+         ame_56, se_56, p_56,
+         p_equal_cohorts,
+         nobs, pseudo_r2,
+         tercile_ub,
+         p_joint_36, p_joint_56)
+
+pairwise_results <- bind_rows(pairwise_list)
+
+# ---------------------------------------------------------------------------- #
+# 13. Exportar Excels de test de igualdad para usar en el codigo 10
+# ---------------------------------------------------------------------------- #
+
+wb_h <- createWorkbook()
+addWorksheet(wb_h, "Sheet1")
+writeData(wb_h, "Sheet1", heterog_results)
+freezePane(wb_h, "Sheet1", firstRow = TRUE)
+setColWidths(wb_h, "Sheet1", cols = 1:ncol(heterog_results), widths = "auto")
+saveWorkbook(wb_h, "Output/heterog_terciles_migration_lapop.xlsx", overwrite = TRUE)
+
+wb_p <- createWorkbook()
+addWorksheet(wb_p, "Sheet1")
+writeData(wb_p, "Sheet1", pairwise_results)
+freezePane(wb_p, "Sheet1", firstRow = TRUE)
+setColWidths(wb_p, "Sheet1", cols = 1:ncol(pairwise_results), widths = "auto")
+saveWorkbook(wb_p, "Output/pairwise_terciles_migration_lapop.xlsx", overwrite = TRUE)
+
+# ---------------------------------------------------------------------------- #
+# 14. Tabla de efectos heterogenos (variables de lapop)
+# ---------------------------------------------------------------------------- #
+
+# --- Version single-var (3 columnas por panel) ---
+make_panel_tabular_from_stata_single <- function(df_panel, group_name, digits = 3) {
+  stopifnot(nrow(df_panel) == 3)  # 3 filas (una por tercil)
+  
+  df_panel <- df_panel %>% arrange(tercile)
+  
+  cells_ame_36 <- fmt_ame(df_panel$ame_36, df_panel$p_36, digits)
+  cells_se_36  <- fmt_se(df_panel$se_36, digits)
+  cells_ame_56 <- fmt_ame(df_panel$ame_56, df_panel$p_56, digits)
+  cells_se_56  <- fmt_se(df_panel$se_56, digits)
+  cells_p_eq   <- fmt_p(df_panel$p_equal_cohorts, 3)
+  cells_ub     <- fmt_ub(df_panel$tercile_ub, digits)
+  cells_n      <- fmt_n(df_panel$nobs)
+  
+  make_row <- function(label, vals) {
+    sprintf("%s & %s \\\\", label, paste(vals, collapse = " & "))
+  }
+  
+  header_top <- sprintf("& \\multicolumn{3}{c}{%s} \\\\", group_name)
+  cmid       <- "\\cmidrule(l){2-4}"
+  header_sub <- "& T1 & T2 & T3 \\\\"
+  
+  c(
+    "\\begin{tabular*}{\\textwidth}{l@{\\extracolsep{\\fill}}ccc}",
+    "\\hline",
+    header_top,
+    cmid,
+    header_sub,
+    "\\hline",
+    make_row("Spanish share 1936-1955$\\times$Post", cells_ame_36),
+    make_row("",                                     cells_se_36),
+    make_row("Spanish share 1956-1978$\\times$Post", cells_ame_56),
+    make_row(" ",                                    cells_se_56),
+    "\\addlinespace",
+    make_row("Observations",                         cells_n),
+    make_row("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)", cells_p_eq),
+    make_row("Tercile upper bound",                  cells_ub),
+    "\\hline",
+    "\\end{tabular*}"
+  )
+}
+
+# --- Cargar el Excel de LAPOP y construir los 2 paneles ---
+heterog_lapop <- read_excel("Output/heterog_terciles_migration_lapop.xlsx")
+
+lapop_labels <- tribble(
+  ~tercile_var,          ~label,
+  "t_interes_pol_mucho", "Share very interested in politics",
+  "t_en_pareja",         "Share partnered"
+)
+
+heterog_lapop_labeled <- heterog_lapop %>% left_join(lapop_labels, by = "tercile_var")
+
+panel_A_lapop <- make_panel_tabular_from_stata_single(
+  df_panel   = heterog_lapop_labeled %>% filter(tercile_var == "t_interes_pol_mucho"),
+  group_name = "Share very interested in politics"
+)
+
+panel_B_lapop <- make_panel_tabular_from_stata_single(
+  df_panel   = heterog_lapop_labeled %>% filter(tercile_var == "t_en_pareja"),
+  group_name = "Share partnered"
+)
+# Sacar hline superior del panel B
+first_hline_B <- grep("^\\\\hline$", panel_B_lapop)[1]
+if (!is.na(first_hline_B)) panel_B_lapop <- panel_B_lapop[-first_hline_B]
+
+# --- Nota con joint tests ---
+joint_tests_text_lapop <- heterog_lapop_labeled %>%
+  distinct(label, p_joint_36, p_joint_56) %>%
+  mutate(entry = sprintf("%s (%.3f / %.3f)", label, p_joint_36, p_joint_56)) %>%
+  pull(entry) %>%
+  paste(collapse = "; ")
+
+nota_lapop <- paste0(
+  "\\caption*{\\footnotesize Notes: The dependent variable is migration ",
+  "intention. Each column reports subsample estimates by municipality-level " ,
+  "tercile of the specified variable. Terciles are defined across municipalities " ,
+  "using the pre-treatment average of each municipality-level aggregate over ",
+  "the 2012, 2014, 2017, and 2019 survey waves. Tercile upper bounds are shown at the ",
+  "bottom of each panel. All specifications include municipality and year ",
+  "fixed effects and individual controls for age and a male indicator. ",
+  "The reported coefficients are average marginal effects from a logit ",
+  "specification. Standard errors clustered at the municipality level in ",
+  "parentheses (56 clusters). The row labeled ",
+  "$p$-value: $\\beta^{1936-1955}=\\beta^{1956-1978}$ reports the p-value from ",
+  "a two-sided Wald test of equality between the two cohort-specific ",
+  "coefficients within each tercile. Joint Wald tests of the null hypothesis that the coefficient ",
+  "on Spanish share $\\times$ Post is equal across the three terciles ",
+  "($H_0: \\beta_{T_1} = \\beta_{T_2} = \\beta_{T_3}$), computed under the ",
+  "independence of the tercile subsamples and following a $\\chi^2$ ",
+  "distribution with 2 degrees of freedom, yield the following p-values, ",
+  "reported as ($\\beta^{1936-1955}$ / $\\beta^{1956-1978}$) for each ",
+  "variable: ", joint_tests_text_lapop, ". ",
+  "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
+)
+
+final_lapop <- c(
+  "\\begin{table}[!h]",
+  "\\centering",
+  "\\renewcommand{\\arraystretch}{1.15}",
+  "\\setlength{\\tabcolsep}{6pt}",
+  "\\captionsetup{justification=centering}",
+  "\\caption{Heterogeneous Effects on Migration Intention --- LAPOP characteristics}",
+  panel_A_lapop,
+  panel_B_lapop,
+  "\\addvspace{0.3em}",
+  "\\captionsetup{font=footnotesize, justification=justified, singlelinecheck=false}",
+  nota_lapop,
+  "\\end{table}"
+)
+
+writeLines(final_lapop, "Output/migration_subsamples_lapop.tex")

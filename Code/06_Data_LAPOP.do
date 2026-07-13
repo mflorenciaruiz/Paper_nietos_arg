@@ -6,8 +6,8 @@ Objetivo: Limpiar la data de LAPOP de las rondas 2012-2023 y unir las rondas
 
 *******************************************************************************/
 
-global main "C:\Users\pilih\Documents\Papers German\Valerie\Paper_nietos_arg"
-* global main "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
+*global main "C:\Users\pilih\Documents\Papers German\Valerie\Paper_nietos_arg"
+ global main "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"
 
 global data_raw_lapop "$main/Data Raw/LAPOP"
 global data_int "$main/Data Int"

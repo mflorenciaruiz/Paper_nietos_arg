@@ -3893,7 +3893,8 @@ att_p2_alt3 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post
 ## Tabla para votos en blanco
 
 make_panel_tabular <- function(models, group_names, group_sizes, panel_label,
-                               data = NULL, panel_vars = NULL, digits = 2) {
+                               data = NULL, panel_vars = NULL, digits = 2, 
+                               tercile_vars = NULL) {
   cm <- c("share_1936_1955:post" = "Spanish share 1936-1955$\\times$Post",
           "post:share_1956_1978" = "Spanish share 1956-1978$\\times$Post")
   gm <- tibble::tribble(
@@ -3926,14 +3927,26 @@ make_panel_tabular <- function(models, group_names, group_sizes, panel_label,
   names(add_rows) <- c("term", names(models))
   
   # Fila con los rangos de cada tercil (si se pasan data y panel_vars)
+  # Fila con el max real dentro de cada tercil
   if (!is.null(data) && !is.null(panel_vars)) {
+    if (is.null(tercile_vars)) {
+      stop("tercile_vars is required when data and panel_vars are provided")
+    }
+    if (length(tercile_vars) != length(panel_vars)) {
+      stop("tercile_vars must have the same length as panel_vars")
+    }
+    
     cutoff_strings <- unlist(lapply(seq_along(panel_vars), function(i) {
-      v <- panel_vars[i]
-      d <- if (length(digits) == 1) digits else digits[i]
-      q <- quantile(data[[v]], probs = c(1/3, 2/3, 1), na.rm = TRUE)
-      c(sprintf("$%.*f$", d, q[1]),
-        sprintf("$%.*f$", d, q[2]),
-        sprintf("$%.*f$", d, q[3]))
+      v  <- panel_vars[i]
+      tv <- tercile_vars[i]
+      d  <- if (length(digits) == 1) digits else digits[i]
+      
+      maxes <- sapply(1:3, function(t) {
+        max(data[[v]][data[[tv]] == t], na.rm = TRUE)
+      })
+      c(sprintf("$%.*f$", d, maxes[1]),
+        sprintf("$%.*f$", d, maxes[2]),
+        sprintf("$%.*f$", d, maxes[3]))
     }))
     
     cutoff_row <- cbind(
@@ -4030,6 +4043,7 @@ panel_A <- make_panel_tabular(
   panel_label = "Panel A",
   data        = data_eff_het,
   panel_vars  = c("popdensgeo2_2010", "share_female_2010"),
+  tercile_vars = c("t_density_2010", "t_fem_2010"),
   digits      = c(3, 3)   
   )
 
@@ -4040,6 +4054,7 @@ panel_B <- make_panel_tabular(
   panel_label = "Panel B",
   data        = data_eff_het,
   panel_vars  = c("mean_yrschool_2010", "median_age_2010"),
+  tercile_vars = c("t_meanyrschool_2010", "t_medianage_2010"),
   digits      = c(3, 3)
   )
 # Sacar la hline de arriba del panel B
@@ -4055,6 +4070,7 @@ panel_C <- make_panel_tabular(
   panel_label = "Panel D",
   data        = data_eff_het,
   panel_vars  = c("share_laborforce_2010", "share_unemployed_2010"),
+  tercile_vars = c("t_pea_2010", "t_unemp_2010"),
   digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel C
@@ -4070,6 +4086,7 @@ panel_D <- make_panel_tabular(
   panel_label = "Panel C",
   data        = data_eff_het,
   panel_vars  = c("share_izq_pre_avg", "share_alt_pre_avg"),
+  tercile_vars = c("t_izam_pre_avg", "t_alt_pre_avg"),
   digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel D
@@ -4153,6 +4170,9 @@ nota_completa <- paste0(
   "and election-type fixed effects. These specifications do not include a ",
   "lagged version of the dependent variable as a control. Standard errors ",
   "clustered at the municipality level in parentheses (104 clusters). ",
+  "The row labeled $p$-value: $\\beta^{1936-1955}=\\beta^{1956-1978}$ reports the p-value from ",
+  "a two-sided Wald test of equality between the two cohort-specific ",
+  "coefficients within each tercile.",
   "Joint Wald tests of the null hypothesis that the coefficient on Spanish ",
   "share $\\times$ Post is equal across the three terciles ",
   "($H_0: \\beta_{T_1} = \\beta_{T_2} = \\beta_{T_3}$), computed under the ",
@@ -4342,6 +4362,7 @@ panel_A <- make_panel_tabular(
   panel_label = "Panel A",
   data        = data_eff_het,
   panel_vars  = c("popdensgeo2_2010", "share_female_2010"),
+  tercile_vars = c("t_density_2010", "t_fem_2010"),
   digits      = c(3, 3)  
 )
 
@@ -4352,6 +4373,7 @@ panel_B <- make_panel_tabular(
   panel_label = "Panel B",
   data        = data_eff_het,
   panel_vars  = c("mean_yrschool_2010", "median_age_2010"),
+  tercile_vars = c("t_meanyrschool_2010", "t_medianage_2010"),
   digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel B
@@ -4367,6 +4389,7 @@ panel_C <- make_panel_tabular(
   panel_label = "Panel C",
   data        = data_eff_het,
   panel_vars  = c("share_laborforce_2010", "share_unemployed_2010"),
+  tercile_vars = c("t_pea_2010", "t_unemp_2010"),
   digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel C
@@ -4382,6 +4405,7 @@ panel_D <- make_panel_tabular(
   panel_label = "Panel C",
   data        = data_eff_het,
   panel_vars  = c("share_izq_pre_avg", "share_alt_pre_avg"),
+  tercile_vars = c("t_izam_pre_avg", "t_alt_pre_avg"),
   digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel D
@@ -4408,6 +4432,9 @@ nota_completa <- paste0(
   "and election-type fixed effects. These specifications do not include a ",
   "lagged version of the dependent variable as a control. Standard errors ",
   "clustered at the municipality level in parentheses (104 clusters). ",
+  "The row labeled $p$-value: $\\beta^{1936-1955}=\\beta^{1956-1978}$ reports the p-value from ",
+  "a two-sided Wald test of equality between the two cohort-specific ",
+  "coefficients within each tercile.",
   "Joint Wald tests of the null hypothesis that the coefficient on Spanish ",
   "share $\\times$ Post is equal across the three terciles ",
   "($H_0: \\beta_{T_1} = \\beta_{T_2} = \\beta_{T_3}$), computed under the ",
@@ -4512,9 +4539,9 @@ chars <- c(
   #"share_age_65plus"  = "Share aged 65+",
   #"share_age_25_44"   = "Share aged 25–44",
   "popdensgeo2"       = "Pop. density",
-  "share_female"      = "Share female"
-  #"share_unemployed"  = "Share unemployed",
-  #"share_laborforce"  = "Share in labor force"
+  "share_female"      = "Share female",
+  "share_unemployed"  = "Share unemployed",
+  "share_laborforce"  = "Share in labor force"
 )
 
 # Regresiones sin estandarizar el outcome
@@ -4596,8 +4623,8 @@ results <- results %>%
 
 # Outcomes electorales pre tratamiento a agregar al mismo plot
 chars_panel <- c(
-  "share_izq"    = "Left vote share, pre-period",
-  "alternancia"  = "Alternation, pre-period"
+  "participacion"    = "Turnout, pre-period",
+  "porcentaje_blanco"  = "Blank vote share, pre-period"
 )
 
 test_char_panel_std <- function(data, char_var) {

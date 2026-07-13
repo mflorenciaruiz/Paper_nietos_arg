@@ -1,0 +1,30 @@
+\begin{table}[!h]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{3pt}
+\caption{Event Study Estimates on Intention to Migrate Under Entropy Balancing Weights -- Spanish Share 1936-1955}
+\begin{tabular}{lcccccccc}
+\hline
+ & (1) & (2) & (3) & (4) & (5) & (6) & (7) & (8) \\
+\hline
+Spanish share 1936-1955 $\times$ 2012 & 0.037 & 0.038 & 0.027 & 0.020 & 0.005 & 0.004 & -0.000 & -0.003 \\
+ & (0.023) & (0.023) & (0.030) & (0.028) & (0.031) & (0.032) & (0.021) & (0.022) \\
+Spanish share 1936-1955 $\times$ 2014 & -0.039 & -0.035 & -0.003 & -0.006 & -0.023 & -0.021 & -0.022 & -0.021 \\
+ & (0.028) & (0.025) & (0.025) & (0.023) & (0.027) & (0.026) & (0.022) & (0.022) \\
+Spanish share 1936-1955 $\times$ 2017 & -0.028 & -0.024 & -0.021 & -0.018 & -0.031 & -0.028 & -0.030 & -0.028 \\
+ & (0.021) & (0.020) & (0.023) & (0.023) & (0.032) & (0.033) & (0.032) & (0.032) \\
+Spanish share 1936-1955 $\times$ 2023 & 0.006 & 0.009 & 0.013 & 0.014 & 0.006 & 0.013 & 0.011 & 0.013 \\
+ & (0.020) & (0.019) & (0.024) & (0.023) & (0.023) & (0.020) & (0.018) & (0.015) \\
+\addlinespace
+Observations & 7394 & 7342 & 7394 & 7342 & 7394 & 7342 & 7394 & 7342 \\
+Pseudo R$^2$ & 0.053 & 0.139 & 0.050 & 0.137 & 0.058 & 0.130 & 0.060 & 0.131 \\
+Controls & No & Yes & No & Yes & No & Yes & No & Yes \\
+Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+Year FE & Yes & Yes & Yes & Yes & Yes & Yes & Yes & Yes \\
+EB weights & No & No & Yes & Yes & Yes & Yes & Yes & Yes \\
+\hline
+\end{tabular}
+\vspace{0.4em}
+\captionsetup{justification=justified, singlelinecheck=false}
+\caption*{\footnotesize Notes: The dependent variable is migration intention. All columns report average marginal effects from a logit specification.The estimates are expressed as the change in the probability of reporting anintention to migrate associated with a one-unit increase in the corresponding regressor,where one unit represents a one-percentage-point increase in the municipal share of theSpanish-born population. Columns use different sets of entropy balancing weights. Columns (1) and (2) are estimated without entropy balancing weights;columns (3)-(8) use entropy balancing weights computed with treatment defined as the share ofSpaniards in the first migration window, 1936–1955. Columns (3) and (4) use entropy balancingweights computed to balance the pre-treatment values of the outcome (2011, 2013, 2015, 2017, 2019, and 2021).Columns (5) and (6) balance on the pre-treatment values of the outcome and additionally on population density andmean age in 2010. Columns (7) and (8) balance on the pre-treatment values of the outcome and additionallyon population density and average years of education in 2010. Columns (2), (4), (6), and (8) includecontrols for age and a male indicator. Standard errors clustered at the municipality level in parentheses (56 clusters). Pseudo R$^2$ is McFadden's. * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}
+\end{table}
