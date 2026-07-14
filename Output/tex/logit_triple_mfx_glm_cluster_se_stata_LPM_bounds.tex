@@ -1,0 +1,32 @@
+\begin{table}[!htbp]
+\centering
+\caption{Logit average marginal effects: triple differences}
+\label{tab:logit_triple_mfx_stata_lpm}
+\scriptsize
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccc}
+\hline
+ & \multicolumn{2}{c}{No controls} & \multicolumn{2}{c}{Controls} & \multicolumn{2}{c}{N} & \multicolumn{2}{c}{LPM outside [0,1]} \\
+Variable & 1936--1955 & 1956--1978 & 1936--1955 & 1956--1978 & No & Yes & No & Yes \\
+\hline
+Log population density & 0.269 (0.965) & -3.465 (3.283) & -0.072 (1.135) & -3.088 (4.001) & 7503 & 7412 & 0 (0.00%) & 760 (10.25%) \\
+Mean age & 0.165 (2.554) & -11.219 (9.708) & 2.214 (2.920) & -19.855* (11.751) & 7467 & 7412 & 0 (0.00%) & 770 (10.39%) \\
+Share blank/null vote & 0.101 (98.150) & 203.155 (419.876) & 25.546 (100.055) & 146.897 (394.224) & 7467 & 7412 & 0 (0.00%) & 762 (10.28%) \\
+Mean years of education & -1.162 (2.477) & -7.316 (9.702) & -2.605 (2.445) & -6.844 (9.421) & 7467 & 7412 & 0 (0.00%) & 752 (10.15%) \\
+Mean left-right ideology & -2.292 (9.224) & 11.304 (26.968) & -0.500 (9.884) & 0.834 (31.785) & 7467 & 7412 & 0 (0.00%) & 759 (10.24%) \\
+Share male & 194.417 (175.475) & -685.175 (755.223) & 372.046 (235.155) & -1084.751 (1017.948) & 7467 & 7412 & 0 (0.00%) & 763 (10.29%) \\
+Share partnered & -63.137** (30.760) & 219.015** (107.636) & -73.256*** (26.996) & 259.182** (114.434) & 7467 & 7412 & 0 (0.00%) & 757 (10.21%) \\
+Share very interested in politics & -46.744 (43.691) & -172.496 (145.679) & -45.902 (42.072) & -252.789* (142.095) & 7467 & 7412 & 0 (0.00%) & 762 (10.28%) \\
+Share unemployed & 122.881 (123.233) & -82.700 (469.756) & 218.586* (115.817) & -440.506 (495.232) & 7467 & 7412 & 0 (0.00%) & 759 (10.24%) \\
+\hline
+\multicolumn{9}{l}{\footnotesize Notes: Each row reports a separate Logit triple-difference model.} \\
+\multicolumn{9}{l}{\footnotesize Entries report average marginal effects in percentage points for \(Post \times X \times Share\).} \\
+\multicolumn{9}{l}{\footnotesize All models include year and municipality fixed effects and use survey weights.} \\
+\multicolumn{9}{l}{\footnotesize Controls include age, male, and \(Post\) interacted with the remaining municipal characteristics.} \\
+\multicolumn{9}{l}{\footnotesize Standard errors clustered at municipality level are in parentheses.} \\
+\multicolumn{9}{l}{\footnotesize LPM columns report the unweighted N (percentage) of fitted values strictly below 0 or above 1.} \\
+\multicolumn{9}{l}{\footnotesize Each LPM uses the same estimation sample, regressors, weights, and fixed effects as the corresponding Logit.} \\
+\multicolumn{9}{l}{\footnotesize * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).} \\
+\end{tabular}
+}
+\end{table}

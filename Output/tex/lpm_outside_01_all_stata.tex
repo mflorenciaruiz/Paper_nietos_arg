@@ -1,0 +1,50 @@
+\begin{table}[!htbp]
+\centering
+\caption{Linear probability model: proportion of predictions outside [0,1]}
+\label{tab:lpm_outside_all}
+\small
+\begin{tabular}{lcc}
+\hline
+Specification & No controls & Controls \\
+\hline
+\multicolumn{3}{l}{\textit{Panel A: Post-period Spanish historical exposure}} \\
+Post-period Spanish historical exposure & 0.00\% & 10.14\% \\
+\addlinespace
+\multicolumn{3}{l}{\textit{Panel B: Post-period municipal characteristics}} \\
+Mean age & 0.00\% & 10.04\% \\
+Share male & 0.00\% & 10.05\% \\
+Log population density & 0.00\% & 10.07\% \\
+Share unemployed & 0.00\% & 10.16\% \\
+Share partnered & 0.00\% & 10.09\% \\
+Mean years of education & 0.00\% & 10.01\% \\
+Mean left-right ideology & 0.00\% & 10.29\% \\
+Share very interested in politics & 0.00\% & 10.04\% \\
+Share blank/null vote & 0.00\% & 10.06\% \\
+\addlinespace
+\multicolumn{3}{l}{\textit{Panel C: Triple-difference specifications}} \\
+Mean age & 0.00\% & 10.39\% \\
+Share male & 0.00\% & 10.29\% \\
+Log population density & 0.00\% & 10.25\% \\
+Share unemployed & 0.00\% & 10.24\% \\
+Share partnered & 0.00\% & 10.21\% \\
+Mean years of education & 0.00\% & 10.15\% \\
+Mean left-right ideology & 0.00\% & 10.24\% \\
+Share very interested in politics & 0.00\% & 10.28\% \\
+Share blank/null vote & 0.00\% & 10.28\% \\
+\hline
+\end{tabular}
+\vspace{0.7em}
+\begin{tabular}{lccc}
+\hline
+Municipal characteristic defining terciles & T1 & T2 & T3 \\
+\hline
+\multicolumn{4}{l}{\textit{Panel D: Heterogeneity by municipal tercile}} \\
+Share very interested in politics & 11.21\% & 10.77\% & 9.91\% \\
+Share partnered & 9.27\% & 11.54\% & 9.93\% \\
+\hline
+\end{tabular}
+\vspace{0.4em}
+\begin{minipage}{0.98\textwidth}
+\footnotesize Notes: Entries report the unweighted proportion of observations, expressed as a percentage, whose fitted value from the linear probability model is strictly below 0 or above 1. Each LPM uses the same estimation sample, regressors, survey weights, year fixed effects, and municipality fixed effects as the corresponding Logit model. In Panels A and B, controls include age and a male indicator. In Panel C, controls include age, male, and Post interacted with the remaining municipal characteristics. Panel D uses tercile-specific samples and includes controls for age and a male indicator.
+\end{minipage}
+\end{table}
