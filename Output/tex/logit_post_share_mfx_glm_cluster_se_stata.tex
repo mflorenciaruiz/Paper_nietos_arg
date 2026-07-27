@@ -1,19 +1,29 @@
 \begin{table}[!htbp]
+\normalsize
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
 \centering
 \caption{Logit average marginal effects: post-period Spanish historical exposure}
 \label{tab:logit_post_share_mfx_stata}
-\small
-\begin{tabular}{lcccc}
+\begin{tabular}{llc}
 \hline
-Term & No controls & Controls & N no controls & N controls \\
+Term & Controls & Logit AME \\
 \hline
-\(Post \times Share_{1936-1955}\) & 1.207 (2.739) & 1.304 (2.827) & 7503 & 7448 \\
-\(Post \times Share_{1956-1978}\) & 2.268 (9.429) & 2.405 (9.832) & 7503 & 7448 \\
+Spanish share 1936--1955 \(\times\) Post & No & 0.012 \\
+ & & (0.027) \\
+Spanish share 1936--1955 \(\times\) Post & Yes & 0.013 \\
+ & & (0.028) \\
+\addlinespace
+Spanish share 1956--1978 \(\times\) Post & No & 0.023 \\
+ & & (0.094) \\
+Spanish share 1956--1978 \(\times\) Post & Yes & 0.024 \\
+ & & (0.098) \\
 \hline
-\multicolumn{5}{l}{\footnotesize Notes: The dependent variable is migration intention.} \\
-\multicolumn{5}{l}{\footnotesize Logit entries report average marginal effects in percentage points.} \\
-\multicolumn{5}{l}{\footnotesize All models include year and municipality fixed effects and use survey weights.} \\
-\multicolumn{5}{l}{\footnotesize Controls include age and male. Standard errors clustered at municipality level are in parentheses.} \\
-\multicolumn{5}{l}{\footnotesize * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).} \\
 \end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{\textwidth}
+{\footnotesize
+Notes: The dependent variable is migration intention. Entries are Logit average marginal effects on the 0--1 probability scale. All models include year and municipality fixed effects. Controls include age and male. Standard errors are clustered at the municipality level and reported in parentheses (56 clusters). The number of observations is        7,503 in models without controls and        7,448 in models with controls. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+}
+\end{minipage}
 \end{table}

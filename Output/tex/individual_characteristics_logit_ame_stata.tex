@@ -1,0 +1,44 @@
+\begin{table}[htbp]
+\normalsize
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\centering
+\caption{Individual characteristics and migration intention: Logit average marginal effects}
+\label{tab:individual_characteristics_ame_stata}
+\setlength{\tabcolsep}{4pt}
+\captionsetup{justification=centering}
+\begin{tabular}{lccc}
+\hline
+ & (1) & (2) & (3) \\
+\hline
+Age & -0.007*** & -0.006*** & -0.006*** \\
+ & (0.000) & (0.000) & (0.000) \\
+Male & 0.049*** & 0.048*** & 0.051*** \\
+ & (0.012) & (0.010) & (0.011) \\
+Unemployed & 0.030 & 0.037** & 0.033* \\
+ & (0.021) & (0.018) & (0.018) \\
+Partnered & -0.029** & -0.023** & -0.035*** \\
+ & (0.012) & (0.010) & (0.011) \\
+High School or more & 0.035*** & 0.030*** & 0.040*** \\
+ & (0.011) & (0.010) & (0.010) \\
+Left-right ideology & 0.001 & 0.001 &  \\
+ & (0.002) & (0.002) &  \\
+Very interested in politics & 0.022* & 0.028** & 0.020 \\
+ & (0.013) & (0.012) & (0.013) \\
+Blank/null vote & 0.031** &  & 0.032*** \\
+ & (0.013) &  & (0.011) \\
+\hline
+Observations &        4,966 &        6,155 &        5,641 \\
+Year FE & Yes & Yes & Yes \\
+Municipality FE & Yes & Yes & Yes \\
+Survey weights & Yes & Yes & Yes \\
+Blank/null vote included & Yes & No & Yes \\
+Ideology included & Yes & Yes & No \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{0.98\linewidth}
+\footnotesize\setlength{\parindent}{0pt}\setlength{\parskip}{1pt}
+Notes: The dependent variable is migration intention. Entries are Logit average marginal effects on the 0--1 probability scale. Standard errors are clustered at the municipality level and reported in parentheses (56 clusters). All models include year and municipality fixed effects. Missing values account for 34.83\%, 19.23\%, and 25.97\% of the original sample in the full, no blank/null vote, and no ideology specifications, respectively. Unlike the other tables, this table relies exclusively on LAPOP data, as its individual-level structure allows us to examine the relationship between respondents' personal characteristics and their intention to migrate. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+\end{minipage}
+\end{table}

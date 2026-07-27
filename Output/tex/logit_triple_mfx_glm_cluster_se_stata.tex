@@ -1,28 +1,58 @@
 \begin{table}[!htbp]
 \centering
-\caption{Logit average marginal effects: triple differences}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\caption{Triple differences by municipal characteristics}
 \label{tab:logit_triple_mfx_stata}
 \small
-\begin{tabular}{lcccccc}
+\begin{tabular}{llcc}
 \hline
- & \multicolumn{2}{c}{No controls} & \multicolumn{2}{c}{Controls} & \multicolumn{2}{c}{N} \\
-Variable & 1936--1955 & 1956--1978 & 1936--1955 & 1956--1978 & No controls & Controls \\
+ & & \multicolumn{2}{c}{Spanish share \(\times\) Post \(\times X\): Logit average marginal effects} \\
+Municipal characteristic & Controls & 1936--1955 & 1956--1978 \\
 \hline
-Mean age & 0.165 (2.554) & -11.219 (9.708) & 2.214 (2.920) & -19.855* (11.751) & 7467 & 7412 \\
-Share male & 194.417 (175.475) & -685.175 (755.223) & 372.046 (235.155) & -1084.751 (1017.948) & 7467 & 7412 \\
-Log population density & 0.269 (0.965) & -3.465 (3.283) & -0.072 (1.135) & -3.088 (4.001) & 7503 & 7412 \\
-Share unemployed & 122.881 (123.233) & -82.700 (469.756) & 218.586* (115.817) & -440.506 (495.232) & 7467 & 7412 \\
-Share partnered & -63.137** (30.760) & 219.015** (107.636) & -73.256*** (26.996) & 259.182** (114.434) & 7467 & 7412 \\
-Mean years of education & -1.162 (2.477) & -7.316 (9.702) & -2.605 (2.445) & -6.844 (9.421) & 7467 & 7412 \\
-Mean left-right ideology & -2.292 (9.224) & 11.304 (26.968) & -0.500 (9.884) & 0.834 (31.785) & 7467 & 7412 \\
-Share very interested in politics & -46.744 (43.691) & -172.496 (145.679) & -45.902 (42.072) & -252.789* (142.095) & 7467 & 7412 \\
-Share blank/null vote & 0.101 (98.150) & 203.155 (419.876) & 25.546 (100.055) & 146.897 (394.224) & 7467 & 7412 \\
+Population density & No & -0.000 & -0.000 \\
+ & & (0.000) & (0.000) \\
+Population density & Yes & -0.000 & -0.000 \\
+ & & (0.000) & (0.000) \\
+\addlinespace
+Female population share & No & -0.022 & 0.038 \\
+ & & (0.021) & (0.083) \\
+Female population share & Yes & -0.050** & 0.102 \\
+ & & (0.023) & (0.105) \\
+\addlinespace
+Mean years of education & No & -0.010 & -0.047 \\
+ & & (0.025) & (0.089) \\
+Mean years of education & Yes & -0.030 & 0.008 \\
+ & & (0.028) & (0.136) \\
+\addlinespace
+Median age & No & 0.002 & -0.046 \\
+ & & (0.008) & (0.033) \\
+Median age & Yes & -0.001 & -0.032 \\
+ & & (0.008) & (0.043) \\
+\addlinespace
+Share in labor force & No & -0.002 & -0.026* \\
+ & & (0.005) & (0.016) \\
+Share in labor force & Yes & -0.002 & -0.026 \\
+ & & (0.005) & (0.026) \\
+\addlinespace
+Share unemployed & No & -0.037 & 0.196** \\
+ & & (0.027) & (0.096) \\
+Share unemployed & Yes & -0.020 & 0.090 \\
+ & & (0.041) & (0.168) \\
+\addlinespace
+Left vote share & No & -0.000 & 0.003 \\
+ & & (0.002) & (0.007) \\
+Left vote share & Yes & 0.002 & -0.011 \\
+ & & (0.002) & (0.010) \\
+\addlinespace
+Ideological alternation & No & 0.001 & -0.003 \\
+ & & (0.001) & (0.003) \\
+Ideological alternation & Yes & -0.001 & 0.003 \\
+ & & (0.001) & (0.005) \\
 \hline
-\multicolumn{7}{l}{\footnotesize Notes: Each row reports a separate Logit triple-difference model.} \\
-\multicolumn{7}{l}{\footnotesize Entries report average marginal effects in percentage points for \(Post \times X \times Share\).} \\
-\multicolumn{7}{l}{\footnotesize All models include year and municipality fixed effects and use survey weights.} \\
-\multicolumn{7}{l}{\footnotesize Controls include age, male, and \(Post\) interacted with the remaining municipal characteristics.} \\
-\multicolumn{7}{l}{\footnotesize Standard errors clustered at municipality level are in parentheses.} \\
-\multicolumn{7}{l}{\footnotesize * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).} \\
 \end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{\textwidth}
+\footnotesize Notes: The dependent variable is migration intention. Each pair of rows reports separate triple-difference Logit specifications for the municipal characteristic indicated in the first column. Entries report average marginal effects on the 0--1 probability scale for \(Spanish\ share_{1936-1955} \times Post \times X\) and \(Spanish\ share_{1956-1978} \times Post \times X\). All models include year and municipality fixed effects. Standard errors are clustered at the municipality level and reported in parentheses (56 clusters). Specifications without controls include the two Spanish-share-by-Post terms, \(Post \times X\), and the two corresponding triple interactions. Specifications with controls additionally include age, male, and \(Post\) interacted with the remaining municipal characteristics. The number of observations is        7,503 in models without controls and        7,448 in models with controls. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+\end{minipage}
 \end{table}

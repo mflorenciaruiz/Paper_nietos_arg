@@ -1,0 +1,37 @@
+\begin{table}[!h]
+\caption{Effects on Blank Votes and Voter Turnout, Controlling for Pre-Election Drought}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\centering
+\begin{tabular}[t]{lcccccc}
+\hline
+ & \multicolumn{3}{c}{Share of blank votes} & \multicolumn{3}{c}{Voter turnout} \\
+\cmidrule(l){2-4} \cmidrule(l){5-7}
+  & (1) & (2) & (3) & (4) & (5) & (6)\\
+\hline
+Spanish share 1936-1955$\times$Post & -2.110** & -1.902*** & -2.275** & -0.434 & -0.387 & -0.301\\
+ & (0.843) & (0.551) & (0.910) & (0.370) & (0.372) & (0.345)\\
+Spanish share 1956-1978$\times$Post & -4.273* & -2.528 & -4.854* & 3.126** & 2.665* & 3.581***\\
+ & (2.242) & (2.319) & (2.493) & (1.429) & (1.357) & (1.325)\\
+Lagged share of blank votes &  &  & -0.268*** &  &  & \\
+ &  &  & (0.026) &  &  & \\
+Lagged voter turnout &  &  &  &  &  & 0.052\\
+ &  &  &  &  &  & (0.042)\\
+Pre-election drought exposure & 0.001 & -0.003 & -0.010* & 0.010*** & 0.014*** & 0.004\\
+ & (0.005) & (0.005) & (0.006) & (0.002) & (0.003) & (0.003)\\
+
+\addlinespace
+Observations & 4680 & 2496 & 4056 & 4680 & 2496 & 4056\\
+R$^2$ & 0.448 & 0.446 & 0.474 & 0.743 & 0.775 & 0.778\\
+$p$-value ($\beta_{36{-}55} = \beta_{56{-}78}$) & 0.427 & 0.816 & 0.392 & 0.035 & 0.057 & 0.013\\
+Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes\\
+Time FE & Yes & Yes & Yes & Yes & Yes & Yes\\
+Election type FE & Yes & No & Yes & Yes & No & Yes\\
+General elections only & No & Yes & No & No & Yes & No\\
+Pre-election drought control & Yes & Yes & Yes & Yes & Yes & Yes\\
+\hline
+\end{tabular}
+\vspace{0.3em}
+\captionsetup{justification=justified, singlelinecheck=false}
+\caption*{\footnotesize Notes: The dependent variable in columns (1)--(3) is the share of blank votes over total voters. In columns (4)--(6), the dependent variable is voter turnout. Pre-election drought exposure is the percentage of municipal area with SPEI-12 below -1.5 in the calendar month immediately preceding each election. Because the accumulation period is 12 months, each monthly SPEI-12 value summarizes the preceding twelve-month climatic balance ending in that month. Columns (2) and (5) use general elections only. Columns (3) and (6) include the lagged dependent variable, calculated within municipality and election type. All specifications include municipality and year fixed effects; pooled specifications also include election-type fixed effects. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}
+\end{table}

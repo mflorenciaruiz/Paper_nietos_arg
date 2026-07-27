@@ -1,0 +1,35 @@
+\begin{table}[!htbp]
+\normalsize
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\centering
+\caption{Pre-trends in migration intention: pooled Spanish exposure, linear probability models}
+\label{tab:pooled_pretrends_lpm_stata}
+\setlength{\tabcolsep}{4pt}
+\captionsetup{justification=centering}
+\begin{tabular}{lcccc}
+\hline
+ & (1) & (2) & (3) & (4) \\
+\hline
+Spanish share 1936--1978 \(\times\) 2012 & 0.003 & 0.004 & 0.002 & 0.007 \\
+ & (0.017) & (0.025) & (0.016) & (0.022) \\
+Spanish share 1936--1978 \(\times\) 2014 & -0.026 & -0.045* & -0.027 & -0.039 \\
+ & (0.018) & (0.027) & (0.016) & (0.025) \\
+Spanish share 1936--1978 \(\times\) 2017 & -0.029* & -0.032 & -0.027* & -0.027 \\
+ & (0.016) & (0.025) & (0.016) & (0.023) \\
+Spanish share 1936--1978 \(\times\) 2023 & 0.017 & 0.007 & 0.018 & 0.010 \\
+ & (0.016) & (0.025) & (0.015) & (0.024) \\
+\hline
+Observations &        7,503 &        7,503 &        7,448 &        7,448 \\
+Municipality FE & Yes & Yes & Yes & Yes \\
+Year FE & Yes & Yes & Yes & Yes \\
+Controls & No & No & Yes & Yes \\
+Spanish share census & 1970 & 1980 & 1970 & 1980 \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{0.98\linewidth}
+\footnotesize\setlength{\parindent}{0pt}\setlength{\parskip}{1pt}
+Notes: The dependent variable is migration intention. Entries are LPM coefficients relative to 2019. Every LPM uses exactly the corresponding Logit estimation sample and the same survey weights, year fixed effects, municipality fixed effects, controls, and standard errors clustered at the municipality level. Controls include age and male. The unweighted percentages of fitted values outside [0,1] are  0.47\%,  0.47\%, 10.24\%, and 10.30\% in columns (1)--(4), respectively. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+\end{minipage}
+\end{table}

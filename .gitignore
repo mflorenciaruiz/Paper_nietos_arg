@@ -29,3 +29,7 @@ Data Out/
 *.blg
 *.synctex.gz
 /Code/Viejos pili
+Output/Argentina/Drought_2021/dip_nac_mun_with_drought_2021.csv
+Output/Argentina/Drought_ERA5_SPEI12/dip_nac_mun_with_era5_spei12.csv
+Output/Argentina/Drought_2023_identification/dip_nac_mun_with_climate_2023.csv
+Output/Argentina/Drought_ERA5_SPEI12_2023_only/dip_nac_mun_with_spei12_2023_control.csv

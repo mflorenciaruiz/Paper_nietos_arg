@@ -1,0 +1,37 @@
+\begin{table}[!h]
+\caption{Effects on Blank Votes and Voter Turnout, Controlling for Severe 2023 Pre-Election Drought}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\centering
+\begin{tabular}[t]{lcccccc}
+\hline
+ & \multicolumn{3}{c}{Share of blank votes} & \multicolumn{3}{c}{Voter turnout} \\
+\cmidrule(l){2-4} \cmidrule(l){5-7}
+  & (1) & (2) & (3) & (4) & (5) & (6)\\
+\hline
+Spanish share 1936-1955$\times$Post & -2.290*** & -1.994*** & -2.421*** & -0.482 & -0.474 & -0.326\\
+ & (0.831) & (0.583) & (0.898) & (0.363) & (0.364) & (0.343)\\
+Spanish share 1956-1978$\times$Post & -4.469* & -2.607 & -4.861* & 2.963** & 2.531* & 3.502***\\
+ & (2.568) & (2.701) & (2.719) & (1.354) & (1.318) & (1.279)\\
+Lagged share of blank votes &  &  & -0.259*** &  &  & \\
+ &  &  & (0.025) &  &  & \\
+Lagged voter turnout &  &  &  &  &  & 0.051\\
+ &  &  &  &  &  & (0.042)\\
+2023 severe drought exposure & -0.048*** & -0.054*** & -0.044*** & -0.004 & 0.003 & -0.005\\
+ & (0.015) & (0.015) & (0.015) & (0.004) & (0.003) & (0.003)\\
+
+\addlinespace
+Observations & 4680 & 2496 & 4056 & 4680 & 2496 & 4056\\
+R$^2$ & 0.457 & 0.460 & 0.481 & 0.742 & 0.772 & 0.778\\
+$p$-value ($\beta_{36{-}55} = \beta_{56{-}78}$) & 0.474 & 0.843 & 0.449 & 0.032 & 0.055 & 0.011\\
+Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes\\
+Time FE & Yes & Yes & Yes & Yes & Yes & Yes\\
+Election type FE & Yes & No & Yes & Yes & No & Yes\\
+General elections only & No & Yes & No & No & Yes & No\\
+2023 drought control & Yes & Yes & Yes & Yes & Yes & Yes\\
+\hline
+\end{tabular}
+\vspace{0.3em}
+\captionsetup{justification=justified, singlelinecheck=false}
+\caption*{\footnotesize Notes: The dependent variable in columns (1)--(3) is the share of blank votes over total voters. In columns (4)--(6), the dependent variable is voter turnout. For 2023 observations, drought exposure is the percentage of municipal area with SPEI-6 below -2 in the calendar month immediately preceding each election. The July 2023 SPEI-6 is used for the PASO and the September 2023 SPEI-6 for the general election. The climate control is equal to zero in all election years other than 2023. Columns (2) and (5) use general elections only. Columns (3) and (6) include the lagged dependent variable, calculated within municipality and election type. All specifications include municipality and year fixed effects; pooled specifications also include election-type fixed effects. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}
+\end{table}

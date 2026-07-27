@@ -1,0 +1,28 @@
+\begin{table}[!htbp]
+\normalsize
+\renewcommand{\arraystretch}{1.15}
+\centering
+\caption{Effect on migration intentions: pooled Spanish exposure, linear probability models}
+\label{tab:post_pooled_share_lpm_stata}
+\setlength{\tabcolsep}{4pt}
+\captionsetup{justification=centering}
+\begin{tabular}{lcccc}
+\hline
+ & (1) & (2) & (3) & (4) \\
+\hline
+Spanish share 1936--1978 \(\times\) Post & 0.029** & 0.031** & 0.025** & 0.025** \\
+ & (0.012) & (0.012) & (0.011) & (0.012) \\
+\hline
+Observations &        7,503 &        7,448 &        7,503 &        7,448 \\
+Year FE & Yes & Yes & Yes & Yes \\
+Municipality FE & Yes & Yes & Yes & Yes \\
+Controls & No & Yes & No & Yes \\
+Spanish share census & 1970 & 1970 & 1980 & 1980 \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{0.98\linewidth}
+\footnotesize\setlength{\parindent}{0pt}\setlength{\parskip}{1pt}
+Notes: The dependent variable is migration intention. Each column reports an LPM using exactly the corresponding Logit estimation sample and the same survey weights, year fixed effects, municipality fixed effects, controls, and standard errors clustered at the municipality level. Controls include age and male. The unweighted percentages of fitted values outside [0,1] are  0.00\%, 10.08\%,  0.00\%, and 10.11\% in columns (1)--(4), respectively. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+\end{minipage}
+\end{table}

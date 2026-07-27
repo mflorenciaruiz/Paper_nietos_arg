@@ -1,0 +1,51 @@
+\begin{table}[!htbp]
+\small
+\renewcommand{\arraystretch}{1}
+\setlength{\tabcolsep}{3pt}
+\centering
+\caption{Triple-difference models: all interaction terms, Spanish presence from 1970 Census, Logit average marginal effects}
+\label{tab:triple_pooled_all_c70_ame_stata}
+\captionsetup{justification=centering}
+\begin{tabular}{llcc}
+\hline
+Municipal characteristic & Term & No controls & Controls \\
+\hline
+Population density & Spanish share 1936--1978 \(\times\) Post & 0.024*** (0.007) & 0.030*** (0.009) \\
+ & \(Post \times X\) & 0.000 (0.000) & 0.000 (0.000) \\
+ & Spanish share 1936--1978 \(\times\) Post \(\times X\) & -0.000 (0.000) & -0.000 (0.000) \\
+\addlinespace
+Female population share & Spanish share 1936--1978 \(\times\) Post & 0.236 (0.228) & 0.717 (0.608) \\
+ & \(Post \times X\) & 0.001 (0.011) & -0.004 (0.013) \\
+ & Spanish share 1936--1978 \(\times\) Post \(\times X\) & -0.004 (0.005) & -0.014 (0.012) \\
+\addlinespace
+Mean years of education & Spanish share 1936--1978 \(\times\) Post & 0.112** (0.047) & 0.154* (0.079) \\
+ & \(Post \times X\) & 0.019 (0.015) & 0.015 (0.030) \\
+ & Spanish share 1936--1978 \(\times\) Post \(\times X\) & -0.012* (0.006) & -0.017* (0.010) \\
+\addlinespace
+Median age & Spanish share 1936--1978 \(\times\) Post & 0.150*** (0.042) & 0.108 (0.069) \\
+ & \(Post \times X\) & 0.010** (0.004) & 0.009* (0.005) \\
+ & Spanish share 1936--1978 \(\times\) Post \(\times X\) & -0.005*** (0.002) & -0.003 (0.003) \\
+\addlinespace
+Share in labor force & Spanish share 1936--1978 \(\times\) Post & 0.261*** (0.093) & 0.198 (0.209) \\
+ & \(Post \times X\) & 0.004** (0.002) & 0.004* (0.002) \\
+ & Spanish share 1936--1978 \(\times\) Post \(\times X\) & -0.004** (0.001) & -0.003 (0.003) \\
+\addlinespace
+Share unemployed & Spanish share 1936--1978 \(\times\) Post & 0.006 (0.035) & 0.013 (0.042) \\
+ & \(Post \times X\) & -0.008 (0.013) & -0.011 (0.015) \\
+ & Spanish share 1936--1978 \(\times\) Post \(\times X\) & 0.003 (0.011) & 0.004 (0.014) \\
+\addlinespace
+Left vote share & Spanish share 1936--1978 \(\times\) Post & 0.000 (0.035) & 0.026 (0.035) \\
+ & \(Post \times X\) & -0.001 (0.001) & -0.001 (0.001) \\
+ & Spanish share 1936--1978 \(\times\) Post \(\times X\) & 0.000 (0.001) & -0.000 (0.001) \\
+\addlinespace
+Ideological alternation & Spanish share 1936--1978 \(\times\) Post & 0.015 (0.017) & 0.027 (0.023) \\
+ & \(Post \times X\) & 0.000 (0.000) & -0.001 (0.001) \\
+ & Spanish share 1936--1978 \(\times\) Post \(\times X\) & 0.000 (0.000) & -0.000 (0.000) \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{0.98\linewidth}
+\footnotesize\setlength{\parindent}{0pt}\setlength{\parskip}{1pt}
+Notes: The dependent variable is migration intention. Each block reports a separate triple-difference specification in which the first-column variable is the municipal characteristic \(X\). Entries are Logit average marginal effects on the 0--1 probability scale, with standard errors reported in parentheses beside the corresponding estimate. Standard errors are clustered at the municipality level (56 clusters). Spanish share is the share of Spanish-born immigrants who arrived between 1936 and 1978 over total municipal population, measured using the 1970 census. All models include year and municipality fixed effects. Controls additionally include age, male, and \(Post\) interacted with the remaining common census/electoral municipal characteristics. The number of observations is        7,503 in models without controls and        7,448 in models with controls. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+\end{minipage}
+\end{table}

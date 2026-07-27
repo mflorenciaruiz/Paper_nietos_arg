@@ -1,0 +1,10 @@
+variable,variable_label,municipios_lapop,municipios_con_missing,minimo_pct,mediana_pct,maximo_pct
+intencion_migrar,Migration intention,56,39,0,1.1111111111111112,5.555555555555555
+edad,Age,56,16,0,0,3.3333333333333335
+hombre,Male,56,18,0,0,2.73972602739726
+desempleado,Unemployed,56,11,0,0,1.1111111111111112
+en_pareja,Partnered,56,11,0,0,2.2222222222222223
+secundaria_completa_o_mas,High school+,56,39,0,2.1739130434782608,8.791208791208792
+izq_der,Ideology,56,56,4.444444444444445,16.483516483516482,31.11111111111111
+interes_pol_mucho,Political interest,56,18,0,0,2.2222222222222223
+voto_blanco_nulo,Blank/null vote,56,56,9.574468085106384,21.73913043478261,35.55555555555556
