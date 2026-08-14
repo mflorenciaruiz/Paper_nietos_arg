@@ -1,0 +1,67 @@
+\begin{table}[!h]
+\centering
+\renewcommand{\arraystretch}{0.95}
+\setlength{\tabcolsep}{8pt}
+\captionsetup{justification=centering}
+\caption{Heterogeneous Effects on Migration Intention}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}cccc}
+\hline
+& \multicolumn{2}{c}{Share partnered} & \multicolumn{2}{c}{Share interested in politics} \\
+\cmidrule(l){2-3} \cmidrule(l){4-5}
+& Below & Above & Below & Above \\
+\hline
+Spanish share 1936-1955$\times$Post & 0.027 & -0.003 & 0.009 & 0.009 \\
+ & (0.043) & (0.039) & (0.036) & (0.039) \\
+Spanish share 1956-1978$\times$Post & -0.005 & 0.070 & 0.150 & -0.035 \\
+  & (0.139) & (0.150) & (0.150) & (0.115) \\
+\addlinespace
+Observations & 4,160 & 3,252 & 3,266 & 4,146 \\
+$p$-value ($\beta_{36{-}55} = \beta_{56{-}78}$) & 0.857 & 0.690 & 0.439 & 0.773 \\
+\hline
+\end{tabular*}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}cccc}
+& \multicolumn{2}{c}{Share female} & \multicolumn{2}{c}{Median age} \\
+\cmidrule(l){2-3} \cmidrule(l){4-5}
+& Below & Above & Below & Above \\
+\hline
+Spanish share 1936-1955$\times$Post & -0.018 & 0.037 & 0.016 & -0.038 \\
+ & (0.032) & (0.036) & (0.026) & (0.044) \\
+Spanish share 1956-1978$\times$Post & 0.203* & -0.072 & 0.159 & 0.058 \\
+  & (0.112) & (0.109) & (0.107) & (0.120) \\
+\addlinespace
+Observations & 3,900 & 3,512 & 4,453 & 2,959 \\
+$p$-value ($\beta_{36{-}55} = \beta_{56{-}78}$) & 0.113 & 0.445 & 0.277 & 0.552 \\
+\hline
+\end{tabular*}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}cccc}
+& \multicolumn{2}{c}{Share unemployed} & \multicolumn{2}{c}{Share secondary educ.} \\
+\cmidrule(l){2-3} \cmidrule(l){4-5}
+& Below & Above & Below & Above \\
+\hline
+Spanish share 1936-1955$\times$Post & -0.059 & 0.011 & -0.002 & -0.033 \\
+ & (0.065) & (0.027) & (0.033) & (0.044) \\
+Spanish share 1956-1978$\times$Post & 0.155 & 0.145 & 0.314* & 0.094 \\
+  & (0.201) & (0.099) & (0.189) & (0.128) \\
+\addlinespace
+Observations & 3,747 & 3,665 & 3,553 & 3,859 \\
+$p$-value ($\beta_{36{-}55} = \beta_{56{-}78}$) & 0.420 & 0.277 & 0.150 & 0.454 \\
+\hline
+\end{tabular*}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}cccc}
+& \multicolumn{2}{c}{Mean left-right ideology} & \multicolumn{2}{c}{Share blank/null vote} \\
+\cmidrule(l){2-3} \cmidrule(l){4-5}
+& Below & Above & Below & Above \\
+\hline
+Spanish share 1936-1955$\times$Post & -0.005 & 0.028 & -0.015 & 0.025 \\
+ & (0.049) & (0.034) & (0.042) & (0.048) \\
+Spanish share 1956-1978$\times$Post & 0.070 & -0.075 & 0.041 & 0.166 \\
+  & (0.157) & (0.164) & (0.128) & (0.275) \\
+\addlinespace
+Observations & 4,025 & 3,387 & 3,963 & 3,449 \\
+$p$-value ($\beta_{36{-}55} = \beta_{56{-}78}$) & 0.711 & 0.588 & 0.736 & 0.660 \\
+\hline
+\end{tabular*}
+\addvspace{0.2em}
+\captionsetup{font=footnotesize, justification=justified, singlelinecheck=false}
+\caption*{\footnotesize \textit{Notes}: The dependent variable is migration intention. Each column reports estimates for the subsample of municipalities below or above the median of the specified municipal-level variable. Medians are defined across municipalities using the pre-treatment average of each municipality-level aggregate over the 2012, 2014, 2017, and 2019 LAPOP survey waves, and the corresponding median cutoffs used to split the sample are also calculated from this pre-treatment sample. The split variables are constructed at the municipality level by pooling individual-level LAPOP responses across all pre-reform survey rounds and are defined as follows: the share of respondents who have a partner; the share of respondents who report being very interested in politics; the share of female respondents; the mean age of respondents; the share of unemployed respondents; the share of respondents with completed secondary education or more; the mean self-placement on the left-right (1--10) ideology scale; and the share of respondents who report having cast a blank or null vote in the last presidential election. The median value used to split the sample for each variable is: Share partnered (0.521); Share partnered (0.685); Share interested in politics (0.125); Share interested in politics (0.278); Share female (0.507); Share female (0.548); Median age (39.000); Median age (45.500); Share unemployed (0.058); Share unemployed (0.160); Share secondary educ. (0.479); Share secondary educ. (0.776); Mean left-right ideology (5.391); Mean left-right ideology (6.943); Share blank/null vote (0.152); Share blank/null vote (0.467). All specifications include municipality and year fixed effects and individual controls for age and a male indicator. The reported coefficients are average marginal effects from a logit specification, expressed as the change in the probability of reporting migration intention per one-unit increase in the corresponding regressor, where one unit corresponds to one percentage point of the municipal Spanish-born population share. Standard errors are clustered at the municipality level and reported in parentheses (56 clusters). The row labeled $p$-value: $\beta^{1936-1955} = \beta^{1956-1978}$ reports the p-value from a two-sided Wald test of equality between the two cohort-specific coefficients within each subsample. Tests of equality of the coefficient on Spanish share $\times$ Post between the below-median and above-median subsamples ($H_0: \beta_{\text{Below}} = \beta_{\text{Above}}$), computed as z-statistics on the difference between the two coefficients estimated on independent subsamples, yield the following p-values, reported as ($\beta^{1936-1955}$ / $\beta^{1956-1978}$) for each variable: Share partnered (0.595 / 0.713); Share interested in politics (0.998 / 0.331); Share female (0.246 / 0.079); Median age (0.289 / 0.533); Share unemployed (0.320 / 0.965); Share secondary educ. (0.572 / 0.335); Mean left-right ideology (0.589 / 0.523); Share blank/null vote (0.530 / 0.680). * $p<0.10$, ** $p<0.05$, *** $p<0.01$. \textit{Sources}:  LAPOP AmericasBarometer, 2023 round (dependent variables, individual controls and socioeconomic characteristics) IPUMS Argentine Census 1970 and 1980 (Spanish immigration shares)}
+\end{table}

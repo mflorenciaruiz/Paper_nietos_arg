@@ -1097,8 +1097,28 @@ censos_0110 <- censos_0110 %>%
     t_pea_2010        = ntile(share_laborforce_2010, 3)
   )
 
+censos_0110 <- censos_0110 %>% 
+  mutate(
+    p50_urb_2001        = ntile(pct_urb_2001, 2),
+    p50_density_2010    = ntile(popdensgeo2_2010, 2),
+    p50_rur_2001        = ntile(pct_rur_2001, 2),
+    p50_fem_2010        = ntile(share_female_2010, 2),
+    p50_male_2010       = ntile(share_male_2010, 2),
+    p50_uni_2010        = ntile(share_university_2010, 2),
+    p50_sec_2010        = ntile(share_secondary_2010, 2),
+    p50_prim_2010       = ntile(share_primary_2010, 2),
+    p50_lessp_2010      = ntile(share_less_primary_2010, 2),
+    p50_mean_schyr_2010 = ntile(mean_yrschool_2010, 2),
+    p50_med_schyr_2010  = ntile(median_yrschool_2010, 2),
+    p50_med_dage_2010   = ntile(median_age_2010, 2),
+    p50_age2544_2010    = ntile(share_age_25_44_2010, 2),
+    p50_unemp_2010      = ntile(share_unemployed_2010, 2),
+    p50_pea_2010        = ntile(share_laborforce_2010, 2)
+  )
+
 dip_nac_mun_2 <- dip_nac_mun %>% 
   left_join(censos_0110, by = "mun_code")
+
 }
 # ------------------------ #
 # 6. Características políticas promedio
@@ -1132,7 +1152,13 @@ dip_nac_mun_pre_avg <- dip_nac_mun_pre_avg %>%
     t_deam_pre_avg = ntile(share_der_amplia_pre_avg, 3),
     t_per_pre_avg  = ntile(share_peronistas_pre_avg, 3),
     t_ofi_pre_avg  = ntile(share_oficialismo_pre_avg, 3),
-    t_alt_pre_avg  = ntile(share_alt_pre_avg, 3)
+    t_alt_pre_avg  = ntile(share_alt_pre_avg, 3),
+    
+    p50_izam_pre_avg = ntile(share_izq_amplia_pre_avg, 2),
+    p50_deam_pre_avg = ntile(share_der_amplia_pre_avg, 2),
+    p50_per_pre_avg  = ntile(share_peronistas_pre_avg, 2),
+    p50_ofi_pre_avg  = ntile(share_oficialismo_pre_avg,2),
+    p50_alt_pre_avg  = ntile(share_alt_pre_avg, 2)
   )
 
 dip_nac_mun_2 <- dip_nac_mun_2 %>% 

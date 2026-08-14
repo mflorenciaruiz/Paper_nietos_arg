@@ -20,7 +20,8 @@ global data_out "$main/Data Out"
 use "$data_raw_lapop/2023/lapop_2023", clear
 
 keep idnum prov municipio year q1tc_r q2 edre upm strata wt ur ocup4a etid q11n /// // características de personas/municipios
-     q14 q14dnew q14f /// // Intenciones de migrar
+     q14 q14dnew q14f q10a q10c  /// // Intenciones de migrar y remesas
+	 comcon3xb comcon3xc immig1xb immig1xc /// // opinion sobre inmigrantes
 	 pol1 cp8 vb2 vb20 vb10 pra4n l1n // Participación, interés político e Ideología
 	  
 * Limpieza de variables
@@ -156,6 +157,53 @@ gen pro_de_migracion = q14f
 tab pro_de_migracion, m	
 drop q14f
 
+	* Remesas
+tab q10a 
+label list q10a_es
+gen recibe_remesas = .
+	replace recibe_remesas = 1 if q10a  == 1
+	replace recibe_remesas = 0 if q10a  == 2
+
+	* Familiares viviendo en el exterior
+tab q10c
+label list q10c_es
+gen familia_exterior =.
+	replace familia_exterior = 1 if q10c == 1 | q10c == 2 | q10c == 3
+	replace familia_exterior = 0 if q10c == 4
+drop q10c
+
+	* Qué tanto le molestaría a usted tener a un inmigrate como vecino
+tab comcon3xb
+label list comcon3xb_es
+gen molesta_vecino_inm =.
+	replace molesta_vecino_inm = 1 if comcon3xb == 1 | comcon3xb == 2 | comcon3xb==3 // Mucho, algo, poco
+	replace molesta_vecino_inm = 0 if comcon3xb == 4 // Nada
+drop comcon3xb
+
+	* Qué tanto le molestaría a usted tener a un ESPAÑOL como vecino
+tab comcon3xc
+label list comcon3xc_es
+gen molesta_vecino_esp =.
+	replace molesta_vecino_esp = 1 if comcon3xc == 1 | comcon3xc == 2 | comcon3xc==3 // Mucho, algo, poco
+	replace molesta_vecino_esp = 0 if comcon3xc == 4 // Nada
+drop comcon3xc
+
+	* Qué tan de acuerdo está con que el gobierno ofrezca servicios sociales a los inmigrantes
+		* genero una dummy de desacuerdo para que vaya en la misma direccion que las variables anteriores
+tab immig1xb
+label list immig1xb_es
+gen desac_serv_inm =.
+	replace desac_serv_inm = 1 if immig1xb == 5 | immig1xb == 5  // Muy en desacuerdo , algo en desacuerdo
+	replace desac_serv_inm = 0 if immig1xb == 3 | immig1xb == 2  | immig1xb == 1  //  Ni de acuerdo ni en desacuerdo, Algo de acuerdo, Muy de acuerdo
+drop immig1xb
+
+	* Qué tan de acuerdo está con que el gobierno ofrezca servicios sociales a los inmigrantes ESPAÑOLES
+tab immig1xc
+label list immig1xc_es
+gen desac_serv_esp =.
+	replace desac_serv_esp = 1 if immig1xc == 5 | immig1xc == 5  // Muy en desacuerdo , algo en desacuerdo
+	replace desac_serv_esp = 0 if immig1xc == 3 | immig1xc == 2  | immig1xc == 1  //  Ni de acuerdo ni en desacuerdo, Algo de acuerdo, Muy de acuerdo
+drop immig1xc
 
 	* Ruralidad
 * UR: 1 Urbano, 2 Rural
@@ -345,7 +393,7 @@ use lapop_2019.dta, clear
 *save lapop_2019_unicode.dta, replace
 
 keep idnum prov municipio fecha q1 q2 ed upm estratopri wt ur ocup4a etid q11 /// // características de personas/municipios
-     q14 /// // Intenciones de migrar
+     q14 q10a /// // Intenciones de migrar y remesas
 	 pol1 cp8 vb2 vb20 vb10 pra4n l1 // Participación, interés político e Ideología
 	  
 * Limpieza de variables
@@ -465,6 +513,13 @@ gen intencion_migrar = .
 	replace intencion_migrar = 0 if q14 == 2
 drop q14
 
+	* Remesas
+tab q10a 
+label list q10a_esp
+gen recibe_remesas = .
+	replace recibe_remesas = 1 if q10a  == 1
+	replace recibe_remesas = 0 if q10a  == 2
+	
 	* Ruralidad
 * UR: 1 Urbano, 2 Rural
 tab ur, missing
@@ -1234,7 +1289,7 @@ use lapop_2012.dta, clear
 *save lapop_2012_unicode.dta, replace
 
 keep idnum prov municipio fecha q1 q2 ed upm estratopri wt ur ocup4a etid q11 /// // características de personas/municipios
-     q14 /// // Intenciones de migrar
+     q14 q10a /// // Intenciones de migrar
 	 pol1 cp8 vb2 vb20 vb10 l1 // Participación, interés político e Ideología
 	 
 * Limpieza de variables
@@ -1345,6 +1400,13 @@ gen intencion_migrar = .
 	replace intencion_migrar = 1 if q14 == 1
 	replace intencion_migrar = 0 if q14 == 2
 drop q14
+
+	* Remesas
+tab q10a 
+label list q10a
+gen recibe_remesas = .
+	replace recibe_remesas = 1 if q10a  == 1
+	replace recibe_remesas = 0 if q10a  == 2
 
 	* Ruralidad
 * UR: 1 Urbano, 2 Rural

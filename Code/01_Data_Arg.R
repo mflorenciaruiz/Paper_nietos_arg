@@ -12,6 +12,8 @@ library(fixest)
 library(zoo)
 library(scales)
 library(patchwork)
+library(sysfonts)
+library(showtext)
 
 # Definir el path a la carpeta del proyecto: ARGENTINA
 path_flor <- "/Users/florenciaruiz/Library/CloudStorage/OneDrive-Personal/BID/Papers Valerie/Ley de nietos/Argentina"
@@ -277,7 +279,7 @@ spanish_cohorts_arg_singeo <- spanish_cohorts_arg %>%
   st_drop_geometry()
 class(spanish_cohorts_arg_singeo$mun_code)
 write.csv(spanish_cohorts_arg_singeo, "Data Out/spanish_cohorts_arg.csv", row.names = FALSE)
-
+write_dta(spanish_cohorts_arg_singeo, "Data Out/spanish_cohorts_arg.dta")
 
 }
 # -------------------- #
@@ -522,12 +524,6 @@ hist70 <- ggplot(censo_arg_1970_filter, aes(x = yrimm, weight = perwt)) +
     ymin = -Inf, ymax = Inf,
     fill =  "lightblue", alpha = 0.18
   ) +
-  annotate(
-    "rect",
-    xmin = 1955.5, xmax = 1978,
-    ymin = -Inf, ymax = Inf,
-    fill ="lightsalmon", alpha = 0.18
-  ) +
   geom_histogram(
     binwidth = 5,
     boundary = 1885,
@@ -536,14 +532,9 @@ hist70 <- ggplot(censo_arg_1970_filter, aes(x = yrimm, weight = perwt)) +
   ) +
   geom_vline(xintercept = c(1936, 1955.5),
              linetype = "solid", color = "steelblue4", linewidth = 0.4) +
-  geom_vline(xintercept = c(1955.5, 1978),
-             linetype = "solid", color = "tomato3", linewidth = 0.4) +
   annotate("text", x = 1945.8, y = 65000,
            label = "Presumed\nexile window",
            color = "steelblue4", size = 5.4, fontface = "bold") +
-  annotate("text", x = 1967, y = 65000,
-           label = "Documented\nexile window",
-           color = "tomato3", size = 5.4, fontface = "bold") +
   labs(
     #title = "1970 Census",
     #subtitle = "Weighted counts using census sampling weights",
@@ -656,12 +647,6 @@ ggsave("Output/Argentina/hist_yrimm_arg_1980.png", width = 8, height = 6, dpi = 
 hist80 <- ggplot(censo_arg_1980_filter, aes(x = yrimm, weight = perwt)) +
   annotate(
     "rect",
-    xmin = 1936, xmax = 1955.5,
-    ymin = -Inf, ymax = Inf,
-    fill =  "lightblue", alpha = 0.18
-  ) +
-  annotate(
-    "rect",
     xmin = 1955.5, xmax = 1978,
     ymin = -Inf, ymax = Inf,
     fill ="lightsalmon", alpha = 0.18
@@ -672,13 +657,8 @@ hist80 <- ggplot(censo_arg_1980_filter, aes(x = yrimm, weight = perwt)) +
     fill = "grey70",
     color = "white"
   ) +
-  geom_vline(xintercept = c(1936, 1955.5),
-             linetype = "solid", color = "steelblue4", linewidth = 0.4) +
   geom_vline(xintercept = c(1955.5, 1978),
              linetype = "solid", color = "tomato3", linewidth = 0.4) +
-  annotate("text", x = 1945.8, y = 65000,
-           label = "Presumed\nexile window",
-           color = "steelblue4", size = 5.4, fontface = "bold") +
   annotate("text", x = 1967, y = 65000,
            label = "Documented\nexile window",
            color = "tomato3", size = 5.4, fontface = "bold") +
@@ -727,5 +707,75 @@ hist70 + hist80 + plot_annotation(
   )
 )
 ggsave("Output/hist_yrimm_arg_combined.png", width = 12, height = 6, dpi = 300, bg = "white")
+
+## Distribución del tratamiento ##
+psych::describe(spanish_cohorts_arg$share_1936_1955)
+map70_t <-  ggplot(spanish_cohorts_arg) +
+  geom_sf(aes(fill = share_1936_1955), color = "grey40", linewidth = 0.3) +
+  scale_fill_distiller(
+    palette = "Blues", direction = 1,
+    limits = c(0, 2.54), oob = scales::squish,
+    #labels = scales::label_number(accuracy = 0.1, suffix = "%"),
+    #name = "% Spanish born",
+    name = NULL,
+    na.value = "grey80" 
+  ) + 
+  #labs(title = "Spanish-born population by municipality in 1970") +
+  theme_void(base_family = "Times New Roman")+
+  theme(
+    plot.margin = margin(t = 0, r = 4, b = 0, l = 0),  # top, right, bottom, left
+    plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
+    legend.text = element_text(size = 14.5),
+    legend.title = element_text(size = 15, margin = margin(b = 12)),
+    #legend.position = "right"
+    legend.position = "none"
+  )
+map70_t
+ggsave("Output/map_share_spanish_arg_1970_v3.png",  plot = map70_t, width = 5, height = 8, dpi = 300, bg = "white")
+ggsave("Output/map_share_spanish_arg_1970_v3.pdf", plot = map70_t, width = 8, height = 5, bg = "white")
+
+psych::describe(spanish_cohorts_arg$share_1956_1978)
+map80_t <- ggplot(spanish_cohorts_arg) +
+  geom_sf(aes(fill = share_1956_1978), color = "grey30", linewidth = 0.3) +
+  scale_fill_distiller(
+    palette = "Blues", direction = 1,
+    limits = c(0, 2.54), oob = scales::squish,
+    #labels = scales::label_number(accuracy = 0.1),
+    name = "% Spanish born",
+    na.value = "grey80" 
+  ) + 
+  #labs(title = "Spanish-born population by municipality in 1980") +
+  theme_void(base_family = "Times New Roman") +
+  theme(
+    plot.margin = margin(t = 0, r = 4, b = 0, l = 0),  # top, right, bottom, left
+    plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15, margin = margin(b = 12)),
+    legend.position = "right"
+  )
+map80_t
+ggsave("Output/map_share_spanish_arg_1980_v3.png",  plot = map80_t, width = 5, height = 8, dpi = 300, bg = "white")
+ggsave("Output/map_share_spanish_arg_1980_v3.pdf", plot = map80_t, width = 8, height = 5, bg = "white")
+
+ggplot(spanish_cohorts_arg) +
+  geom_sf(aes(fill = share_1956_1978), color = "grey30", linewidth = 0.3) +
+  scale_fill_distiller(
+    palette = "Blues", direction = 1,
+    limits = c(0, 1), oob = scales::squish,
+    #labels = scales::label_number(accuracy = 0.1),
+    name = "% Spanish born",
+    na.value = "grey80" 
+  ) + 
+  #labs(title = "Spanish-born population by municipality in 1980") +
+  theme_void(base_family = "Times New Roman") +
+  theme(
+    plot.margin = margin(t = 0, r = 4, b = 0, l = 0),  # top, right, bottom, left
+    plot.title = element_text(hjust = 0.5, size = 10, face = "bold"),
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15, margin = margin(b = 12)),
+    legend.position = "right"
+  )
+ggsave("Output/map_share_spanish_arg_1980_v4.png",  width = 5, height = 8, dpi = 300, bg = "white")
+ggsave("Output/map_share_spanish_arg_1980_v4.pdf", width = 8, height = 5, bg = "white")
 
 }

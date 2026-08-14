@@ -1,0 +1,19 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{6}{c}}
+\toprule
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}\\
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}&\multicolumn{1}{c}{(5)}&\multicolumn{1}{c}{(6)}\\
+\midrule
+Spanish share 1936-1955&       0.036\sym{***}&      -0.041         &      -0.006         &      -0.063         &      -0.001         &      -0.003         \\
+            &     (0.009)         &     (0.029)         &     (0.022)         &     (0.040)         &     (0.039)         &     (0.031)         \\
+\midrule
+Observations&       1,515         &         513         &         493         &         425         &         400         &         336         \\
+\bottomrule
+\multicolumn{7}{l}{\footnotesize \textit{Notes}: Each column reports the average marginal effect of Spanish share 1936-1955 from a separate logit regression on the outcome indicated in the column header.}\\
+\multicolumn{7}{l}{\footnotesize The dependent variables are: (1) family abroad; (2) bothered by Spanish neighbor; (3) bothered by immigrant neighbor; (4) disagreement with services to Spanish immigrants; (5) disagreement with services to immigrants; (6) intention to migrate to Spain.}\\
+\multicolumn{7}{l}{\footnotesize Individual controls include age and male. Standard errors clustered at the municipality level in parentheses.}\\
+\multicolumn{7}{l}{\footnotesize * p<0.10, ** p<0.05, *** p<0.01.}\\
+\multicolumn{7}{l}{\footnotesize \textit{Sources}: LAPOP AmericasBarometer, 2023 round (dependent variables and individual controls); IPUMS Argentine Census 1970 (Spanish immigration share).}\\
+\end{tabular}
+}

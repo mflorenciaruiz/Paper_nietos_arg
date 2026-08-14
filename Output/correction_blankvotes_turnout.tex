@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\caption{Bias-corrected fixed-effects estimates}
+\label{tab:dynamic\_correction}
+\begin{tabular}{l*{6}{c}}
+\hline
+            &\multicolumn{3}{c}{Share of blank votes}                         &\multicolumn{3}{c}{Voter turnout}                                \\\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+            &\multicolumn{1}{c}{(1)}         &\multicolumn{1}{c}{(2)}         &\multicolumn{1}{c}{(3)}         &\multicolumn{1}{c}{(4)}         &\multicolumn{1}{c}{(5)}         &\multicolumn{1}{c}{(6)}         \\
+\hline
+Spanish share 1936--1955 $\times$ Post&      -2.266\sym{***}&      -2.226\sym{**} &      -2.185\sym{***}&      -0.306         &      -0.305         &      -0.322         \\
+            &     (0.546)         &     (0.962)         &     (0.757)         &     (0.372)         &     (0.367)         &     (0.325)         \\
+Spanish share 1956--1978 $\times$ Post&      -4.718\sym{**} &      -4.780\sym{*}  &      -4.472\sym{**} &       3.523\sym{**} &       3.958\sym{***}&       3.789\sym{***}\\
+            &     (2.355)         &     (2.505)         &     (2.224)         &     (1.603)         &     (1.423)         &     (1.370)         \\
+Lag(blank vote share)&      -0.268\sym{***}&      -0.329\sym{***}&      -0.211\sym{***}&                     &                     &                     \\
+            &     (0.019)         &     (0.024)         &     (0.023)         &                     &                     &                     \\
+Lag(turnout)&                     &                     &                     &       0.051\sym{***}&      -0.021         &       0.163\sym{***}\\
+            &                     &                     &                     &     (0.016)         &     (0.046)         &     (0.053)         \\
+\hline
+Observations&        4056         &        4056         &        4056         &        4056         &        4056         &        4056         \\
+Municipality FE&         Yes         &          No         &          No         &         Yes         &          No         &          No         \\
+Time FE     &         Yes         &         Yes         &         Yes         &         Yes         &         Yes         &         Yes         \\
+Election type FE&         Yes         &          No         &          No         &         Yes         &          No         &          No         \\
+Municipality x Election type FE&          No         &         Yes         &         Yes         &          No         &         Yes         &         Yes         \\
+\hline
+\end{tabular}
+\captionsetup{justification = justified}
+\caption*{\footnotesize \textit{Notes:} The dependent variable in columns (1)--(3) is the share of blank votes over total voters; in columns (4)--(6) it is voter turnout. Columns (1) and (4) report the baseline specification with additive municipality, year, and election-type fixed effects. Columns (2) and (5) replace the additive municipality and election-type fixed effects with their interaction (municipality $\times$ election-type). Columns (3) and (6) apply the bootstrap-based bias-corrected fixed-effects estimator (BCFE) of De Vos, Everaert, and Ruyssen (2015) to the specification in columns (2) and (5). All specifications include one lag of the dependent variable and observations from PASO and general elections. Prior to estimation, the stationarity of each dependent variable was tested using the Im-Pesaran-Shin (2003) test and the Fisher-type augmented Dickey-Fuller test (Choi 2001); both reject the null of a unit root at the 1\% level for both outcomes. In columns (1), (2), (4), and (5), standard errors are clustered at the municipality level and reported in parentheses. In columns (3) and (6), the bias-correction step uses 500 bootstrap iterations, and confidence intervals are computed from the 2.5th and 97.5th percentiles of the bootstrap distribution over 1,000 additional iterations, with residuals resampled with replacement within each panel unit. * <0.10$, ** <0.05$, *** <0.01$. \\ \textit{Sources}:National Electoral Commission (dependent variables); IPUMS Argentine Census 1970 (Spanish immigration shares).}
+\end{table}

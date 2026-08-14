@@ -11,6 +11,9 @@
 library(dplyr)
 library(haven)
 library(stringi)
+library(stringr)
+library(readr)
+library(tidyr)
 
 # Definir el path a la carpeta del proyecto: ARGENTINA
 path <- "/Users/florenciaruiz/BID 2/Paper Valerie/Nietos/Argentina/Paper_nietos_arg"

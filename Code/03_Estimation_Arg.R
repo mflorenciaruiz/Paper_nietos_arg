@@ -60,9 +60,12 @@ censo_2010 <- read_dta("Data Int/censo_2010_arg_mun.dta")
 
 spanish_cohorts_arg <- read_csv("Data Int/spanish_cohorts_arg.csv")
 
+# Data para calcular limites de terciles 
+data_eff_het <- read_csv("Data Out/data_eff_het.csv")
+
 # Settings para exportar
-options("modelsummary_format_numeric_latex" = "plain") # Números sin formato en tablas de modelsummary.
-options("modelsummary_factory_latex" = "kableExtra")
+options("modelsummary_format_numeric_latex" = "plain") # Números sin formato en tablas de modelsummary.No se envuelven como \num{1.223}
+options("modelsummary_factory_latex" = "kableExtra") # Necesario para la funcion make_panel_tabular
 options(knitr.table.format = "latex")
 
 #font_add(family = "Latin Modern Math", regular = "latinmodern-math.otf")
@@ -317,23 +320,7 @@ coefs <- bind_rows(
       #title = "Effect turnout"
     ) +
     guides(shape = guide_legend(nrow = 1, byrow = TRUE)) +
-    theme_minimal(base_family = "Times New Roman", base_size = 12) +
-    theme(
-      legend.position = "bottom",
-      legend.justification = "center",
-      legend.box = "horizontal",
-      legend.margin = margin(t = -5, r = 0, b = 0, l = 0),
-      plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
-      
-      plot.title = element_text(hjust = 0.5, size = 12),
-      panel.grid.minor = element_blank(),
-      panel.grid.major.x = element_blank(),
-      panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
-      axis.line = element_line(color = "black", linewidth = 0.4),
-      axis.text = element_text(color = "black", size = 11),
-      axis.title = element_text(color = "black", size = 11),
-      legend.text = element_text(size = 11)
-    ))
+    my_theme)
 
 # 3) Guardar
 ggsave("Output/event_p2_combined.pdf", p,
@@ -668,23 +655,7 @@ coefs <- bind_rows(
       #title = "Effect on share of blank votes"
     ) +
     guides(shape = guide_legend(nrow = 1, byrow = TRUE)) +
-    theme_minimal(base_family = "Times New Roman", base_size = 12) +
-    theme(
-      legend.position = "bottom",
-      legend.justification = "center",
-      legend.box = "horizontal",
-      legend.margin = margin(t = -5, r = 0, b = 0, l = 0),
-      plot.margin = margin(t = 10, r = 10, b = 10, l = 10),
-      
-      plot.title = element_text(hjust = 0.5, size = 12),
-      panel.grid.minor = element_blank(),
-      panel.grid.major.x = element_blank(),
-      panel.grid.major.y = element_line(color = "grey85", linewidth = 0.3),
-      axis.line = element_line(color = "black", linewidth = 0.4),
-      axis.text = element_text(color = "black", size = 11),
-      axis.title = element_text(color = "black", size = 11),
-      legend.text = element_text(size = 11)
-    ))
+    my_theme)
 
 # 3) Guardar
 ggsave("Output/event_b2_combined.pdf", p,
@@ -703,8 +674,8 @@ gm <- tibble::tribble(
   "nobs",      "Observations", 0,
   "r.squared", "R$^2$",        3)
 
-models_list <- list("(1)" = att_b2, "(2)" = att_b4, "(3)" = att_b2_l, 
-                    "(4)" = att_p2, "(5)" = att_p3, "(6)" = att_p2_l)
+models_list <- list("(1)" = att_b4, "(2)" = att_b2,  "(3)" = att_b2_l, 
+                    "(4)" = att_p3, "(5)" = att_p2, "(6)" = att_p2_l)
 
 # Función para calcular el p-valor del test β_1936-1955 = β_1956-1978
 get_p_equal <- function(m) {
@@ -731,11 +702,11 @@ p_strings <- sprintf("%.3f", p_values)
 add_rows <- tibble::tibble(
   term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
            "Municipality FE", "Time FE", "Election type FE", "General elections only"),
-  m1 = c(p_strings[1], "Yes", "Yes", "Yes", "No"),
-  m2 = c(p_strings[2], "Yes", "Yes", "No", "Yes"),
+  m1 = c(p_strings[1], "Yes", "Yes", "No", "Yes"),
+  m2 = c(p_strings[2], "Yes", "Yes", "Yes", "No"),
   m3 = c(p_strings[3], "Yes", "Yes", "Yes", "No"),
-  m4 = c(p_strings[4], "Yes", "Yes", "Yes", "No"),
-  m5 = c(p_strings[5], "Yes", "Yes", "No", "Yes"),
+  m4 = c(p_strings[4], "Yes", "Yes", "No", "Yes"),
+  m5 = c(p_strings[5], "Yes", "Yes", "Yes", "No"),
   m6 = c(p_strings[6], "Yes", "Yes", "Yes", "No")
 )
 names(add_rows) <- c("term", "(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
@@ -801,7 +772,15 @@ endtab <- grep("\\\\end\\{tabular\\}", lines)
 if (length(endtab) >= 1) {
   nota <- c("\\vspace{0.3em}",
             "\\captionsetup{justification=justified, singlelinecheck=false}",
-            "\\caption*{\\footnotesize Notes: The dependent variable in columns (1) and (2) is the share of blank votes over total voters. In columns (3) and (4), the dependent variable is voter turnout. Standard errors clustered at the municipality level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$.}")
+            "\\caption*{\\footnotesize \\textit{Notes}: The dependent variable in ",
+            "columns (1)-(3) is the share of blank votes over total voters. ",
+            "In columns (4)-(6), the dependent variable is voter turnout.  ",
+            "The row labeled $p$-value: $\\beta_{36-55}=\\beta_{56-78}$ reports ",
+            "the p-value from a two-sided Wald test of equality between the two ",
+            "cohort-specific coefficients. Standard errors clustered at the municipality ",
+            "level in parentheses (312 clusters). * $p<0.10$, ** $p<0.05$, *** $p<0.01$. ",
+            "\\\ \\textit{Sources}: National Electoral Commission (dependent variables); ",
+            "IPUMS Argentine Census 1970 (Spanish immigration shares).}")
   lines <- c(lines[1:endtab[1]], nota, lines[(endtab[1] + 1):length(lines)])
 }
 
@@ -3456,10 +3435,10 @@ modelsummary(
 }
 
 # ------------------------------------------ #
-# 7. Efectos heterogéneos
+# 7. Efectos heterogéneos 
 # ------------------------------------------ #
 
-### 7.1 Voto en Blanco ###
+### 7.1 Voto en Blanco por tercil ###
 {
 
 # Densidad de población
@@ -3770,7 +3749,7 @@ att_b2_alt3 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:
 # - más de izquierda (izquierda = gente con más movilización politica), con menor alternancia (hay un partido fuerte como alternativa al voto blanco)
 }
 
-### 7.2 Participación ###
+### 7.2 Participación por tercil ###
 {
  
 # Densidad de población 
@@ -3888,7 +3867,7 @@ att_p2_alt3 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post
 # Conclusión: efectos más fuertes en municipios MÁS urbanizados,con MÁS mujeres, no es tan claro que pasa con educ, gente MÁS jóven.
 }
 
-### 7.4 Exporto los resultados ###
+### 7.4 Exporto los resultados por tercil ###
 {
 ## Tabla para votos en blanco
 
@@ -3965,6 +3944,10 @@ make_panel_tabular <- function(models, group_names, group_sizes, panel_label,
     add_rows = add_rows, 
     escape = FALSE)
   
+  print("Chequeo de TEX")
+  class(tex)
+  str(tex)
+  
   lines <- strsplit(tex, "\n")[[1]]
   ncols <- 1 + length(models)
   
@@ -4029,8 +4012,8 @@ panel_B_models <- list(
   "T1 "  = att_b2_at1,      "T2 "  = att_b2_at2,      "T3 "  = att_b2_at3)
 
 panel_C_models <- list(
-  "T1"   = att_b2_ut1,      "T2" = att_b2_ut2,   "T3"   = att_b2_ut3,
-  "T1 "  = att_b2_peat1, "T2 "  = att_b2_peat2, "T3 "  = att_b2_peat3)
+  "T1 "  = att_b2_peat1, "T2 "  = att_b2_peat2, "T3 "  = att_b2_peat3,
+  "T1"   = att_b2_ut1,      "T2" = att_b2_ut2,   "T3"   = att_b2_ut3)
 
 panel_D_models <- list(
   "T1"   = att_b2_izt1, "T2"   = att_b2_izt2, "T3"   = att_b2_izt3,
@@ -4054,7 +4037,7 @@ panel_B <- make_panel_tabular(
   panel_label = "Panel B",
   data        = data_eff_het,
   panel_vars  = c("mean_yrschool_2010", "median_age_2010"),
-  tercile_vars = c("t_meanyrschool_2010", "t_medianage_2010"),
+  tercile_vars = c("t_mean_schyr_2010", "t_med_dage_2010"),
   digits      = c(3, 3)
   )
 # Sacar la hline de arriba del panel B
@@ -4085,7 +4068,7 @@ panel_D <- make_panel_tabular(
   group_sizes = c(3, 3),
   panel_label = "Panel C",
   data        = data_eff_het,
-  panel_vars  = c("share_izq_pre_avg", "share_alt_pre_avg"),
+  panel_vars  = c("share_izq_amplia_pre_avg", "share_alt_pre_avg"),
   tercile_vars = c("t_izam_pre_avg", "t_alt_pre_avg"),
   digits      = c(3, 3)
 )
@@ -4166,13 +4149,23 @@ nota_completa <- paste0(
   "\\caption*{\\footnotesize Notes: The dependent variable is the share of blank votes over total voters. ",
   "Each column reports estimates for the subsample corresponding to a tercile ",
   "of the specified municipal-level variable. Tercile upper bounds are shown ",
-  "at the bottom of each panel. All specifications include municipality, year, ",
+  "at the bottom of each panel. The tercile variables are defined as follows. Population ",
+  "density, the female share of the population, mean years of education, ",
+  "median age, the labor-force participation rate among individuals aged 14 ",
+  "and older, and the unemployment rate among individuals aged 14 and older ",
+  "are measured using the 2010 census. Broad-left vote share is the average ",
+  "share of valid votes received by left and center-left parties over the ",
+  "pre-reform elections held between 2011 and 2021. Ideological alternation ",
+  "is an indicator equal to one if the ideological bloc of the winning party ",
+  "changes relative to the previous election of the same type; the tercile ",
+  "variable is the municipality-level average of this indicator over the 2011--2021 ",
+  "pre-reform period. All specifications include municipality, year, ",
   "and election-type fixed effects. These specifications do not include a ",
   "lagged version of the dependent variable as a control. Standard errors ",
   "clustered at the municipality level in parentheses (104 clusters). ",
   "The row labeled $p$-value: $\\beta^{1936-1955}=\\beta^{1956-1978}$ reports the p-value from ",
   "a two-sided Wald test of equality between the two cohort-specific ",
-  "coefficients within each tercile.",
+  "coefficients within each tercile. ",
   "Joint Wald tests of the null hypothesis that the coefficient on Spanish ",
   "share $\\times$ Post is equal across the three terciles ",
   "($H_0: \\beta_{T_1} = \\beta_{T_2} = \\beta_{T_3}$), computed under the ",
@@ -4187,7 +4180,7 @@ nota_completa <- paste0(
 final <- c(
   "\\begin{table}[!h]",
   "\\centering",
-  "\\renewcommand{\\arraystretch}{1.15}",
+  "\\renewcommand{\\arraystretch}{1.05}",
   "\\setlength{\\tabcolsep}{6pt}",
   "\\captionsetup{justification=centering}",
   "\\caption{Heterogeneous Effects on Blank Votes}",
@@ -4329,6 +4322,17 @@ final <- c(
     "comparison ($T_1 = T_2$, $T_1 = T_3$, or $T_2 = T_3$). Tests are computed as ",
     "z-statistics on the difference between the two coefficients estimated on ",
     "independent subsamples. The dependent variable is the share of blank votes over total voters. ",
+    "The tercile variables are defined as follows. Population ",
+    "density, the female share of the population, mean years of education, ",
+    "median age, the labor-force participation rate among individuals aged 14 ",
+    "and older, and the unemployment rate among individuals aged 14 and older ",
+    "are measured using the 2010 census. Broad-left vote share is the average ",
+    "share of valid votes received by left and center-left parties over the ",
+    "pre-reform elections held between 2011 and 2021. Ideological alternation ",
+    "is an indicator equal to one if the ideological bloc of the winning party ",
+    "changes relative to the previous election of the same type; the tercile ",
+    "variable is the municipality-level average of this indicator over the 2011--2021 ",
+    "pre-reform period. ",
     "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   ),
   "\\end{table}"
@@ -4348,8 +4352,8 @@ panel_B_models <- list(
   "T1 "  = att_p2_at1,      "T2 "  = att_p2_at2,      "T3 "  = att_p2_at3)
 
 panel_C_models <- list(
-  "T1"   = att_p2_ut1, "T2"   = att_p2_ut2, "T3"   = att_p2_ut3,
-  "T1 "  = att_p2_peat1, "T2 "  = att_p2_peat2, "T3 "  = att_p2_peat3)
+  "T1 "  = att_p2_peat1, "T2 "  = att_p2_peat2, "T3 "  = att_p2_peat3,
+  "T1"   = att_p2_ut1, "T2"   = att_p2_ut2, "T3"   = att_p2_ut3)
 
 panel_D_models <- list(
   "T1"   = att_p2_izt1, "T2"   = att_p2_izt2, "T3"   = att_p2_izt3,
@@ -4373,7 +4377,7 @@ panel_B <- make_panel_tabular(
   panel_label = "Panel B",
   data        = data_eff_het,
   panel_vars  = c("mean_yrschool_2010", "median_age_2010"),
-  tercile_vars = c("t_meanyrschool_2010", "t_medianage_2010"),
+  tercile_vars = c("t_mean_schyr_2010", "t_med_dage_2010"),
   digits      = c(3, 3)
 )
 # Sacar la hline de arriba del panel B
@@ -4404,7 +4408,7 @@ panel_D <- make_panel_tabular(
   group_sizes = c(3, 3),
   panel_label = "Panel C",
   data        = data_eff_het,
-  panel_vars  = c("share_izq_pre_avg", "share_alt_pre_avg"),
+  panel_vars  = c("share_izq_amplia_pre_avg", "share_alt_pre_avg"),
   tercile_vars = c("t_izam_pre_avg", "t_alt_pre_avg"),
   digits      = c(3, 3)
 )
@@ -4428,13 +4432,23 @@ nota_completa <- paste0(
   "\\caption*{\\footnotesize Notes: The dependent variable is voter turnout. ",
   "Each column reports estimates for the subsample corresponding to a tercile ",
   "of the specified municipal-level variable. Tercile upper bounds are shown ",
-  "at the bottom of each panel. All specifications include municipality, year, ",
+  "at the bottom of each panel. The tercile variables are defined as follows. Population ",
+  "density, the female share of the population, mean years of education, ",
+  "median age, the labor-force participation rate among individuals aged 14 ",
+  "and older, and the unemployment rate among individuals aged 14 and older ",
+  "are measured using the 2010 census. Broad-left vote share is the average ",
+  "share of valid votes received by left and center-left parties over the ",
+  "pre-reform elections held between 2011 and 2021. Ideological alternation ",
+  "is an indicator equal to one if the ideological bloc of the winning party ",
+  "changes relative to the previous election of the same type; the tercile ",
+  "variable is the municipality-level average of this indicator over the 2011--2021 ",
+  "pre-reform period. All specifications include municipality, year, ",
   "and election-type fixed effects. These specifications do not include a ",
   "lagged version of the dependent variable as a control. Standard errors ",
   "clustered at the municipality level in parentheses (104 clusters). ",
   "The row labeled $p$-value: $\\beta^{1936-1955}=\\beta^{1956-1978}$ reports the p-value from ",
   "a two-sided Wald test of equality between the two cohort-specific ",
-  "coefficients within each tercile.",
+  "coefficients within each tercile. ",
   "Joint Wald tests of the null hypothesis that the coefficient on Spanish ",
   "share $\\times$ Post is equal across the three terciles ",
   "($H_0: \\beta_{T_1} = \\beta_{T_2} = \\beta_{T_3}$), computed under the ",
@@ -4449,7 +4463,7 @@ nota_completa <- paste0(
 final <- c(
   "\\begin{table}[!h]",
   "\\centering",
-  "\\renewcommand{\\arraystretch}{1.15}",
+  "\\renewcommand{\\arraystretch}{1.05}",
   "\\setlength{\\tabcolsep}{6pt}",
   "\\captionsetup{justification=centering}",
   "\\caption{Heterogeneous Effects on Turnout}",
@@ -4513,13 +4527,605 @@ final <- c(
     "terciles of each municipal characteristic. Each column corresponds to a pairwise ",
     "comparison ($T_1 = T_2$, $T_1 = T_3$, or $T_2 = T_3$). Tests are computed as ",
     "z-statistics on the difference between the two coefficients estimated on ",
-    "independent subsamples. The dependent variable is voter turnout. ",
+    "independent subsamples. The dependent variable is voter turnout. The tercile variables are defined as follows. Population ",
+    "density, the female share of the population, mean years of education, ",
+    "median age, the labor-force participation rate among individuals aged 14 ",
+    "and older, and the unemployment rate among individuals aged 14 and older ",
+    "are measured using the 2010 census. Broad-left vote share is the average ",
+    "share of valid votes received by left and center-left parties over the ",
+    "pre-reform elections held between 2011 and 2021. Ideological alternation ",
+    "is an indicator equal to one if the ideological bloc of the winning party ",
+    "changes relative to the previous election of the same type; the tercile ",
+    "variable is the municipality-level average of this indicator over the 2011--2021 ",
+    "pre-reform period. ",
     "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
   ),
   "\\end{table}"
 )
 
 writeLines(final, "Output/turnout_tercile_pvalues.tex")
+}
+
+### 7.5 Voto en Blanco por la media ###
+{
+  
+  # Densidad de población
+  
+  # Divido en sub-muestras en base a la media de densidad de población
+  att_b2_dm1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_density_2010 == 1))
+  att_b2_dm2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_density_2010 == 2))
+  # Sexo:
+  
+  # Divido en submuestras en base a la media de female
+  att_b2_fm1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_fem_2010 == 1))
+  att_b2_fm2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_fem_2010 == 2))
+  
+  # Escolaridad:
+  
+  # Divido en submuestras en base a terciles de la mediana de los años de educ
+  feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+          mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+          filter(p50_med_schyr_2010 == 1))
+  feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+          mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+          filter(p50_med_schyr_2010 == 2))
+
+  # Divido en submuestras en base a la mediana del promedio de los años de educ
+  att_b2_meanedm1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                             filter(p50_mean_schyr_2010 == 1))
+  att_b2_meanedm2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                             filter(p50_mean_schyr_2010 == 2))
+  
+  # Edad: 
+  
+  # Divido en sub-muestras en base a terciles de la mediana de la edad
+  att_b2_am1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_med_dage_2010 == 1))
+  att_b2_am2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_med_dage_2010 == 2))
+  
+  # Indicador económico
+  
+  # Divido en sub-muestras en base a la mediana del share de personas desempleadas
+  att_b2_um1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_unemp_2010 == 1))
+  att_b2_um2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_unemp_2010 == 2))
+  
+  # Divido en sub-muestras en base a la mediana del share de personas en la pea
+  att_b2_peam1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                          mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                          filter(p50_pea_2010 == 1))
+  att_b2_peam2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                          mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                          filter(p50_pea_2010 == 2))
+  
+  # Características políticas
+  
+  # Divido en sub-muestras en base a la media del share de votos a la izquierda amplia
+  att_b2_izm1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                         filter(p50_izam_pre_avg == 1))
+  att_b2_izm2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                         filter(p50_izam_pre_avg == 2))
+  
+  # Divido en sub-muestras en base a terciles de alternancia
+  att_b2_alm1 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                         filter(p50_alt_pre_avg == 1))
+  att_b2_alm2 <- feols(porcentaje_blanco ~ share_1936_1955:post + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                         filter(p50_alt_pre_avg == 2))
+
+}
+
+### 7.6 Participación por la mediana ###
+{
+  
+  # Densidad de población 
+  
+  # Divido en sub-muestras en base a la mediana de urbanización
+  att_p2_dm1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_density_2010 == 1))
+  att_p2_dm2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_density_2010 == 2))
+  
+  # Sexo:
+  
+  # Divido en submuestras en base a la mediana de female
+  att_p2_fm1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_fem_2010 == 1))
+  att_p2_fm2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_fem_2010 == 2))
+  
+  # Educación:
+  
+  # Divido en sub-muestras en base a la mediana del promedio de los años de educ
+  att_p2_meanedm1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                             filter(p50_mean_schyr_2010 == 1))
+  att_p2_meanedm2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                             mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                             filter(p50_mean_schyr_2010 == 2))
+
+  # Edad
+  
+  # Divido en sub-muestras en base a la mediana de la mediana de la edad
+  att_p2_am1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_med_dage_2010 == 1))
+  att_p2_am2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_med_dage_2010 == 2))
+  
+  # Características económicas
+  
+  # Divido en sub-muestras en base a la mediana del share de personas desempleadas
+  att_p2_um1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_unemp_2010 == 1))
+  att_p2_um2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                        mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                        filter(p50_unemp_2010 == 2))
+  
+  # Divido en sub-muestras en babse a la mediana de la pea
+  att_p2_peam1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                          mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                          filter(p50_pea_2010 == 1))
+  att_p2_peam2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post |
+                          mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                          filter(p50_pea_2010 == 2))
+  
+  # Características políticas
+  
+  # Divido en sub-muestras en base a la mediana del share de votos a la izquierda amplia
+  att_p2_izm1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                         filter(p50_izam_pre_avg == 1))
+  att_p2_izm2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                         filter(p50_izam_pre_avg == 2))
+
+  # Divido en sub-muestras en base a la mediana de alternancia
+  att_p2_alm1 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                         filter(p50_alt_pre_avg == 1))
+  att_p2_alm2 <- feols(participacion ~ share_1936_1955:post + share_1956_1978:post | 
+                         mun_code + anio + tipo_eleccion, data = dip_nac_mun %>% 
+                         filter(p50_alt_pre_avg == 2))
+
+
+}
+
+### 7.7 Exporto los resultados por la media ###
+{
+  ## Tabla para votos en blanco
+  
+  make_panel_tabular_medias <- function(models, group_names, group_sizes, panel_label) {
+    cm <- c("share_1936_1955:post" = "Spanish share 1936-1955$\\times$Post",
+            "post:share_1956_1978" = "Spanish share 1956-1978$\\times$Post")
+    gm <- tibble::tribble(
+      ~raw,        ~clean,         ~fmt,
+      "nobs",      "Observations", 0
+      #"r.squared", "R$^2$",        3
+    )
+    
+    # Calcular p-valor del test de igualdad para cada modelo
+    p_values  <- sapply(models, get_p_equal)
+    p_strings <- sprintf("%.3f", p_values)
+    
+    # Combinar fila de p-valores + filas de FE en un solo bloque
+    yes_mat  <- matrix("Yes", nrow = 3, ncol = length(models))
+    data_mat <- rbind(p_strings, yes_mat)
+    
+    # Descomentar si quiero poner los FE tambien en la tabla
+    #add_rows <- cbind(
+    #  data.frame(term = c("$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
+    #                      "Year FE", "Municipality FE", "Election Type FE"),
+    #             stringsAsFactors = FALSE),
+    #  as.data.frame(data_mat, stringsAsFactors = FALSE))
+    #names(add_rows) <- c("term", names(models))
+    
+    # add_rows: solo la fila del p-valor del test de igualdad
+    add_rows <- cbind(
+      data.frame(term = "$p$-value ($\\beta_{36{-}55} = \\beta_{56{-}78}$)",
+                 stringsAsFactors = FALSE),
+      as.data.frame(matrix(p_strings, nrow = 1), stringsAsFactors = FALSE))
+    names(add_rows) <- c("term", names(models))
+    
+    tex <- modelsummary(
+      models, output = "latex",
+      coef_map = cm, gof_map = gm,
+      estimate = "{estimate}{stars}", statistic = "({std.error})",
+      stars = c("*" = .10, "**" = .05, "***" = .01),
+      add_rows = add_rows, 
+      escape = FALSE)
+    
+    lines <- strsplit(tex, "\n")[[1]]
+    ncols <- 1 + length(models)
+    
+    # Header agrupado
+    top_idx <- grep("\\\\toprule", lines)
+    if (length(top_idx) >= 1) {
+      mc_parts <- paste0("\\multicolumn{", group_sizes, "}{c}{", group_names, "}")
+      multicol <- paste0(" & ", paste(mc_parts, collapse = " & "), " \\\\")
+      cmids <- c(); pos <- 2
+      for (gs in group_sizes) {
+        cmids <- c(cmids, paste0("\\cmidrule(l){", pos, "-", pos + gs - 1, "}"))
+        pos <- pos + gs
+      }
+      cmidrule <- paste(cmids, collapse = " ")
+      lines <- c(lines[1:top_idx[1]], multicol, cmidrule,
+                 lines[(top_idx[1] + 1):length(lines)])
+    }
+    
+    # booktabs -> \hline
+    lines <- gsub("\\\\toprule",    "\\\\hline", lines)
+    lines <- gsub("\\\\bottomrule", "\\\\hline", lines)
+    
+    # Midrules: el primero a \hline; el segundo eliminar
+    mr <- grep("\\\\midrule", lines)
+    if (length(mr) >= 1) lines[mr[1]] <- gsub("\\\\midrule", "\\\\hline", lines[mr[1]])
+    if (length(mr) >= 2) for (i in mr[-1]) lines[i] <- ""
+    
+    # \addlinespace arriba de Observations
+    obs <- grep("Observations", lines)
+    if (length(obs) >= 1) {
+      lines <- c(lines[1:(obs[1] - 1)], "\\addlinespace", lines[obs[1]:length(lines)])
+    }
+    
+    # Quitar \begin{table}, \end{table}, \centering, \caption: dejar solo el tabular
+    rm_idx <- grep("(\\\\begin\\{table\\}|\\\\end\\{table\\}|^\\\\centering|\\\\caption)", lines)
+    if (length(rm_idx) > 0) lines <- lines[-rm_idx]
+    
+    # Insertar la etiqueta del panel justo después del segundo \hline (header/body separator)
+    #hline_idx <- grep("\\\\hline", lines)
+    #if (length(hline_idx) >= 2) {
+    #  panel_row <- paste0("\\multicolumn{", ncols, "}{l}{\\textit{", panel_label, "}} \\\\")
+    #  lines <- c(lines[1:hline_idx[2]], panel_row,
+    #             lines[(hline_idx[2] + 1):length(lines)])
+    #}
+    
+    # Ancho fijo del tabular con 4 columnas de datos (2 vars x 2 grupos)
+    lines <- gsub("\\begin{tabular}[t]{lcccc}",
+                  "\\begin{tabular*}{\\textwidth}{l@{\\extracolsep{\\fill}}cccc}",
+                  lines, fixed = TRUE)
+    lines <- gsub("\\end{tabular}", "\\end{tabular*}", lines, fixed = TRUE)
+    
+    lines
+  }
+  
+  # Modelos de cada panel
+  panel_A_models <- list(
+    "Below"   = att_b2_dm1,  "Above"   = att_b2_dm2,
+    "Below "  = att_b2_fm1,  "Above "  = att_b2_fm2)
+  
+  panel_B_models <- list(
+    "Below"   = att_b2_meanedm1, "Above"   = att_b2_meanedm2,
+    "Below "  = att_b2_am1,      "Above "  = att_b2_am2)
+  
+  panel_C_models <- list(
+    "Below "  = att_b2_peam1, "Above "  = att_b2_peam2, 
+    "Below"   = att_b2_um1,   "Above" = att_b2_um2)
+  
+  panel_D_models <- list(
+    "Below"   = att_b2_izm1, "Above"   = att_b2_izm2,
+    "Below "  = att_b2_alm1, "Above "  = att_b2_alm2)
+  
+  panel_A <- make_panel_tabular_medias(
+    models = panel_A_models,
+    group_names = c("Pop. density", "Female pop."),
+    group_sizes = c(2, 2),
+    panel_label = "Panel A"
+  )
+  
+  panel_B <- make_panel_tabular_medias(
+    models      = panel_B_models,
+    group_names = c("Mean years educ.", "Median age"),
+    group_sizes = c(2, 2),
+    panel_label = "Panel B"
+  )
+  # Sacar la hline de arriba del panel B
+  first_hline_B <- grep("^\\\\hline$", panel_B)[1]
+  if (!is.na(first_hline_B)) {
+    panel_B <- panel_B[-first_hline_B]
+  }
+  
+  panel_C <- make_panel_tabular_medias(
+    models      = panel_C_models,
+    group_names = c("Share in labor force", "Share unemployed"),
+    group_sizes = c(2, 2),
+    panel_label = "Panel D"
+  )
+  # Sacar la hline de arriba del panel C
+  first_hline_C <- grep("^\\\\hline$", panel_C)[1]
+  if (!is.na(first_hline_C)) {
+    panel_C <- panel_C[-first_hline_C]
+  }
+  
+  panel_D <- make_panel_tabular_medias(
+    models      = panel_D_models,
+    group_names = c("Left vote share", "Ideological alternation"),
+    group_sizes = c(2, 2),
+    panel_label = "Panel C"
+  )
+  # Sacar la hline de arriba del panel D
+  first_hline_D <- grep("^\\\\hline$", panel_D)[1]
+  if (!is.na(first_hline_D)) {
+    panel_D <- panel_D[-first_hline_D]
+  }
+  
+  # Test de igualdad de coeficientes entre subsamples (below vs above)
+  compute_pairwise_test <- function(mod_below, mod_above, coef_name) {
+    b_below <- coef(mod_below)[coef_name]
+    b_above <- coef(mod_above)[coef_name]
+    
+    v_below <- vcov(mod_below)[coef_name, coef_name]
+    v_above <- vcov(mod_above)[coef_name, coef_name]
+    
+    diff    <- b_above - b_below
+    se_diff <- sqrt(v_below + v_above)
+    z       <- diff / se_diff
+    as.numeric(2 * (1 - pnorm(abs(z))))
+  }
+  
+  # Arma el texto de p-valores pairwise para la nota
+  build_pairwise_tests_note <- function(panels_list, panel_labels_list) {
+    parts <- character()
+    for (p in seq_along(panels_list)) {
+      panel_models <- panels_list[[p]]
+      panel_labels <- panel_labels_list[[p]]
+      n_vars       <- length(panel_labels)
+      
+      for (v in seq_len(n_vars)) {
+        idx_below <- (v - 1) * 2 + 1
+        idx_above <- (v - 1) * 2 + 2
+        
+        p_36 <- compute_pairwise_test(panel_models[[idx_below]],
+                                      panel_models[[idx_above]],
+                                      "share_1936_1955:post")
+        p_56 <- compute_pairwise_test(panel_models[[idx_below]],
+                                      panel_models[[idx_above]],
+                                      "post:share_1956_1978")
+        
+        parts <- c(parts, sprintf("%s (%.3f / %.3f)", panel_labels[v], p_36, p_56))
+      }
+    }
+    paste(parts, collapse = "; ")
+  }
+  
+  # Arma el texto con los valores de mediana para la nota
+  build_medians_note <- function(data, vars_labels, digits = 2) {
+    parts <- character()
+    for (i in seq_along(vars_labels)) {
+      v   <- names(vars_labels)[i]
+      lbl <- vars_labels[i]
+      med <- median(data[[v]], na.rm = TRUE)
+      d   <- if (length(digits) == 1) digits else digits[i]
+      parts <- c(parts, sprintf("%s (%.*f)", lbl, d, med))
+    }
+    paste(parts, collapse = "; ")
+  }
+  
+  # Corro las funciones para hacer los test y crear la nota
+  panels_list <- list(panel_A_models, panel_B_models, panel_C_models, panel_D_models)
+  panel_labels_list <- list(
+    c("Pop.\\ density",       "Female pop."),
+    c("Mean years educ.",     "Median age"),
+    c("Share in labor force", "Share unemployed"),
+    c("Left vote share",      "Ideological alternation")
+  )
+  # Diccionario de variables continuas -> etiquetas para computar medianas
+  vars_labels <- c(
+    "popdensgeo2_2010"         = "Pop.\\ density",
+    "share_female_2010"        = "Female pop.",
+    "mean_yrschool_2010"       = "Mean years educ.",
+    "median_age_2010"          = "Median age",
+    "share_laborforce_2010"    = "Share in labor force",
+    "share_unemployed_2010"    = "Share unemployed",
+    "share_izq_amplia_pre_avg" = "Left vote share",
+    "share_alt_pre_avg"        = "Ideological alternation"
+  )
+  
+  pairwise_tests_text <- build_pairwise_tests_note(panels_list, panel_labels_list)
+  medians_text        <- build_medians_note(data_eff_het, vars_labels, digits = 3)
+  
+  nota_completa <- paste0(
+    "\\caption*{\\footnotesize \\textit{Notes}: The dependent variable is the share of blank votes over total voters. ",
+    "Each column reports estimates for the subsample of municipalities below or above the median of the ",
+    "specified municipal-level variable. The split variables are defined as follows. Population density, ",
+    "the female share of the population, mean years of education, median age, the labor-force ",
+    "participation rate among individuals aged 14 and older, and the unemployment rate among individuals ",
+    "aged 14 and older are measured using the 2010 census. Broad-left vote share is the average share of ",
+    "valid votes received by left and center-left parties over the pre-reform elections held between 2011 ",
+    "and 2021. Ideological alternation is an indicator equal to one if the ideological bloc of the ",
+    "winning party changes relative to the previous election of the same type; the split variable is the ",
+    "municipality-level average of this indicator over the 2011--2021 pre-reform period. ",
+    "The median value used to split the sample for each variable is: ", medians_text, ". ",
+    "All specifications include municipality, year, and election-type fixed effects. These specifications ",
+    "do not include a lagged version of the dependent variable as a control. Standard errors clustered at ",
+    "the municipality level in parentheses (156 clusters). ",
+    "The row labeled $p$-value: $\\beta^{1936-1955} = \\beta^{1956-1978}$ reports the p-value from a ",
+    "two-sided Wald test of equality between the two cohort-specific coefficients within each subsample. ",
+    "Tests of equality of the coefficient on Spanish share $\\times$ Post between the below-median and ",
+    "above-median subsamples ($H_0: \\beta_{\\text{Below}} = \\beta_{\\text{Above}}$), computed as ",
+    "z-statistics on the difference between the two coefficients estimated on independent subsamples, ",
+    "yield the following p-values, reported as ($\\beta^{1936-1955}$ / $\\beta^{1956-1978}$) for each ",
+    "variable: ", pairwise_tests_text, ". ",
+    "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
+  )
+  
+  # Combinar en una sola tabla con un único caption y una única nota
+  final <- c(
+    "\\begin{table}[!h]",
+    "\\centering",
+    "\\renewcommand{\\arraystretch}{1.05}",
+    "\\setlength{\\tabcolsep}{8pt}",
+    "\\captionsetup{justification=centering}",
+    "\\caption{Heterogeneous Effects on Blank Votes}",
+    panel_A,
+    panel_B,
+    panel_C,
+    panel_D,
+    "\\addvspace{0.3em}",
+    "\\captionsetup{font=footnotesize, justification=justified, singlelinecheck=false}",
+    nota_completa,
+    "\\end{table}"
+  )
+  
+  writeLines(final, "Output/blank_votes_subsamples_median.tex")
+  
+ 
+## Tabla para turnout
+  
+  # Modelos de cada panel
+  panel_A_models <- list(
+    "Below"   = att_p2_dm1,  "Above"   = att_p2_dm2,
+    "Below "  = att_p2_fm1,  "Above "  = att_p2_fm2)
+  
+  panel_B_models <- list(
+    "Below"   = att_p2_meanedm1, "Above"   = att_p2_meanedm2, 
+    "Below "  = att_p2_am1,      "Above "  = att_p2_am2)
+  
+  panel_C_models <- list(
+    "Below "  = att_p2_peam1, "Above "  = att_p2_peam2,
+    "Below"   = att_p2_um1, "Above"   = att_p2_um2)
+  
+  panel_D_models <- list(
+    "Below"   = att_p2_izm1, "Above"   = att_p2_izm2, 
+    "Below "  = att_p2_alm1, "Above "  = att_p2_alm2)
+  
+  panel_A <- make_panel_tabular_medias(
+    models      = panel_A_models,
+    group_names = c("Pop. density", "Female pop."),
+    group_sizes = c(2, 2),
+    panel_label = "Panel A"
+  )
+  
+  panel_B <- make_panel_tabular_medias(
+    models = panel_B_models,
+    group_names = c("Mean years educ.", "Median age"),
+    group_sizes = c(2, 2),
+    panel_label = "Panel B"
+  )
+  # Sacar la hline de arriba del panel B
+  first_hline_B <- grep("^\\\\hline$", panel_B)[1]
+  if (!is.na(first_hline_B)) {
+    panel_B <- panel_B[-first_hline_B]
+  }
+  
+  panel_C <- make_panel_tabular_medias(
+    models      = panel_C_models,
+    group_names = c("Share in labor force", "Share unemployed"),
+    group_sizes = c(2, 2),
+    panel_label = "Panel C"
+  )
+  # Sacar la hline de arriba del panel C
+  first_hline_C <- grep("^\\\\hline$", panel_C)[1]
+  if (!is.na(first_hline_C)) {
+    panel_C <- panel_C[-first_hline_C]
+  }
+  
+  panel_D <- make_panel_tabular_medias(
+    models      = panel_D_models,
+    group_names = c("Left vote share", "Ideological alternation"),
+    group_sizes = c(2, 2),
+    panel_label = "Panel D"
+  )
+  # Sacar la hline de arriba del panel D
+  first_hline_D <- grep("^\\\\hline$", panel_D)[1]
+  if (!is.na(first_hline_D)) {
+    panel_D <- panel_D[-first_hline_D]
+  }
+  
+  # Corro las funciones para hacer los test y crear la nota
+  panels_list <- list(panel_A_models, panel_B_models, panel_C_models, panel_D_models)
+  panel_labels_list <- list(
+    c("Pop.\\ density",       "Female pop."),
+    c("Mean years educ.",     "Median age"),
+    c("Share in labor force", "Share unemployed"),
+    c("Left vote share",      "Ideological alternation")
+  )
+  # Diccionario de variables continuas -> etiquetas para computar medianas
+  vars_labels <- c(
+    "popdensgeo2_2010"         = "Pop.\\ density",
+    "share_female_2010"        = "Female pop.",
+    "mean_yrschool_2010"       = "Mean years educ.",
+    "median_age_2010"          = "Median age",
+    "share_laborforce_2010"    = "Share in labor force",
+    "share_unemployed_2010"    = "Share unemployed",
+    "share_izq_amplia_pre_avg" = "Left vote share",
+    "share_alt_pre_avg"        = "Ideological alternation"
+  )
+  
+  pairwise_tests_text <- build_pairwise_tests_note(panels_list, panel_labels_list)
+  medians_text        <- build_medians_note(data_eff_het, vars_labels, digits = 3)
+  
+  nota_completa <- paste0(
+    "\\caption*{\\footnotesize \\textit{Notes}: The dependent variable is voter turnout. ",
+    "Each column reports estimates for the subsample of municipalities below or above the median of the ",
+    "specified municipal-level variable. The split variables are defined as follows. Population density, ",
+    "the female share of the population, mean years of education, median age, the labor-force ",
+    "participation rate among individuals aged 14 and older, and the unemployment rate among individuals ",
+    "aged 14 and older are measured using the 2010 census. Broad-left vote share is the average share of ",
+    "valid votes received by left and center-left parties over the pre-reform elections held between 2011 ",
+    "and 2021. Ideological alternation is an indicator equal to one if the ideological bloc of the ",
+    "winning party changes relative to the previous election of the same type; the split variable is the ",
+    "municipality-level average of this indicator over the 2011--2021 pre-reform period. ",
+    "The median value used to split the sample for each variable is: ", medians_text, ". ",
+    "All specifications include municipality, year, and election-type fixed effects. These specifications ",
+    "do not include a lagged version of the dependent variable as a control. Standard errors clustered at ",
+    "the municipality level in parentheses (156 clusters). ",
+    "The row labeled $p$-value: $\\beta^{1936-1955} = \\beta^{1956-1978}$ reports the p-value from a ",
+    "two-sided Wald test of equality between the two cohort-specific coefficients within each subsample. ",
+    "Tests of equality of the coefficient on Spanish share $\\times$ Post between the below-median and ",
+    "above-median subsamples ($H_0: \\beta_{\\text{Below}} = \\beta_{\\text{Above}}$), computed as ",
+    "z-statistics on the difference between the two coefficients estimated on independent subsamples, ",
+    "yield the following p-values, reported as ($\\beta^{1936-1955}$ / $\\beta^{1956-1978}$) for each ",
+    "variable: ", pairwise_tests_text, ". ",
+    "* $p<0.10$, ** $p<0.05$, *** $p<0.01$.}"
+  )
+  
+  
+  # Combinar en una sola tabla con un único caption y una única nota
+  final <- c(
+    "\\begin{table}[!h]",
+    "\\centering",
+    "\\renewcommand{\\arraystretch}{1.05}",
+    "\\setlength{\\tabcolsep}{8pt}",
+    "\\captionsetup{justification=centering}",
+    "\\caption{Heterogeneous Effects on Turnout}",
+    panel_A,
+    panel_B,
+    panel_C,
+    panel_D,
+    "\\addvspace{0.3em}",
+    "\\captionsetup{font=footnotesize, justification=justified, singlelinecheck=false}",
+    nota_completa,
+    "\\end{table}"
+  )
+  
+  writeLines(final, "Output/turnout_subsamples_median.tex")
+  
 }
 
 # ------------------------------------------ #
@@ -4546,65 +5152,52 @@ chars <- c(
 
 # Regresiones sin estandarizar el outcome
 results_raw <- lapply(names(chars), function(v) {
-  m <- feols(as.formula(paste0(v, " ~ share_1936_1955 + share_1956_1978")),
+  m <- feols(as.formula(paste0(v, " ~ share_1936_1955 +share_1956_1978")),
              data = censo_2010 %>% distinct(mun_code, .keep_all = TRUE))
   tidy(m, conf.int = TRUE) %>% mutate(outcome = v)
+
 }) %>% bind_rows()
 
 test_char_std <- function(data, char_var) {
+  
   # Estandarizar el outcome
   data <- data %>%
-    mutate(y_std = (!!sym(char_var) - mean(!!sym(char_var), na.rm = TRUE)) /
-             sd(!!sym(char_var), na.rm = TRUE))
+    mutate(
+      y_std = (.data[[char_var]] - mean(.data[[char_var]], na.rm = TRUE)) /
+        sd(.data[[char_var]], na.rm = TRUE)
+    )
   
-  # Correr la regresión
-  m <- feols(
-    y_std ~ share_1936_1955 + share_1956_1978,
+  # Regresión con share 1936–1955
+  m1 <- feols(
+    y_std ~ share_1936_1955,
     data = data,
     vcov = "hetero"
   )
   
-  # Wald test: H0: beta_36 = beta_56
-  betas <- coef(m)
-  V     <- vcov(m)
-  
-  diff <- betas["share_1936_1955"] - betas["share_1956_1978"]
-  
-  se_diff <- sqrt(
-    V["share_1936_1955", "share_1936_1955"] +
-      V["share_1956_1978", "share_1956_1978"] -
-      2 * V["share_1936_1955", "share_1956_1978"]
+  # Regresión con share 1956–1978
+  m2 <- feols(
+    y_std ~ share_1956_1978,
+    data = data,
+    vcov = "hetero"
   )
   
-  t_stat <- diff / se_diff
-  p_val  <- 2 * pnorm(-abs(t_stat))
-  
-  # F-test global de la regresión
-  ftest <- fitstat(m, "f")
-  
-  f_stat <- ftest$f$stat
-  f_pval <- ftest$f$p
-  
-  broom::tidy(m, conf.int = TRUE) %>%
-    filter(term %in% c("share_1936_1955", "share_1956_1978")) %>%
+  bind_rows(
+    broom::tidy(m1, conf.int = TRUE) %>%
+      filter(term == "share_1936_1955"),
+    
+    broom::tidy(m2, conf.int = TRUE) %>%
+      filter(term == "share_1956_1978")
+  ) %>%
     mutate(
-      p_equal = p_val,
-      sig_equal = case_when(
-        p_val < 0.01 ~ "***",
-        p_val < 0.05 ~ "**",
-        p_val < 0.10 ~ "*",
-        TRUE         ~ ""
-      ),
-      f_stat = f_stat,
-      f_pval = f_pval,
-      sig_f = case_when(
-        f_pval < 0.01 ~ "***",
-        f_pval < 0.05 ~ "**",
-        f_pval < 0.10 ~ "*",
-        TRUE          ~ ""
+      sig = case_when(
+        p.value < 0.01 ~ "***",
+        p.value < 0.05 ~ "**",
+        p.value < 0.10 ~ "*",
+        TRUE           ~ ""
       )
     )
 }
+
 # Correr todas las regresiones y juntar resultados
 results <- bind_rows(lapply(names(chars), function(v) {
   test_char_std(censo_2010, v) %>%
@@ -4623,8 +5216,8 @@ results <- results %>%
 
 # Outcomes electorales pre tratamiento a agregar al mismo plot
 chars_panel <- c(
-  "participacion"    = "Turnout, pre-period",
-  "porcentaje_blanco"  = "Blank vote share, pre-period"
+  "participacion"    = "Turnout, pre-period †",
+  "porcentaje_blanco"  = "Blank vote share, pre-period †"
 )
 
 test_char_panel_std <- function(data, char_var) {
@@ -4636,50 +5229,31 @@ test_char_panel_std <- function(data, char_var) {
     )
   
   # Regresión con FE de municipio y año
-  m <- feols(
-    y_std ~ share_1936_1955 + share_1956_1978 |  anio,
+  m1 <- feols(
+    y_std ~ share_1936_1955 |  anio,
     data = data_reg,
     cluster = ~ mun_code
   )
   
-  # Wald test: H0 beta_36 = beta_56
-  betas <- coef(m)
-  V     <- vcov(m)
-  
-  diff <- betas["share_1936_1955"] - betas["share_1956_1978"]
-  
-  se_diff <- sqrt(
-    V["share_1936_1955", "share_1936_1955"] +
-      V["share_1956_1978", "share_1956_1978"] -
-      2 * V["share_1936_1955", "share_1956_1978"]
+  m2 <- feols(
+    y_std ~  share_1956_1978 |  anio,
+    data = data_reg,
+    cluster = ~ mun_code
   )
   
-  t_stat <- diff / se_diff
-  p_val  <- 2 * pnorm(-abs(t_stat))
-  
-  # F-test global de los regresores
-  ftest <- fitstat(m, "f")
-  
-  f_stat <- ftest$f$stat
-  f_pval <- ftest$f$p
-  
-  broom::tidy(m, conf.int = TRUE) %>%
-    filter(term %in% c("share_1936_1955", "share_1956_1978")) %>%
+  bind_rows(
+    broom::tidy(m1, conf.int = TRUE) %>%
+      filter(term == "share_1936_1955"),
+    
+    broom::tidy(m2, conf.int = TRUE) %>%
+      filter(term == "share_1956_1978")
+  ) %>%
     mutate(
-      p_equal = p_val,
-      sig_equal = case_when(
-        p_val < 0.01 ~ "***",
-        p_val < 0.05 ~ "**",
-        p_val < 0.10 ~ "*",
-        TRUE         ~ ""
-      ),
-      f_stat = f_stat,
-      f_pval = f_pval,
-      sig_f = case_when(
-        f_pval < 0.01 ~ "***",
-        f_pval < 0.05 ~ "**",
-        f_pval < 0.10 ~ "*",
-        TRUE          ~ ""
+      sig = case_when(
+        p.value < 0.01 ~ "***",
+        p.value < 0.05 ~ "**",
+        p.value < 0.10 ~ "*",
+        TRUE           ~ ""
       )
     )
 }
@@ -4716,11 +5290,6 @@ results_all <- results_all %>%
     characteristic = factor(characteristic, levels = rev(char_order_all))
   )
 
-# Labels de p-valores
-sig_labels <- results_all %>%
-  distinct(characteristic, p_equal) %>%
-  mutate(label = sprintf("p = %.3f", p_equal))
-
 # Coefplot
 (p <- ggplot(results_all, aes(x = estimate, y = characteristic,
                          color = window, shape = window)) +
@@ -4751,7 +5320,15 @@ sig_labels <- results_all %>%
     axis.line        = element_line(color = "black", linewidth = 0.4)
   ))
 
+ggsave("Output/coef_plot_chars_v2.pdf", p, width = 9, height = 6)
+ggsave("Output/coef_plot_chars_v2.png", p, width = 9, height = 6, dpi = 300)
+
 # Agregar al plot los resultados del test de igualdad de coeficientes
+# Labels de p-valores
+sig_labels <- results_all %>%
+  distinct(characteristic, p_equal) %>%
+  mutate(label = sprintf("p = %.3f", p_equal))
+
 (p <- p +
   geom_text(data = sig_labels,
             aes(x = Inf, y = characteristic, label = label),
@@ -4760,8 +5337,6 @@ sig_labels <- results_all %>%
             size = 4,
             color = "black"))
 
-ggsave("Output/coef_plot_chars.pdf", p, width = 9, height = 6)
-ggsave("Output/coef_plot_chars.png", p, width = 9, height = 6, dpi = 300)
 
 }
 
@@ -5060,7 +5635,7 @@ theme_honestdid_sd <- list(
     color = NULL,
     linetype = NULL,
     fill = NULL,
-    x = "Delta",
+    x = "M",
     y = "Estimated effect"
   ),
   scale_color_manual(
@@ -5079,7 +5654,7 @@ theme_honestdid_rm <- list(
     color = NULL,
     linetype = NULL,
     fill = NULL,
-    x = "Delta",
+    x = expression(bar(M)),
     y = "Estimated effect"
   ),
   scale_color_manual(
@@ -5126,7 +5701,7 @@ honestdid_smoothness <- function(model,
                                  label,
                                  cohort = NULL,             # Seleccionar sets de coeficientes solo si el modelo tiene ambos (36 / 56)
                                  att = FALSE,
-                                 Mvec = seq(0, 4, by = 0.5),
+                                 Mvec = seq(0, 0.05, by = 0.005),
                                  numPrePeriods  = 5,
                                  numPostPeriods = 2,
                                  alpha = 0.05,
@@ -5181,7 +5756,7 @@ honestdid_smoothness <- function(model,
 # ============================ #
 honestdid_magnitudes <- function(model,
                                  label,
-                                 cohort = NULL,             # NUEVO
+                                 cohort = NULL,              
                                  att = FALSE,
                                  Mbarvec = seq(0.25, 2, by = 0.25),
                                  numPrePeriods  = 5,

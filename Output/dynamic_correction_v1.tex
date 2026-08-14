@@ -1,0 +1,25 @@
+\begin{table}[htbp]
+\centering
+\caption{Bias-corrected fixed-effects estimates}
+\label{tab:dynamic\_correction}
+\begin{tabular}{l*{3}{c}}
+\hline
+            &\multicolumn{2}{c}{Blank vote share}       &\multicolumn{2}{c}{Voter turnout}          \\
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}\\
+            &\multicolumn{1}{c}{FE (biased)}&\multicolumn{1}{c}{BCFE (bootstrap)}&\multicolumn{1}{c}{FE (biased)}&\multicolumn{1}{c}{BCFE (bootstrap)}\\
+\hline
+Lag(share blank)&     -0.3288\sym{***}&     -0.2107\sym{***}&                     &                     \\
+            &    (0.0238)         &    (0.0231)         &                     &                     \\
+Spanish share 1936--1955 $\times$ Post&     -2.2260\sym{**} &     -2.1847\sym{***}&     -0.3047         &     -0.3222         \\
+            &    (0.9616)         &    (0.7832)         &    (0.3669)         &    (0.3220)         \\
+Spanish share 1956--1978 $\times$ Post&     -4.7801\sym{*}  &     -4.4723\sym{*}  &      3.9580\sym{***}&      3.7894\sym{***}\\
+            &    (2.5051)         &    (2.3054)         &    (1.4232)         &    (1.3404)         \\
+\hline
+Observations&        4056         &        4056         &        4056         &        4056         \\
+Municipality FE&         Yes         &         Yes         &         Yes         &         Yes         \\
+Time FE     &         Yes         &         Yes         &         Yes         &         Yes         \\
+Election type FE&         Yes         &         Yes         &         Yes         &         Yes         \\
+\hline
+\end{tabular}
+\caption*{\footnotesize \textit{Notes:} The dependent variable in  columns (1) and (2) is the share of blank votes over total voters. In columns (3) and (4), the dependent variable is voter turnout. Standard errors are reported in parentheses (clusters). * <0.10$, ** <0.05$, *** <0.01$. \\ \textit{Sources}: National Electoral Commission (dependent variables); IPUMS Argentine Census 1970 (Spanish immigration shares).}
+\end{table}

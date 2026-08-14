@@ -1,0 +1,27 @@
+\begin{table}[htbp]
+\centering
+\caption{Bias-corrected fixed-effects estimates}
+\label{tab:dynamic\_correction}
+\begin{tabular}{l*{2}{c}}
+\hline
+            &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+            &\multicolumn{1}{c}{Blank vote share}&\multicolumn{1}{c}{Voter turnout}\\
+\hline
+Spanish share 1936--1955 $\times$ Post&     -1.9912\sym{***}&     -0.1700         \\
+            &    (0.6724)         &    (0.3320)         \\
+Spanish share 1956--1978 $\times$ Post&     -3.2407         &      3.1757\sym{**} \\
+            &    (2.6673)         &    (1.2955)         \\
+Lag(blank vote share)&     -0.1906\sym{***}&                     \\
+            &    (0.0263)         &                     \\
+Lag(turnout)&                     &      0.3005\sym{***}\\
+            &                     &    (0.0926)         \\
+\hline
+Observations&        2184         &        2184         \\
+Municipality FE&         Yes         &         Yes         \\
+Time FE     &         Yes         &         Yes         \\
+General elections only&         Yes         &         Yes         \\
+\hline
+\end{tabular}
+\captionsetup{justification = justified}
+\caption*{\footnotesize \textit{Notes:} Both columns report estimates from the bootstrap-based bias-corrected fixed-effects estimator (BCFE) of De Vos, Everaert, and Ruyssen (2015). The dependent variable in column (1) is the share of blank votes over total voters; the dependent variable in column (2) is voter turnout. The sample is restricted to general elections. The specification includes municipality fixed effects, time fixed effects, and one lag of the dependent variable. Prior to estimation we tested the stationarity of each dependent variable using the Im-Pesaran-Shin (2003) test and the Fisher-type augmented Dickey-Fuller test (Choi 2001); both reject the null of a unit root at the 1\% level for both outcomes. The bias-correction step uses 500 bootstrap iterations. Confidence intervals are computed from the 2.5th and 97.5th percentiles of the bootstrap distribution over 1,000 additional iterations, with residuals resampled with replacement within each panel unit. * <0.10$, ** <0.05$, *** <0.01$. \\ \textit{Sources}: National Electoral Commission (dependent variables); IPUMS Argentine Census 1970 (Spanish immigration shares).}
+\end{table}
