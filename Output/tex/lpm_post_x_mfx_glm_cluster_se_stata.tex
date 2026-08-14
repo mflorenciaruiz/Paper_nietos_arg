@@ -1,0 +1,57 @@
+\begin{table}[!htbp]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\caption{Linear probability model: post-period changes by municipal characteristics}
+\label{tab:lpm_post_x_mfx_stata}
+\small
+\begin{tabular}{llc}
+\hline
+Municipal characteristic & Controls & LPM: \(Post \times X\) \\
+\hline
+Population density & No & 0.000 \\
+ & & (0.000) \\
+Population density & Yes & 0.000 \\
+ & & (0.000) \\
+\addlinespace
+Female population share & No & 0.007 \\
+ & & (0.008) \\
+Female population share & Yes & 0.005 \\
+ & & (0.008) \\
+\addlinespace
+Mean years of education & No & 0.014 \\
+ & & (0.010) \\
+Mean years of education & Yes & 0.010 \\
+ & & (0.010) \\
+\addlinespace
+Median age & No & 0.005 \\
+ & & (0.003) \\
+Median age & Yes & 0.004 \\
+ & & (0.003) \\
+\addlinespace
+Share in labor force & No & 0.004** \\
+ & & (0.001) \\
+Share in labor force & Yes & 0.004** \\
+ & & (0.002) \\
+\addlinespace
+Share unemployed & No & -0.005 \\
+ & & (0.014) \\
+Share unemployed & Yes & -0.004 \\
+ & & (0.014) \\
+\addlinespace
+Left vote share & No & -0.001 \\
+ & & (0.001) \\
+Left vote share & Yes & -0.001 \\
+ & & (0.001) \\
+\addlinespace
+Ideological alternation & No & 0.001 \\
+ & & (0.001) \\
+Ideological alternation & Yes & 0.000 \\
+ & & (0.001) \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{\textwidth}
+{\footnotesize Notes: The dependent variable is migration intention. Each pair of rows reports a separate linear probability model interacting \(Post\) with the municipal characteristic in the first column. Standard errors are clustered at the municipality level. Each LPM uses exactly the corresponding Logit estimation sample and the same survey weights and fixed effects. Controls include age and male. The number of observations is        7,503 without controls and        7,448 with controls. The unweighted percentage of fitted values outside [0,1], reported as No controls / Controls, is: Population density ( 0.00\% / 10.08\%); Female population share ( 0.00\% / 10.11\%); Mean years of education ( 0.00\% / 10.08\%); Median age ( 0.00\% / 10.18\%); Share in labor force ( 0.00\% / 10.22\%); Share unemployed ( 0.00\% / 10.04\%); Left vote share ( 0.00\% / 10.00\%); Ideological alternation ( 0.00\% /  9.99\%). * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).}
+\end{minipage}
+\end{table}

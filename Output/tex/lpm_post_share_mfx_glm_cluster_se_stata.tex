@@ -1,0 +1,27 @@
+\begin{table}[!htbp]
+\normalsize
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\centering
+\caption{Linear probability model: post-period Spanish historical exposure}
+\label{tab:lpm_post_share_mfx_stata}
+\begin{tabular}{llc}
+\hline
+Term & Controls & LPM coefficient \\
+\hline
+Spanish share 1936--1955 \(\times\) Post & No & 0.008 \\
+ & & (0.037) \\
+Spanish share 1936--1955 \(\times\) Post & Yes & 0.013 \\
+ & & (0.037) \\
+\addlinespace
+Spanish share 1956--1978 \(\times\) Post & No & 0.112 \\
+ & & (0.115) \\
+Spanish share 1956--1978 \(\times\) Post & Yes & 0.094 \\
+ & & (0.118) \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{\textwidth}
+{\footnotesize Notes: The dependent variable is migration intention. Entries are linear probability model coefficients, with standard errors clustered at the municipality level and reported in parentheses. Each LPM uses exactly the estimation sample of the corresponding Logit specification and the same survey weights, year fixed effects, municipality fixed effects, and controls. Controls include age and male. The number of observations is        7,503 without controls and        7,448 with controls. The unweighted percentage of fitted values outside [0,1] is:  0.00\% without controls and 10.14\% with controls. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).}
+\end{minipage}
+\end{table}

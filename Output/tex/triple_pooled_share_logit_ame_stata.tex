@@ -1,0 +1,60 @@
+\begin{table}[!htbp]
+\normalsize
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\centering
+\caption{Triple differences: pooled Spanish exposure, Logit average marginal effects}
+\label{tab:triple_pooled_share_ame_stata}
+\setlength{\tabcolsep}{4pt}
+\captionsetup{justification=centering}
+\begin{tabular}{llcc}
+\hline
+Municipal characteristic & Controls & 1970 Census & 1980 Census \\
+\hline
+Population density & No & -0.000 & -0.000 \\
+ & & (0.000) & (0.000) \\
+Population density & Yes & -0.000 & -0.000 \\
+ & & (0.000) & (0.000) \\
+\addlinespace
+Female population share & No & -0.004 & -0.006 \\
+ & & (0.005) & (0.009) \\
+Female population share & Yes & -0.014 & -0.004 \\
+ & & (0.012) & (0.024) \\
+\addlinespace
+Mean years of education & No & -0.012* & -0.013 \\
+ & & (0.006) & (0.009) \\
+Mean years of education & Yes & -0.017* & -0.018 \\
+ & & (0.010) & (0.017) \\
+\addlinespace
+Median age & No & -0.005*** & -0.007** \\
+ & & (0.002) & (0.003) \\
+Median age & Yes & -0.003 & -0.007 \\
+ & & (0.003) & (0.005) \\
+\addlinespace
+Share in labor force & No & -0.004** & -0.008** \\
+ & & (0.001) & (0.004) \\
+Share in labor force & Yes & -0.003 & -0.007 \\
+ & & (0.003) & (0.008) \\
+\addlinespace
+Share unemployed & No & 0.003 & 0.023* \\
+ & & (0.011) & (0.012) \\
+Share unemployed & Yes & 0.004 & 0.018 \\
+ & & (0.014) & (0.019) \\
+\addlinespace
+Left vote share & No & 0.000 & 0.001 \\
+ & & (0.001) & (0.001) \\
+Left vote share & Yes & -0.000 & -0.000 \\
+ & & (0.001) & (0.001) \\
+\addlinespace
+Ideological alternation & No & 0.000 & -0.001 \\
+ & & (0.000) & (0.000) \\
+Ideological alternation & Yes & -0.000 & -0.000 \\
+ & & (0.000) & (0.001) \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{0.98\linewidth}
+\footnotesize\setlength{\parindent}{0pt}\setlength{\parskip}{1pt}
+Notes: The dependent variable is migration intention. Each pair of rows reports a separate triple-difference specification. Entries are Logit average marginal effects on the 0--1 probability scale for \(Spanish\ share_{1936-1978} \times Post \times X\). All models include year and municipality fixed effects. Standard errors are clustered at the municipality level and reported in parentheses (56 clusters). Controls include age, male, and \(Post\) interacted with the remaining common census/electoral municipal characteristics. The number of observations is        7,503 in models without controls and        7,448 in models with controls. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+\end{minipage}
+\end{table}

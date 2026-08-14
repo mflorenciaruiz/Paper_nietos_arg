@@ -1,0 +1,67 @@
+\begin{table}[!htbp]
+\small
+\renewcommand{\arraystretch}{1}
+\setlength{\tabcolsep}{3pt}
+\centering
+\caption{Triple-difference models: all interaction terms, Logit average marginal effects}
+\label{tab:triple_all_interactions_ame_stata}
+\captionsetup{justification=centering}
+\begin{tabular}{llcc}
+\hline
+Municipal characteristic & Term & No controls & Controls \\
+\hline
+Population density & Spanish share 1936--1955 \(\times\) Post & 0.004 (0.029) & -0.002 (0.034) \\
+ & Spanish share 1956--1978 \(\times\) Post & 0.174 (0.116) & 0.234* (0.130) \\
+ & \(Post \times X\) & 0.000 (0.000) & 0.000 (0.000) \\
+ & Spanish share 1936--1955 \(\times\) Post \(\times X\) & -0.000 (0.000) & -0.000 (0.000) \\
+ & Spanish share 1956--1978 \(\times\) Post \(\times X\) & -0.000 (0.000) & -0.000 (0.000) \\
+\addlinespace
+Female population share & Spanish share 1936--1955 \(\times\) Post & 1.110 (1.092) & 2.552** (1.193) \\
+ & Spanish share 1956--1978 \(\times\) Post & -1.830 (4.259) & -5.048 (5.407) \\
+ & \(Post \times X\) & 0.000 (0.011) & -0.002 (0.012) \\
+ & Spanish share 1936--1955 \(\times\) Post \(\times X\) & -0.022 (0.021) & -0.050** (0.023) \\
+ & Spanish share 1956--1978 \(\times\) Post \(\times X\) & 0.038 (0.083) & 0.102 (0.105) \\
+\addlinespace
+Mean years of education & Spanish share 1936--1955 \(\times\) Post & 0.080 (0.197) & 0.223 (0.228) \\
+ & Spanish share 1956--1978 \(\times\) Post & 0.518 (0.751) & 0.168 (1.136) \\
+ & \(Post \times X\) & 0.018 (0.014) & 0.024 (0.029) \\
+ & Spanish share 1936--1955 \(\times\) Post \(\times X\) & -0.010 (0.025) & -0.030 (0.028) \\
+ & Spanish share 1956--1978 \(\times\) Post \(\times X\) & -0.047 (0.089) & 0.008 (0.136) \\
+\addlinespace
+Median age & Spanish share 1936--1955 \(\times\) Post & -0.053 (0.218) & 0.002 (0.242) \\
+ & Spanish share 1956--1978 \(\times\) Post & 1.473 (1.017) & 1.186 (1.272) \\
+ & \(Post \times X\) & 0.010*** (0.004) & 0.008 (0.005) \\
+ & Spanish share 1936--1955 \(\times\) Post \(\times X\) & 0.002 (0.008) & -0.001 (0.008) \\
+ & Spanish share 1956--1978 \(\times\) Post \(\times X\) & -0.046 (0.033) & -0.032 (0.043) \\
+\addlinespace
+Share in labor force & Spanish share 1936--1955 \(\times\) Post & 0.108 (0.303) & 0.125 (0.357) \\
+ & Spanish share 1956--1978 \(\times\) Post & 1.897* (1.074) & 1.920 (1.768) \\
+ & \(Post \times X\) & 0.005** (0.002) & 0.006** (0.003) \\
+ & Spanish share 1936--1955 \(\times\) Post \(\times X\) & -0.002 (0.005) & -0.002 (0.005) \\
+ & Spanish share 1956--1978 \(\times\) Post \(\times X\) & -0.026* (0.016) & -0.026 (0.026) \\
+\addlinespace
+Share unemployed & Spanish share 1936--1955 \(\times\) Post & 0.162 (0.103) & 0.076 (0.163) \\
+ & Spanish share 1956--1978 \(\times\) Post & -0.749** (0.380) & -0.184 (0.783) \\
+ & \(Post \times X\) & -0.012 (0.012) & -0.015 (0.015) \\
+ & Spanish share 1936--1955 \(\times\) Post \(\times X\) & -0.037 (0.027) & -0.020 (0.041) \\
+ & Spanish share 1956--1978 \(\times\) Post \(\times X\) & 0.196** (0.096) & 0.090 (0.168) \\
+\addlinespace
+Left vote share & Spanish share 1936--1955 \(\times\) Post & 0.027 (0.127) & -0.150 (0.135) \\
+ & Spanish share 1956--1978 \(\times\) Post & -0.144 (0.458) & 0.980 (0.640) \\
+ & \(Post \times X\) & -0.001 (0.001) & -0.002 (0.001) \\
+ & Spanish share 1936--1955 \(\times\) Post \(\times X\) & -0.000 (0.002) & 0.002 (0.002) \\
+ & Spanish share 1956--1978 \(\times\) Post \(\times X\) & 0.003 (0.007) & -0.011 (0.010) \\
+\addlinespace
+Ideological alternation & Spanish share 1936--1955 \(\times\) Post & -0.002 (0.040) & 0.015 (0.050) \\
+ & Spanish share 1956--1978 \(\times\) Post & 0.116 (0.138) & 0.188 (0.157) \\
+ & \(Post \times X\) & 0.000 (0.001) & -0.001 (0.001) \\
+ & Spanish share 1936--1955 \(\times\) Post \(\times X\) & 0.001 (0.001) & -0.001 (0.001) \\
+ & Spanish share 1956--1978 \(\times\) Post \(\times X\) & -0.003 (0.003) & 0.003 (0.005) \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{0.98\linewidth}
+\footnotesize\setlength{\parindent}{0pt}\setlength{\parskip}{1pt}
+Notes: The dependent variable is migration intention. Each block reports a separate triple-difference specification for municipal characteristic \(X\). Entries are Logit average marginal effects on the 0--1 probability scale, with standard errors reported in parentheses beside the corresponding estimate. Standard errors are clustered at the municipality level (56 clusters). All models include year and municipality fixed effects. Controls additionally include age, male, and \(Post\) interacted with the remaining pre-2022 municipal characteristics. Lower-order interaction terms are conditional on the other interacted variables being zero. The number of observations is        7,503 in models without controls and        7,448 in models with controls. * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+\end{minipage}
+\end{table}

@@ -1,0 +1,60 @@
+\begin{table}[!htbp]
+\normalsize
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{6pt}
+\centering
+\caption{Triple differences: pooled Spanish exposure, linear probability models}
+\label{tab:triple_pooled_share_lpm_stata}
+\setlength{\tabcolsep}{4pt}
+\captionsetup{justification=centering}
+\begin{tabular}{llcc}
+\hline
+Municipal characteristic & Controls & 1970 Census & 1980 Census \\
+\hline
+Population density & No & -0.000 & -0.000 \\
+ & & (0.000) & (0.000) \\
+Population density & Yes & -0.000 & -0.000 \\
+ & & (0.000) & (0.000) \\
+\addlinespace
+Female population share & No & -0.011* & -0.008 \\
+ & & (0.006) & (0.012) \\
+Female population share & Yes & -0.023 & -0.005 \\
+ & & (0.016) & (0.031) \\
+\addlinespace
+Mean years of education & No & -0.020** & -0.016 \\
+ & & (0.008) & (0.010) \\
+Mean years of education & Yes & -0.022 & -0.018 \\
+ & & (0.014) & (0.023) \\
+\addlinespace
+Median age & No & -0.007*** & -0.007* \\
+ & & (0.002) & (0.004) \\
+Median age & Yes & -0.005 & -0.009 \\
+ & & (0.003) & (0.007) \\
+\addlinespace
+Share in labor force & No & -0.005*** & -0.009 \\
+ & & (0.002) & (0.006) \\
+Share in labor force & Yes & -0.003 & -0.007 \\
+ & & (0.004) & (0.011) \\
+\addlinespace
+Share unemployed & No & -0.017 & 0.004 \\
+ & & (0.013) & (0.017) \\
+Share unemployed & Yes & -0.006 & 0.009 \\
+ & & (0.018) & (0.028) \\
+\addlinespace
+Left vote share & No & 0.000 & 0.001 \\
+ & & (0.001) & (0.001) \\
+Left vote share & Yes & -0.000 & -0.001 \\
+ & & (0.001) & (0.002) \\
+\addlinespace
+Ideological alternation & No & 0.000 & -0.001 \\
+ & & (0.000) & (0.001) \\
+Ideological alternation & Yes & 0.000 & 0.000 \\
+ & & (0.000) & (0.001) \\
+\hline
+\end{tabular}
+\par\vspace{1.5mm}
+\begin{minipage}{0.98\linewidth}
+\footnotesize\setlength{\parindent}{0pt}\setlength{\parskip}{1pt}
+Notes: The dependent variable is migration intention. Each pair of rows reports a separate pooled triple-difference LPM. Every LPM uses exactly the corresponding Logit estimation sample and the same regressors, survey weights, fixed effects, controls, and standard errors clustered at the municipality level. Controls include age, male, and \(Post\) interacted with the remaining municipal characteristics. The number of observations is        7,503 without controls and        7,448 with controls. The unweighted percentage of fitted values outside [0,1], reported as 1970 Census / 1980 Census, is: Population density, No ( 0.00\% /  0.00\%); Population density, Yes (10.24\% / 10.27\%); Female population share, No ( 0.00\% /  0.00\%); Female population share, Yes (10.20\% / 10.26\%); Mean years of education, No ( 0.00\% /  0.00\%); Mean years of education, Yes (10.26\% / 10.26\%); Median age, No ( 0.00\% /  0.00\%); Median age, Yes (10.26\% / 10.28\%); Share in labor force, No ( 0.00\% /  0.00\%); Share in labor force, Yes (10.19\% / 10.34\%); Share unemployed, No ( 0.00\% /  0.00\%); Share unemployed, Yes (10.23\% / 10.28\%); Left vote share, No ( 0.00\% /  0.00\%); Left vote share, Yes (10.22\% / 10.27\%); Ideological alternation, No ( 0.00\% /  0.00\%); Ideological alternation, Yes (10.23\% / 10.30\%). * \(p<0.10\), ** \(p<0.05\), *** \(p<0.01\).
+\end{minipage}
+\end{table}
